@@ -1,0 +1,20 @@
+body {
+    background-color: hsl(0, 0%, 96%);
+}
+
+.text-muted {
+    color: hsl(217, 10%, 50.8%);
+}
+
+.social-btn {
+    color: #15b1e5;
+}
+
+.text-custom-color {
+    color: #15b1e5;
+}
+
+.contenedorLogin{
+    display: flex !important;
+    justify-content: center !important;
+}
