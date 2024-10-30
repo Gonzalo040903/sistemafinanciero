@@ -73,7 +73,7 @@ export function PanelControl() {
                         <h3 className="px-4 textogris mt-5"><b>Tabla Clientes</b></h3>
 
                         {/* TABLA */}
-                        <MDBTable id="tabla" className="shadow-3 rounded-5 mx-4 mt-4">
+                        <MDBTable id="tabla" className="shadow-3 rounded-5 mx-4 mt-4 text-center">
                             <MDBTableHead>
                                 <tr>
                                     <th scope='col'>Nombre</th>
