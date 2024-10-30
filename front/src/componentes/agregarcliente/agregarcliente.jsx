@@ -12,7 +12,7 @@ import {
     MDBInput,
 } from 'mdb-react-ui-kit';
 import { useState } from 'react';
-
+import toast, { Toaster } from 'react-hot-toast';
 export function Agregarcliente() {
     const [isGestionClientesOpen, setIsGestionClientesOpen] = useState(false);
     const [semanas, setSemanas] = useState('1');
@@ -39,6 +39,10 @@ export function Agregarcliente() {
         return '';
     };
 
+    const funcionSuccess = (e) => {
+        e.preventDefault();
+        toast.success('Nuevo Cliente Creado')
+    }
     // Calcula el pago semanal
     const calcularPagoSemanal = () => {
         if (monto && semanas) {
@@ -49,6 +53,10 @@ export function Agregarcliente() {
 
     return (
         <MDBContainer fluid className='col-10' id="container">
+            <Toaster
+                position="top-center"
+                reverseOrder={false}
+            />
             <MDBCard className="row" id="color">
                 <div className="row p-0" id="color">
                     <div className="col-2 text-center" id="nav">
@@ -165,7 +173,7 @@ export function Agregarcliente() {
                             </div>
 
                             <div className="col-6 mt-3">
-                                <MDBBtn className='w-100' href='/error' size='md' style={{ backgroundColor: '#15b1e5' }}>
+                                <MDBBtn className='w-100' href='/error' size='md' style={{ backgroundColor: '#15b1e5' }} onClick={funcionSuccess}>
                                     Registrar Nuevo Cliente
                                 </MDBBtn>
                             </div>
