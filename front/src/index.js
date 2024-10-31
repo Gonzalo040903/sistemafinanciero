@@ -8,12 +8,13 @@ import { LoginPage } from "./paginas/loginPage.jsx"
 import { PanelPage } from './paginas/panelPage.jsx';
 import { AgregarclientePage } from "./paginas/agregarclientePage.jsx";
 import { EliminarclientePage } from './paginas/eliminarclientePage.jsx';
+import { ModificarclientePage } from './paginas/modificarclientePage.jsx';
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
   <React.StrictMode>
     <div className='mt-5'>
-      <EliminarclientePage />
+      <AgregarclientePage />
     </div>
   </React.StrictMode>
 );

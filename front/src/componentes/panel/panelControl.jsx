@@ -35,7 +35,7 @@ export function PanelControl() {
                             </MDBNavbarLink>
                             <MDBNavbarLink href='#' onClick={toggleGestionClientes} className="nav-item-link">
                                 <MDBIcon icon="user-cog" className="me-1 mx-0 mover mt-2" />
-                                Gestion Clientes
+                                Registro Clientes
                                 <MDBIcon icon={isGestionClientesOpen ? 'angle-up' : 'angle-down'} className='' />
                             </MDBNavbarLink>
                             {isGestionClientesOpen && (

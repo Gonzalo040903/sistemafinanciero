@@ -9,54 +9,46 @@ import {
     MDBBtn,
     MDBRow,
     MDBCol,
+    MDBCardBody,
     MDBInput,
+    MDBTypography,
 } from 'mdb-react-ui-kit';
 import { useState } from 'react';
 import toast, { Toaster } from 'react-hot-toast';
+
 export function Agregarcliente() {
     const [isGestionClientesOpen, setIsGestionClientesOpen] = useState(false);
-    const [semanas, setSemanas] = useState('1');
-    const [monto, setMonto] = useState('');
-    const [intereses, setIntereses] = useState('');
 
     const toggleGestionClientes = () => {
         setIsGestionClientesOpen(!isGestionClientesOpen);
     };
-
-    const CustomInput = ({ label, type, id, value, onChange }) => (
-        <MDBInput wrapperClass='mb-4' label={label} id={id} type={type} value={value} onChange={onChange} />
+    // funcion calcular
+    const calcular = (e) => {
+        e.preventDefault();
+        let monto = parseInt(document.getElementById("formMonto").value);
+        let intereses = parseInt(document.getElementById("formIntereses").value);
+        let montoFinal = (monto * intereses / 100) + monto
+        let semana = parseInt(document.getElementById("formSemanas").value);
+        let montoxsemana = montoFinal / semana;
+        let semanapaga = document.getElementById("formSemanaPaga")
+        let devuelve = document.getElementById("formDevuelve")
+        if (monto){
+            semanapaga.value = montoxsemana;
+            devuelve.value = montoFinal;
+        }
+    }
+    const CustomInput = ({ label, type, id }) => (
+        <MDBInput wrapperClass='mb-4' label={label} id={id} type={type} />
     );
 
-    let palabra = "Panel de control > Agregar Cliente";
-
-    // Calcula el monto a devolver (interés + monto)
-    const calcularDevuelve = () => {
-        if (monto && intereses) {
-            const montoFloat = parseFloat(monto);
-            const interesFloat = (montoFloat * parseFloat(intereses)) / 100;
-            return (montoFloat + interesFloat).toFixed(2);
-        }
-        return '';
-    };
-
+    let palabra = "Panel de control > Registro Clientes > Agregar Cliente";
     const funcionSuccess = (e) => {
         e.preventDefault();
-        toast.success('Nuevo Cliente Creado')
-    }
-    // Calcula el pago semanal
-    const calcularPagoSemanal = () => {
-        if (monto && semanas) {
-            return (parseFloat(monto) / parseInt(semanas)).toFixed(2);
-        }
-        return '';
+        toast.success('Nuevo Cliente Creado');
     };
-
     return (
         <MDBContainer fluid className='col-10' id="container">
-            <Toaster
-                position="top-center"
-                reverseOrder={false}
-            />
+            <Toaster position="top-center" reverseOrder={false} />
             <MDBCard className="row" id="color">
                 <div className="row p-0" id="color">
                     <div className="col-2 text-center" id="nav">
@@ -68,7 +60,7 @@ export function Agregarcliente() {
                             </MDBNavbarLink>
                             <MDBNavbarLink href='#' onClick={toggleGestionClientes} className="nav-item-link">
                                 <MDBIcon icon="user-cog" className="me-1 mx-0 mover mt-2" />
-                                Gestion Clientes
+                                Registro Clientes
                                 <MDBIcon icon={isGestionClientesOpen ? 'angle-up' : 'angle-down'} className='' />
                             </MDBNavbarLink>
                             {isGestionClientesOpen && (
@@ -107,12 +99,14 @@ export function Agregarcliente() {
 
                         {/* FORMULARIO */}
                         <div className="p-5 mx-4 mt-0 px-4 rounded-5 shadow-3 mb-4 row" id="formulario">
+
                             <div className="col-5">
                                 <h3 className="text-center text-muted mb-3">Cliente</h3>
                                 <MDBRow>
                                     <MDBCol col='3'>
                                         <CustomInput label='Nombres' id='formNombre' type='text' />
                                     </MDBCol>
+
                                     <MDBCol col='3'>
                                         <CustomInput label='Apellidos' id='formApellido' type='text' />
                                     </MDBCol>
@@ -127,55 +121,62 @@ export function Agregarcliente() {
                                         <CustomInput label='Telefono 2' id='formTel2' type='number' />
                                     </MDBCol>
                                 </MDBRow>
-                            </div>
 
+                            </div>
                             <div className="col-5">
                                 <h3 className="text-center text-muted mb-3">Prestamo</h3>
                                 <MDBRow>
                                     <MDBCol col='3'>
-                                        <CustomInput label='Monto' id='formMonto' type='number' value={monto} onChange={(e) => setMonto(e.target.value)} />
+                                        <CustomInput label='Monto' id='formMonto' type='number' />
                                     </MDBCol>
+
                                     <MDBCol col='3'>
-                                        <CustomInput label='%Intereses' id='formIntereses' type='number' value={intereses} onChange={(e) => setIntereses(e.target.value)} />
+                                        <CustomInput label='%Intereses' id='formIntereses' type='number' />
                                     </MDBCol>
                                 </MDBRow>
                                 <MDBRow>
                                     <MDBCol col='3'>
                                         <CustomInput label='Fecha Inicio' id='formFecha' type='date' />
                                     </MDBCol>
+
+                                    {/* Select de Semanas */}
                                     <MDBCol col='3'>
-                                        <select className="form-select" value={semanas} onChange={(e) => setSemanas(e.target.value)}>
-                                            <option value="1">Semana 1</option>
-                                            <option value="2">Semana 2</option>
-                                            <option value="3">Semana 3</option>
-                                            <option value="4">Semana 4</option>
-                                            <option value="5">Semana 5</option>
-                                            <option value="6">Semana 6</option>
-                                            <option value="7">Semana 7</option>
-                                            <option value="8">Semana 8</option>
-                                            <option value="9">Semana 9</option>
-                                            <option value="10">Semana 10</option>
-                                            <option value="11">Semana 11</option>
-                                            <option value="12">Semana 12</option>
+                                        <select id="formSemanas" className="form-select mb-4">
+                                            <option value={1}>1 Semana</option>
+                                            <option value={2}>2 Semanas</option>
+                                            <option value={3}>3 Semanas</option>
+                                            <option value={4}>4 Semanas</option>
+                                            <option value={5}>5 Semanas</option>
+                                            <option value={6}>6 Semanas</option>
+                                            <option value={7}>7 Semanas</option>
+                                            <option value={8}>8 Semanas</option>
+                                            <option value={9}>9 Semanas</option>
+                                            <option value={10}>10 Semanas</option>
+                                            <option value={11}>11 Semanas</option>
+                                            <option value={12}>12 Semanas</option>
+
+
                                         </select>
                                     </MDBCol>
                                 </MDBRow>
-                                <MDBRow className="mt-2">
+
+                                <MDBRow className="">
                                     <MDBCol col='3'>
-                                        <label htmlFor="" className="text-muted">Devuelve</label>
-                                        <MDBInput label="" id="formDevuelve" type="text" value={calcularDevuelve()} disabled />
+                                        <MDBInput label="Monto Final" id="formDevuelve" value={" "} type="text" disabled />
                                     </MDBCol>
                                     <MDBCol col='3'>
-                                        <label htmlFor="" className="text-muted">Cada semana paga</label>
-                                        <MDBInput label="" id="formControlDisabled" type="text" value={calcularPagoSemanal()} disabled />
+                                        <MDBInput label="Por Semana paga:" value={" "} id="formSemanaPaga" type="text" disabled />
+                                    </MDBCol>
+                                </MDBRow>
+                                <MDBRow>
+                                    <MDBCol col='3'>
+                                        <MDBBtn className='w-100 mt-3' href='/error' size='md' color="dark" onClick={calcular}>Calcular intereses</MDBBtn>
                                     </MDBCol>
                                 </MDBRow>
                             </div>
 
                             <div className="col-6 mt-3">
-                                <MDBBtn className='w-100' href='/error' size='md' style={{ backgroundColor: '#15b1e5' }} onClick={funcionSuccess}>
-                                    Registrar Nuevo Cliente
-                                </MDBBtn>
+                                <MDBBtn className='w-100' href='/error' size='md' style={{ backgroundColor: '#15b1e5' }} onClick={funcionSuccess}>Registrar Nuevo Cliente</MDBBtn>
                             </div>
                         </div>
                     </div>

@@ -20,8 +20,8 @@ export function Eliminarcliente() {
         setIsGestionClientesOpen(!isGestionClientesOpen);
     };
 
-    let palabra = "Panel de control > Eliminar Cliente";
-    
+    let palabra = "Panel de control > Registro Clientes > Eliminar Cliente";
+
     return (
         <MDBContainer fluid className='col-10' id="container">
             <MDBCard className="row" id="color">
@@ -30,12 +30,12 @@ export function Eliminarcliente() {
                         <h5 className="mt-4 text-center mb-5 admintitulo">Administracion</h5>
                         <MDBNavbarNav>
                             <MDBNavbarLink active aria-current='page' href='#' className="aaa nav-item-link">
-                                <MDBIcon icon="table" className="me-2 mx-0"/>
+                                <MDBIcon icon="table" className="me-2 mx-0" />
                                 Tabla Clientes
                             </MDBNavbarLink>
                             <MDBNavbarLink href='#' onClick={toggleGestionClientes} className="nav-item-link">
                                 <MDBIcon icon="user-cog" className="me-1 mx-0 mover mt-2" />
-                                Gestion Clientes
+                                Registro Clientes
                                 <MDBIcon icon={isGestionClientesOpen ? 'angle-up' : 'angle-down'} className='' />
                             </MDBNavbarLink>
                             {isGestionClientesOpen && (
