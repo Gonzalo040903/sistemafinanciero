@@ -6,7 +6,7 @@ const router = Router();
 
 //Crear prestamo
 router.post('/', async (req, res) => {
-    const {clienteId, monto, interes, cuotasTotales} = req.body;
+    const {clienteId, monto, interes} = req.body;
     try {
         const cliente = await Cliente.findOne(clienteId);
         if(!cliente) {

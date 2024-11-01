@@ -3,7 +3,27 @@ import Cliente from '../model/modelCliente.js'
 
 const router = Router();
 
-
+//crear cliente
+router.post('/cliente', async (req, res) => {
+    const {nombre, apellido, dni, direccion, telefonoPersonal, telefonoReferencia} = req.body;
+    if(!nombre || !dni || !direccion || !telefonoPersonal ||telefonoReferencia){
+        return res.status(400).json({message:'Todos los campos son obligarorios'});
+    }
+    const nuevoCliente = new Cliente({
+        nombre,
+        apellido,
+        dni,
+        direccion,
+        telefonoPersonal,
+        telefonoReferencia
+    });
+    try {
+      const clienteGuardado = await nuevoCliente.save();
+      res.status(201).json(clienteGuardado);
+    } catch (error) {
+      res.status(500).json({message:error.message});
+    }
+});
 
 //Obetener Clientes
 router.get('/clientes', async (req, res) => {
