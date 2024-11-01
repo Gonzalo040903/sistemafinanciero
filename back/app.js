@@ -5,14 +5,14 @@ import clientesRouter from './routes/routesC.js';
 import prestammosRouter from './routes/routesP.js'
 
 const app = express();
-const PORT = process.env.PORT || 5000; //define el puerto
+const PORT = process.env.PORT || 3000;
 
 app.use(express.json());
 app.use(cors());
 
 //conexion a MongoDB
 const uri = 'mongodb://localhost:27017/Sistema-Financiero';
-mongoose.connect(uri,{useNewUrlParser: true, useUnifiedTopology: true })
+mongoose.connect(uri)
     .then(() => console.log('Connected to MongoDB'))
     .catch(err => console.log('Failed to connect to MongoDB', err));
 //Rutas de cliente y prestamo

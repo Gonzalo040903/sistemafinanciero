@@ -9,5 +9,5 @@ const clienteSchema = new Schema({
     telefonoReferencia: {type: Number, required: true},
 },{collection:'Cliente', versionKey:false});
 
-const CLiente = model('Cliente', clienteSchema);
+const Cliente = model('Cliente', clienteSchema);
 export default Cliente;

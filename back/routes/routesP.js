@@ -1,6 +1,6 @@
 import { Router } from 'express';
-import Prestamo from '../model/modelPrestamo';
-import Cliente from '../model/modelCliente';
+import Prestamo from '../model/modelPrestamo.js';
+import Cliente from '../model/modelCliente.js';
 
 const router = Router();
 
@@ -24,6 +24,20 @@ router.post('/', async (req, res) => {
         res.status(201).json(nuevoPrestamo)  
     } catch (error) {
         res.status(500).json({message: error.message})
+    }
+});
+//actualizar prestamo(cuotas y montoadeudado)
+router.patch('/:id', async (req, res) => {
+    const {cuotasPagadas} = req.body;
+    try {
+        const prestamo = await Prestamo.findById(req.params.id);
+        if(!prestamo){
+            return res.status(404).json({message: 'Prestamo no encontrado'});
+        }
+        prestamo.cuotasPagadas = cuotasPagadas;
+        prestamo.montoAdeudado = prestamo.montoFinal - ((prestamo.montoFinal / prestamo.semanas) * cuotasPagadas);
+    } catch (error) {
+        res.status(500).json({message: error.message});
     }
 });
 export default router;
