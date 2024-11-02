@@ -5,8 +5,10 @@ const router = Router();
 
 //crear cliente
 router.post('/', async (req, res) => {
+    console.log(req.body);
+    
     const {nombre, apellido, dni, direccion, telefonoPersonal, telefonoReferencia} = req.body;
-    if(!nombre || !apellido ||  !dni || !direccion || !telefonoPersonal ||telefonoReferencia){
+    if(!nombre || !apellido || !dni || !direccion || !telefonoPersonal || !telefonoReferencia){
         return res.status(400).json({message:'Todos los campos son obligarorios'});
     }
     const nuevoCliente = new Cliente({

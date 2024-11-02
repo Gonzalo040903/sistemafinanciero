@@ -5,10 +5,10 @@ import clientesRouter from './routes/routesC.js';
 import prestammosRouter from './routes/routesP.js';
 
 const app = express();
-const PORT = process.env.PORT || 3001;
+const PORT = 3001;
 
-app.use(express.json());
 app.use(cors());
+app.use(express.json());
 
 //conexion a MongoDB
 const uri = 'mongodb://localhost:27017/Sistema-Financiero';
