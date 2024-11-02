@@ -2,10 +2,10 @@ import express from 'express';
 import mongoose from 'mongoose';
 import cors from 'cors';
 import clientesRouter from './routes/routesC.js';
-import prestammosRouter from './routes/routesP.js'
+import prestammosRouter from './routes/routesP.js';
 
 const app = express();
-const PORT = process.env.PORT || 3000;
+const PORT = process.env.PORT || 3001;
 
 app.use(express.json());
 app.use(cors());

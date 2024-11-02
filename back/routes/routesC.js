@@ -4,9 +4,9 @@ import Cliente from '../model/modelCliente.js'
 const router = Router();
 
 //crear cliente
-router.post('/cliente', async (req, res) => {
+router.post('/', async (req, res) => {
     const {nombre, apellido, dni, direccion, telefonoPersonal, telefonoReferencia} = req.body;
-    if(!nombre || !dni || !direccion || !telefonoPersonal ||telefonoReferencia){
+    if(!nombre || !apellido ||  !dni || !direccion || !telefonoPersonal ||telefonoReferencia){
         return res.status(400).json({message:'Todos los campos son obligarorios'});
     }
     const nuevoCliente = new Cliente({
@@ -37,7 +37,7 @@ router.get('/clientes', async (req, res) => {
     }   
 });
 //obtener por dni
-router.get('/clientes', async (req, res) => {
+router.get('/:dni', async (req, res) => {
     try {
         const cliente = await Cliente.findOne({dni: req.params.dni});
         if(cliente == null){
@@ -85,4 +85,3 @@ router.delete('/clientes/:dni', async (req, res) => {
 });
 
 export default router;
-//Prueba
