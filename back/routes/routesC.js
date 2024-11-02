@@ -5,12 +5,12 @@ const router = Router();
 
 //crear cliente
 router.post('/', async (req, res) => {
-    console.log(req.body);
-    
+
     const {nombre, apellido, dni, direccion, telefonoPersonal, telefonoReferencia} = req.body;
     if(!nombre || !apellido || !dni || !direccion || !telefonoPersonal || !telefonoReferencia){
         return res.status(400).json({message:'Todos los campos son obligarorios'});
     }
+
     const nuevoCliente = new Cliente({
         nombre,
         apellido,
@@ -19,39 +19,38 @@ router.post('/', async (req, res) => {
         telefonoPersonal,
         telefonoReferencia
     });
+
     try {
       const clienteGuardado = await nuevoCliente.save();
       res.status(201).json(clienteGuardado);
     } catch (error) {
-      res.status(500).json({message:error.message});
+      res.status(500).json({message: error.message});
     }
 });
 
 //Obetener Clientes
-router.get('/clientes', async (req, res) => {
+router.get('/', async (req, res) => {
     try {
         const clientes = await Cliente.find();
-        res.json(clientes)
-    
+        res.json(clientes);
     } catch (error) {
-        res.status(500).json({message:error.message});
-    
+        res.status(500).json({message: error.message});
     }   
 });
 //obtener por dni
-router.get('/:dni', async (req, res) => {
+router.get('/:apellido', async (req, res) => {
     try {
         const cliente = await Cliente.findOne({dni: req.params.dni});
         if(cliente == null){
             return res.status(404).json({message: 'Cliente no encontrado'});
         }
-        res.json(cliente)
+        res.json(cliente);
     } catch (error) {
         res.status(500).json({message: error.message});
     }
 });
 //actualizar cliente
-router.patch('/clientes/:dni', async (req, res) => {
+router.patch('/:dni', async (req, res) => {
     try {
         const cliente = await Cliente.findOne({dni: req.params.dni});
         if(cliente == null){
@@ -65,14 +64,14 @@ router.patch('/clientes/:dni', async (req, res) => {
         if(telefonoPersonal) cliente.telefonoPersonal = telefonoPersonal;
         if(telefonoReferencia) cliente.telefonoReferencia = telefonoReferencia;
         await cliente.save();
-        res.json({message:'Cliente actualizado', cliente})
+        res.json({message:'Cliente actualizado', cliente});
 
     } catch (error) {
         res.status(500).json({message: error.message});
     }
 });
 //eliminar cliente
-router.delete('/clientes/:dni', async (req, res) => {
+router.delete('/:dni', async (req, res) => {
     try {
         const cliente = await Cliente.findOne({dni: req.params.dni});
         if(cliente == null){
