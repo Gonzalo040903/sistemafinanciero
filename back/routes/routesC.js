@@ -37,10 +37,10 @@ router.get('/', async (req, res) => {
         res.status(500).json({message: error.message});
     }   
 });
-//obtener por dni
+//obtener por apellido
 router.get('/:apellido', async (req, res) => {
     try {
-        const cliente = await Cliente.findOne({dni: req.params.dni});
+        const cliente = await Cliente.findOne({ apellido: req.params.apellido});
         if(cliente == null){
             return res.status(404).json({message: 'Cliente no encontrado'});
         }
@@ -50,13 +50,13 @@ router.get('/:apellido', async (req, res) => {
     }
 });
 //actualizar cliente
-router.patch('/:dni', async (req, res) => {
+router.patch('/:apellido', async (req, res) => {
     try {
-        const cliente = await Cliente.findOne({dni: req.params.dni});
+        const cliente = await Cliente.findOne({ apellido: req.params.apellido});
         if(cliente == null){
             return res.status(404).json({message: 'Cliente no encontrado'});
         }
-        const {nombre, apellido,dni, direccion, telefonoPersonal, telefonoReferencia } = req.body;
+        const {nombre, apellido, dni, direccion, telefonoPersonal, telefonoReferencia } = req.body;
         if(nombre) cliente.nombre = nombre;
         if(apellido) cliente.apellido = apellido;
         if(dni) cliente.dni = dni;
@@ -71,13 +71,13 @@ router.patch('/:dni', async (req, res) => {
     }
 });
 //eliminar cliente
-router.delete('/:dni', async (req, res) => {
+router.delete('/:apellido', async (req, res) => {
     try {
-        const cliente = await Cliente.findOne({dni: req.params.dni});
+        const cliente = await Cliente.findOne({ apellido: req.params.apellido});
         if(cliente == null){
             return res.status(404).json({message: 'Cliente no encontrado'});
         }
-        await cliente.deleteOne({dni: req.params.dni})
+        await cliente.deleteOne({ apellido: req.params.apellido})
         res.json({message: 'Cliente eliminado'});
 
     } catch (error) {
