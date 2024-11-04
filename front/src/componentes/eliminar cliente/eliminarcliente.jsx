@@ -96,7 +96,7 @@ export function Eliminarcliente() {
                                     <th scope='col'>Direccion</th>
                                     <th scope='col'>Telefono</th>
                                     <th scope='col'>Telefono 2</th>
-                                    <th scope='col'>Accion</th>
+                                    <th scope='col'></th>
                                 </tr>
                             </MDBTableHead>
                             <MDBTableBody>
