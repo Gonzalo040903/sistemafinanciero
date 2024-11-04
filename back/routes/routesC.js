@@ -40,8 +40,8 @@ router.get('/', async (req, res) => {
 //obtener por apellido
 router.get('/:apellido', async (req, res) => {
     try {
-        const cliente = await Cliente.findOne({ apellido: req.params.apellido});
-        if(cliente == null){
+        const cliente = await Cliente.find({ apellido:  req.params.apellido});
+        if(cliente.length === 0){
             return res.status(404).json({message: 'Cliente no encontrado'});
         }
         res.json(cliente);
