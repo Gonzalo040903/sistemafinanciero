@@ -9,13 +9,23 @@ import {
     MDBTable,
     MDBTableHead,
     MDBTableBody,
-    MDBBtn
+    MDBBtn,
+    MDBModal,
+    MDBModalDialog,
+    MDBModalContent,
+    MDBModalHeader,
+    MDBModalTitle,
+    MDBModalBody,
+    MDBModalFooter
 } from 'mdb-react-ui-kit';
 import { useState } from 'react';
 
+
 export function Eliminarcliente() {
     const [isGestionClientesOpen, setIsGestionClientesOpen] = useState(false);
+    const [optSmModal, setOptSmModal] = useState(false);
 
+    const toggleOpen = () => setOptSmModal(!optSmModal);
     const toggleGestionClientes = () => {
         setIsGestionClientesOpen(!isGestionClientesOpen);
     };
@@ -92,7 +102,7 @@ export function Eliminarcliente() {
                                     <td>555-1234</td>
                                     <td>555-5678</td>
                                     <td>
-                                        <MDBBtn color='danger' size='sm'>
+                                        <MDBBtn color='danger' size='sm' onClick={toggleOpen}>
                                             <MDBIcon icon="times" className="me-2" />
                                             Eliminar
                                         </MDBBtn>
@@ -105,7 +115,7 @@ export function Eliminarcliente() {
                                     <td>555-5678</td>
                                     <td>555-1234</td>
                                     <td>
-                                        <MDBBtn color='danger' size='sm'>
+                                        <MDBBtn color='danger' size='sm' onClick={toggleOpen}>
                                             <MDBIcon icon="times" className="me-2" />
                                             Eliminar
                                         </MDBBtn>
@@ -118,7 +128,7 @@ export function Eliminarcliente() {
                                     <td>555-9101</td>
                                     <td>555-1112</td>
                                     <td>
-                                        <MDBBtn color='danger' size='sm'>
+                                        <MDBBtn color='danger' size='sm' onClick={toggleOpen}>
                                             <MDBIcon icon="times" className="me-2" />
                                             Eliminar
                                         </MDBBtn>
@@ -129,6 +139,31 @@ export function Eliminarcliente() {
                     </div>
                 </div>
             </MDBCard>
+
+            <MDBModal open={optSmModal} tabIndex='-1' onClose={() => setOptSmModal(false)}>
+                <MDBModalDialog size='sm'>
+                    <MDBModalContent>
+                        <MDBModalHeader className="bg-danger text-center">
+                            <MDBModalTitle className="text-light m-auto">¿Estas Seguro?</MDBModalTitle>
+                            {/* <MDBBtn className='btn-close' color='none' onClick={toggleOpen}></MDBBtn> */}
+                        </MDBModalHeader>
+                        <MDBModalBody className="text-center">
+                            <MDBIcon icon="times" className="me-2 text-danger iconogrande" /><br />
+                            Desea eliminar "nombre de cliente"
+                        </MDBModalBody>
+                        <MDBModalFooter>
+                            <MDBBtn color='danger' onClick={toggleOpen}>
+                                Si
+                            </MDBBtn>
+                            <MDBBtn color="info" onClick={toggleOpen}>
+                                cancelar
+                            </MDBBtn>
+                        </MDBModalFooter>
+                    </MDBModalContent>
+                </MDBModalDialog>
+            </MDBModal>
         </MDBContainer>
+
+
     );
 }

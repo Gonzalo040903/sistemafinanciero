@@ -14,7 +14,7 @@ const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
   <React.StrictMode>
     <div className='mt-5'>
-      <AgregarclientePage />
+      <EliminarclientePage />
     </div>
   </React.StrictMode>
 );

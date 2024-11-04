@@ -32,7 +32,7 @@ export function Agregarcliente() {
         let montoxsemana = montoFinal / semana;
         let semanapaga = document.getElementById("formSemanaPaga")
         let devuelve = document.getElementById("formDevuelve")
-        if (monto){
+        if (monto && intereses){
             semanapaga.value = montoxsemana;
             devuelve.value = montoFinal;
         }
