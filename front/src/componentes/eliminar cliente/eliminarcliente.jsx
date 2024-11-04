@@ -19,12 +19,16 @@ import {
     MDBModalFooter
 } from 'mdb-react-ui-kit';
 import { useState } from 'react';
-
+import toast, { Toaster } from 'react-hot-toast';
 
 export function Eliminarcliente() {
     const [isGestionClientesOpen, setIsGestionClientesOpen] = useState(false);
     const [optSmModal, setOptSmModal] = useState(false);
-
+    const funcionSuccess = (e) => {
+        e.preventDefault();
+        toast.success('Cliente Eliminado');
+        toggleOpen()
+    };
     const toggleOpen = () => setOptSmModal(!optSmModal);
     const toggleGestionClientes = () => {
         setIsGestionClientesOpen(!isGestionClientesOpen);
@@ -34,6 +38,7 @@ export function Eliminarcliente() {
 
     return (
         <MDBContainer fluid className='col-10' id="container">
+            <Toaster position="top-center" reverseOrder={false} />
             <MDBCard className="row" id="color">
                 <div className="row p-0" id="color">
                     <div className="col-2 text-center" id="nav">
@@ -145,14 +150,13 @@ export function Eliminarcliente() {
                     <MDBModalContent>
                         <MDBModalHeader className="bg-danger text-center">
                             <MDBModalTitle className="text-light m-auto">¿Estas Seguro?</MDBModalTitle>
-                            {/* <MDBBtn className='btn-close' color='none' onClick={toggleOpen}></MDBBtn> */}
                         </MDBModalHeader>
                         <MDBModalBody className="text-center">
                             <MDBIcon icon="times" className="me-2 text-danger iconogrande" /><br />
                             Desea eliminar "nombre de cliente"
                         </MDBModalBody>
                         <MDBModalFooter>
-                            <MDBBtn color='danger' onClick={toggleOpen}>
+                            <MDBBtn color='danger' onClick={funcionSuccess}>
                                 Si
                             </MDBBtn>
                             <MDBBtn color="info" onClick={toggleOpen}>

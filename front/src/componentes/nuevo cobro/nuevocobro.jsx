@@ -1,4 +1,4 @@
-import "./modificarclienteStyle.css";
+import "./nuevocobro.css";
 import {
     MDBContainer,
     MDBCard,
@@ -10,21 +10,18 @@ import {
     MDBTableHead,
     MDBTableBody,
     MDBBtn,
-    MDBModal,
-    MDBModalDialog,
-    MDBModalContent,
-    MDBModalHeader,
-    MDBModalTitle,
-    MDBModalBody,
-    MDBModalFooter,
     MDBInput,
     MDBRow,
-    MDBCol
+    MDBCol,
+    MDBModal,
+    MDBModalHeader,
+    MDBModalDialog,
+    MDBModalContent
 } from 'mdb-react-ui-kit';
 import { useState } from 'react';
 import toast, { Toaster } from 'react-hot-toast';
 
-export function Modificarcliente() {
+export function Nuevocobro() {
     const calcular = (e) => {
         e.preventDefault();
         let monto = parseInt(document.getElementById("formMonto").value);
@@ -45,7 +42,7 @@ export function Modificarcliente() {
     const toggleGestionClientes = () => {
         setIsGestionClientesOpen(!isGestionClientesOpen);
     };
-
+    const nombreCliente = "ramon ignacio martinez"
     const funcionSuccess = (e) => {
         e.preventDefault();
         toast.success('Cliente Modificado')
@@ -55,7 +52,7 @@ export function Modificarcliente() {
     const CustomInput = ({ label, type, id, value, onChange }) => (
         <MDBInput wrapperClass='mb-4' label={label} id={id} type={type} value={value} onChange={onChange} />
     );
-    let palabra = "Panel de control > Registro Clientes > Modificar Cliente";
+    let palabra = "Panel de control > Nuevo Cobro";
 
     return (
         <MDBContainer fluid className='col-10' id="container">
@@ -106,7 +103,7 @@ export function Modificarcliente() {
                     {/* PANEL ZONA */}
                     <div className="col-10 p-0" id="panel">
                         <header className="p-2 mx-4 mt-3 px-4 header rounded-5 shadow-3">{palabra}</header>
-                        <h3 className="px-4 textogris mt-5 mx-1"><b>Modificar Clientes</b></h3>
+                        <h3 className="px-4 textogris mt-5 mx-1"><b>Nuevo Cobro</b></h3>
 
                         {/* TABLA */}
                         <MDBTable id="tabla" className="shadow-3 rounded-5 mx-4 mt-4 text-center">
@@ -114,49 +111,49 @@ export function Modificarcliente() {
                                 <tr>
                                     <th scope='col'>Nombre</th>
                                     <th scope='col'>DNI</th>
-                                    <th scope='col'>Direccion</th>
-                                    <th scope='col'>Telefono</th>
-                                    <th scope='col'>Telefono 2</th>
-                                    <th scope='col'>Accion</th>
+                                    <th scope='col'>Fecha Inicio</th>
+                                    <th scope='col'>Cuotas</th>
+                                    <th scope='col'>Cuotas Pagadas</th>
+                                    <th scope='col'></th>
                                 </tr>
                             </MDBTableHead>
                             <MDBTableBody>
                                 <tr>
                                     <td>John Doe</td>
                                     <td>12345678</td>
-                                    <td>1234 Elm St</td>
-                                    <td>555-1234</td>
-                                    <td>555-5678</td>
+                                    <td>31/12/2024</td>
+                                    <td>12</td>
+                                    <td>6</td>
                                     <td>
-                                        <MDBBtn color='warning' size='sm' onClick={toggleOpen}>
+                                        <MDBBtn color='info' size='sm' onClick={toggleOpen}>
                                             <MDBIcon icon="pencil-alt" className="me-2" />
-                                            Modificar
+                                            Mas Info
                                         </MDBBtn>
                                     </td>
                                 </tr>
                                 <tr>
                                     <td>Alex Ray</td>
                                     <td>87654321</td>
-                                    <td>av belrnao 1200</td>
-                                    <td>555-5678</td>
-                                    <td>555-1234</td>
+                                    <td>12/11/2023</td>
+                                    <td>11</td>
+                                    <td>11</td>
                                     <td>
-                                        <MDBBtn color='warning' size='sm' onClick={toggleOpen}>
+                                        <MDBBtn color='info' size='sm' onClick={toggleOpen}>
                                             <MDBIcon icon="pencil-alt" className="me-2" />
-                                            Modificar
+                                            Mas Info
                                         </MDBBtn>
                                     </td>
                                 </tr>
                                 <tr>
                                     <td>Kate Hunington</td>
                                     <td>45678912</td>
-                                    <td>910 Maple Ave</td>
-                                    <td>555-9101</td>
-                                    <td>555-1112</td>
+                                    <td>04/09/2024</td>
+                                    <td>3</td>
+                                    <td>0</td>
                                     <td>
-                                        <MDBBtn color='warning' size='sm' onClick={toggleOpen}>
+                                        <MDBBtn color='info' size='sm' onClick={toggleOpen}>
                                             <MDBIcon icon="pencil-alt" className="me-2" />
-                                            Modificar
+                                            Mas Info
                                         </MDBBtn>
                                     </td>
                                 </tr>
@@ -165,101 +162,63 @@ export function Modificarcliente() {
                     </div>
                 </div>
             </MDBCard>
-
-
-
-            {/* MODAL */}
+            {/* <MODAL></MODAL> */}
             <MDBModal open={basicModal} onClose={() => setBasicModal(false)} tabIndex='-1'>
                 <MDBModalDialog size="xl">
                     <MDBModalContent>
-
-
-
                         {/* FORMULARIO */}
                         <div className="rounded-5 shadow-3 p-4 row" id="formulario">
                             <MDBModalHeader className="mb-4">
-                                <h2 className=""><b>Modificar Cliente</b></h2>
+                                <h2 className=""><b>Nuevo Cobro</b></h2>
                                 <MDBBtn className='btn-close' color='none' onClick={toggleOpen}></MDBBtn>
                             </MDBModalHeader>
-                            <div className="col-5">
+                            <div className="col-4">
                                 <h3 className="text-center text-muted mb-3">Cliente</h3>
-                                <MDBRow>
-                                    <MDBCol col='3'>
-                                        <CustomInput label='Nombres' id='formNombre' type='text' />
-                                    </MDBCol>
-
-                                    <MDBCol col='3'>
-                                        <CustomInput label='Apellidos' id='formApellido' type='text' />
-                                    </MDBCol>
-                                </MDBRow>
-                                <CustomInput label='DNI' id='formDni' type='number' />
-                                <CustomInput label='Direccion' id='formDirec' type='text' />
-                                <MDBRow>
-                                    <MDBCol>
-                                        <CustomInput label='Telefono' id='formTel' type='number' />
-                                    </MDBCol>
-                                    <MDBCol>
-                                        <CustomInput label='Telefono 2' id='formTel2' type='number' />
-                                    </MDBCol>
-                                </MDBRow>
-
+                                <ul>
+                                    <li className="p-1"><b className="pe-2">Nombre:</b> {nombreCliente}</li>
+                                    <li className="p-1"><b className="pe-2">DNI:</b> 44989031</li>
+                                </ul>
                             </div>
-                            <div className="col-5">
+                            <div className="col-8 row text-center">
                                 <h3 className="text-center text-muted mb-3">Prestamo</h3>
-                                <MDBRow>
-                                    <MDBCol col='3'>
-                                        <CustomInput label='Monto' id='formMonto' type='number' />
-                                    </MDBCol>
+                                <div className="col-5">
+                                    <ul>
+                                        <li className="p-1"><b className="pe-2">Fecha Inicio:</b> 12/12/2025</li>
+                                        <li className="p-1"><b className="pe-2">Monto Prestado:</b> 100.000</li>
+                                        <li className="p-1"><b className="pe-2">Monto Pagado:</b> 75.000</li>
+                                    </ul>
+                                </div>
+                                <div className="col-5">
+                                    <ul>
+                                        <li className="p-1"><b className="pe-2">Intereses:</b> 15%</li>
+                                        <li className="p-1"><b className="pe-2">Monto Devule:</b> 115.000</li>
+                                        <li className="p-1"><b className="pe-2">Monto Faltante:</b> 50.000</li>
 
-                                    <MDBCol col='3'>
-                                        <CustomInput label='%Intereses' id='formIntereses' type='number' />
-                                    </MDBCol>
-                                </MDBRow>
-                                <MDBRow>
-                                    <MDBCol col='3'>
-                                        <CustomInput label='Fecha Inicio' id='formFecha' type='date' />
-                                    </MDBCol>
-
-                                    {/* Select de Semanas */}
-                                    <MDBCol col='3'>
-                                        <select id="formSemanas" className="form-select mb-4">
-                                            <option value={1}>1 Semana</option>
-                                            <option value={2}>2 Semanas</option>
-                                            <option value={3}>3 Semanas</option>
-                                            <option value={4}>4 Semanas</option>
-                                            <option value={5}>5 Semanas</option>
-                                            <option value={6}>6 Semanas</option>
-                                            <option value={7}>7 Semanas</option>
-                                            <option value={8}>8 Semanas</option>
-                                            <option value={9}>9 Semanas</option>
-                                            <option value={10}>10 Semanas</option>
-                                            <option value={11}>11 Semanas</option>
-                                            <option value={12}>12 Semanas</option>
-
-
-                                        </select>
-                                    </MDBCol>
-                                </MDBRow>
-
-                                <MDBRow className="">
-                                    <MDBCol col='3'>
-                                        <MDBInput label="Monto Final" id="formDevuelve" value={" "} type="text" disabled />
-                                    </MDBCol>
-                                    <MDBCol col='3'>
-                                        <MDBInput label="Por Semana paga:" value={" "} id="formSemanaPaga" type="text" disabled />
-                                    </MDBCol>
-                                </MDBRow>
-                                <MDBRow>
-                                    <MDBCol col='3'>
-                                        <MDBBtn className='w-100 mt-3' href='/error' size='md' color="dark" onClick={calcular}>Calcular intereses</MDBBtn>
-                                    </MDBCol>
-                                </MDBRow>
+                                    </ul>
+                                </div>
                             </div>
+                            <div className="col-4">
+                            </div>
+                            <div className="col-8 text-center pt-3 row mb-4">
+                                <h5 className="text-muted text-center">
+                                    Cuotas
+                                </h5>
+                                <div className="col-5">
+                                    <ul>
+                                        <li className="p-1"><b className="pe-2">Cuotas:</b> 12</li>
+                                        <li className="p-1"><b className="pe-2">Cuotas Pagadas:</b> 7</li>
+                                    </ul>
+                                </div>
+                                <div className="col-5">
+                                    <ul>
+                                        <li className="p-1"><b className="pe-2">Semanas:</b> 12</li>
+                                        <li className="p-1"><b className="pe-2">Cuotas Faltantes:</b> 5</li>
 
-                            <div className="col-6 mt-3">
-                                <MDBBtn className='w-100 mb-4' href='/error' color="warning" size='md' onClick={funcionSuccess}>Modificar Cliente</MDBBtn>
+                                    </ul>
+                                </div>
                             </div>
                         </div>
+
                     </MDBModalContent>
                 </MDBModalDialog>
             </MDBModal>
