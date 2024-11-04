@@ -11,6 +11,11 @@ body {
 
 }
 
+#contenedorA{
+    display: flex;
+    justify-content: space-between;
+}
+
 #nav {
     color: rgb(234, 233, 233);
     background-color: #15b1e5;
