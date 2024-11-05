@@ -47,9 +47,12 @@ export function Agregarcliente() {
         formNombre: Yup.string().min(2, 'Mínimo 2 caracteres').max(20, 'Máximo 20 caracteres').required('Campo obligatorio'),
         formApellido: Yup.string().min(2, 'Mínimo 2 caracteres').max(20, 'Máximo 20 caracteres').required('Campo obligatorio'),
         formDni: Yup.string().matches(/^\d+$/, 'Solo números').length(8, 'Debe tener 8 caracteres').required('Campo obligatorio'),
-        formDirec: Yup.string().min(2, 'Mínimo 2 caracteres').max(50, 'Máximo 50 caracteres').required('Campo obligatorio'),
         formTel: Yup.string().matches(/^\d+$/, 'Solo números').max(11, 'Máximo 11 caracteres').required('Campo obligatorio'),
-        formTel2: Yup.string().matches(/^\d+$/, 'Solo números').max(11, 'Máximo 11 caracteres'),
+        formTel2: Yup.string().matches(/^\d+$/, 'Solo números').max(11, 'Máximo 11 caracteres').required('Campo obligatorio'),
+        formTel3: Yup.string().matches(/^\d+$/, 'Solo números').max(11, 'Máximo 11 caracteres').required('Campo obligatorio'),
+        formDirec: Yup.string().min(2, 'Mínimo 2 caracteres').max(50, 'Máximo 50 caracteres').required('Campo obligatorio'),
+        formMaps: Yup.string().min(2, 'Mínimo 2 caracteres').max(300, 'Máximo 300 caracteres').required('Campo obligatorio'),
+        formVendedor: Yup.string().min(2, 'Mínimo 2 caracteres').max(20, 'Máximo 20 caracteres').required('Campo obligatorio'),
         formMonto: Yup.number().required('Campo obligatorio'),
         formIntereses: Yup.number().max(99, 'Máximo 2 caracteres').required('Campo obligatorio'),
         formFecha: Yup.date().required('Campo obligatorio'),
@@ -124,9 +127,11 @@ export function Agregarcliente() {
                                 formNombre: '',
                                 formApellido: '',
                                 formDni: '',
-                                formDirec: '',
                                 formTel: '',
                                 formTel2: '',
+                                formTel3: '',
+                                formDirec: '',
+                                formMaps: '',
                                 formMonto: '',
                                 formIntereses: '',
                                 formFecha: ''
@@ -146,19 +151,36 @@ export function Agregarcliente() {
                                                 <CustomInput label='Apellidos' id='formApellido' formik={formik} />
                                             </MDBCol>
                                         </MDBRow>
-                                        <CustomInput label='DNI' id='formDni' formik={formik} />
-                                        <CustomInput label='Direccion' id='formDirec' formik={formik} />
                                         <MDBRow>
                                             <MDBCol>
-                                                <CustomInput label='Telefono' id='formTel' formik={formik} />
+                                                <CustomInput label='DNI' id='formDni' formik={formik} />
                                             </MDBCol>
                                             <MDBCol>
+                                                <CustomInput label='Telefono' id='formTel' formik={formik} type="link" />
+                                            </MDBCol>
+                                        </MDBRow>
+
+
+                                        <MDBRow>
+                                            <MDBCol>
                                                 <CustomInput label='Telefono 2' id='formTel2' formik={formik} />
+                                            </MDBCol>
+                                            <MDBCol>
+                                                <CustomInput label='Telefono 3' id='formTel3' formik={formik} />
+                                            </MDBCol>
+
+                                        </MDBRow>
+                                        <CustomInput label='Direccion' id='formDirec' formik={formik} />
+                                        <CustomInput label='Maps' id='formMaps' formik={formik} type="url" />
+                                        <MDBRow>
+                                            <MDBCol>
+
                                             </MDBCol>
                                         </MDBRow>
                                     </div>
                                     <div className="col-5">
                                         <h3 className="text-center text-muted mb-3">Prestamo</h3>
+                                        <CustomInput label='Vendedor' id='formVendedor' formik={formik} />
                                         <MDBRow>
                                             <MDBCol col='3'>
                                                 <CustomInput label='Monto' id='formMonto' formik={formik} />
