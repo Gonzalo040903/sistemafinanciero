@@ -7,6 +7,7 @@ const clienteSchema = new Schema({
     direccion: {type: String, required: true},
     telefonoPersonal: {type: Number, required: true},
     telefonoReferencia: {type: Number, required: true},
+    telefonoTres:{Type:Number, required: true}
 },{collection:'Cliente', versionKey:false});
 
 const Cliente = model('Cliente', clienteSchema);

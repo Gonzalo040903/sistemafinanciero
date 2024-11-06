@@ -4,20 +4,18 @@ import jwt from 'jsonwebtoken';
 import bcrypt from 'bcrypt';
 import Usuario from '../model/modelUsuario.js';
 
-async function login(req, res) {
+export const login = async (req, res) => {
     const {nombre, apellido} =  req.body;
-    const usuario = await Usuario.findOne({nombre, apellido});
 
-    if(!Usuario){
-        return res.status(401).json({ error: 'Credenciales incorrectas'});
+    try{
+        const usuario = await Usuario.findOne({nombre, apellido});
+        if(!usuario) return res.status(404).json({message: "Usuario no encontrado"});
 
+        const token = jwt.sign({id: user._id, rol: user.rol}, ' tu_secreto_jwt', {expiresIn:'1h'});
+        res.json({token}); 
+
+    }catch(error) {
+        res.status(500).json({message: error.message});
     }
-    const isMatch = await bcrypt.compare(apellido, Usuario.password);
-    if(!isMatch){
-        return res.status(401).json({ error: 'Credenciales incorrectas'});
-    }
-    const token = jwt.sign({usuarioId: usuario._id, role: usuario.role}, 'secret_key');
-    res.json({token, role: usuario.role});
-
-}
+};
 export default { login };

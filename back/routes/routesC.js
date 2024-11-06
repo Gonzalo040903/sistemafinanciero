@@ -1,88 +1,16 @@
 import {Router} from 'express';
-import Cliente from '../model/modelCliente.js'
-
+import {getClientes, createCliente, updateCliente, deleteCliente, getClienteByApellido} from '../controllers/clienteController.js';
+import authenticate from '../middlewares/autenticar.js';
+import authorize from '../middlewares/autorizar.js';
 const router = Router();
 
-//crear cliente
-router.post('/', async (req, res) => {
+router.post('/', authenticate, authorize(['admin', 'vendedor']), createCliente);
 
-    const {nombre, apellido, dni, direccion, telefonoPersonal, telefonoReferencia} = req.body;
-    if(!nombre || !apellido || !dni || !direccion || !telefonoPersonal || !telefonoReferencia){
-        return res.status(400).json({message:'Todos los campos son obligarorios'});
-    }
+router.get('/',authenticate, authorize(['admin', 'vendedor']),getClientes);
 
-    const nuevoCliente = new Cliente({
-        nombre,
-        apellido,
-        dni,
-        direccion,
-        telefonoPersonal,
-        telefonoReferencia
-    });
+router.get('/:apellido', authenticate, authorize(['admin', 'vendedor']),getClienteByApellido);
 
-    try {
-      const clienteGuardado = await nuevoCliente.save();
-      res.status(201).json(clienteGuardado);
-    } catch (error) {
-      res.status(500).json({message: error.message});
-    }
-});
+router.patch('/:apellido',authenticate, authorize(['admin', 'vendedor']),updateCliente);
 
-//Obetener Clientes
-router.get('/', async (req, res) => {
-    try {
-        const clientes = await Cliente.find();
-        res.json(clientes);
-    } catch (error) {
-        res.status(500).json({message: error.message});
-    }   
-});
-//obtener por apellido
-router.get('/:apellido', async (req, res) => {
-    try {
-        const cliente = await Cliente.find({ apellido:  req.params.apellido});
-        if(cliente.length === 0){
-            return res.status(404).json({message: 'Cliente no encontrado'});
-        }
-        res.json(cliente);
-    } catch (error) {
-        res.status(500).json({message: error.message});
-    }
-});
-//actualizar cliente
-router.patch('/:apellido', async (req, res) => {
-    try {
-        const cliente = await Cliente.findOne({ apellido: req.params.apellido});
-        if(cliente == null){
-            return res.status(404).json({message: 'Cliente no encontrado'});
-        }
-        const {nombre, apellido, dni, direccion, telefonoPersonal, telefonoReferencia } = req.body;
-        if(nombre) cliente.nombre = nombre;
-        if(apellido) cliente.apellido = apellido;
-        if(dni) cliente.dni = dni;
-        if(direccion) cliente.direccion = direccion;
-        if(telefonoPersonal) cliente.telefonoPersonal = telefonoPersonal;
-        if(telefonoReferencia) cliente.telefonoReferencia = telefonoReferencia;
-        await cliente.save();
-        res.json({message:'Cliente actualizado', cliente});
-
-    } catch (error) {
-        res.status(500).json({message: error.message});
-    }
-});
-//eliminar cliente
-router.delete('/:apellido', async (req, res) => {
-    try {
-        const cliente = await Cliente.findOne({ apellido: req.params.apellido});
-        if(cliente == null){
-            return res.status(404).json({message: 'Cliente no encontrado'});
-        }
-        await cliente.deleteOne({ apellido: req.params.apellido})
-        res.json({message: 'Cliente eliminado'});
-
-    } catch (error) {
-        res.status(500).json({ message: error.message });
-    }
-});
-
+router.delete('/:apellido',authenticate,authorize(['admin', 'vendedor']),deleteCliente);
 export default router;
