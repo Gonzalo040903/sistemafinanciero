@@ -1,8 +1,8 @@
 import { model,Schema } from 'mongoose';
 import bcrypt from 'bcrypt';
 const usuarioSchema = new Schema({
-    nombre: String,
-    apellido: String,
+    nombre: {type: String, required: true},
+    apellido: {type: String, required: true},
     role: {
         type: String,
         enum: ['admin', 'vendedor'],

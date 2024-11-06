@@ -1,6 +1,6 @@
 import jwt from 'jsonwebtoken';
 
-const authenticate = (req, res, next) => {
+const autenticar = (req, res, next) => {
     const token = req.headers.authorization?.split(" ")[1];
     if(!token) return res.status(401).json({message: "Acesso no autorizado"});
 
@@ -12,4 +12,4 @@ const authenticate = (req, res, next) => {
         res.status(401).json({message: "Token no valido"});
     }
 };
-export default authenticate;
+export default autenticar;
