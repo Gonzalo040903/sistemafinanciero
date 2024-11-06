@@ -1,21 +1,12 @@
 import { Router } from 'express';
+import { createPrestamo, deletePrestamo, getPrestamosByCliente, updatePrestamo } from '../controllers/prestamoController';
 
 const router = Router();
 
 //Crear prestamo
-router.post('/',
-//actualizar prestamo(cuotas y montoadeudado)
-router.patch('/:id', async (req, res) => {
-    const {cuotasPagadas} = req.body;
-    try {
-        const prestamo = await Prestamo.findById(req.params.id);
-        if(!prestamo){
-            return res.status(404).json({message: 'Prestamo no encontrado'});
-        }
-        prestamo.cuotasPagadas = cuotasPagadas;
-        prestamo.montoAdeudado = prestamo.montoFinal - ((prestamo.montoFinal / prestamo.semanas) * cuotasPagadas);
-    } catch (error) {
-        res.status(500).json({message: error.message});
-    }
-});
+router.post('/',createPrestamo);
+router.get('/:clienteId', getPrestamosByCliente);
+router.patch('/:id',updatePrestamo);
+router.delete('/:id',deletePrestamo)
+
 export default router;
