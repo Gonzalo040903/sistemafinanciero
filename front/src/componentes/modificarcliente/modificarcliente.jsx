@@ -62,10 +62,10 @@ export function Modificarcliente() {
             <Toaster position="top-center" reverseOrder={false} />
             <MDBCard className="row" id="color">
                 <div className="row p-0" id="color">
-                    <div className="col-2 text-center" id="nav">
+                <div className="col-2 text-center" id="nav">
                         <h5 className="mt-4 text-center mb-5 admintitulo">Administracion</h5>
                         <MDBNavbarNav>
-                            <MDBNavbarLink active aria-current='page' href='#' className="aaa nav-item-link">
+                            <MDBNavbarLink active aria-current='page' href='/panel' className="aaa nav-item-link">
                                 <MDBIcon icon="table" className="me-2 mx-0" />
                                 Tabla Clientes
                             </MDBNavbarLink>
@@ -77,32 +77,36 @@ export function Modificarcliente() {
                             {isGestionClientesOpen && (
                                 <div className="submenu">
                                     <MDBNavbarItem>
-                                        <MDBNavbarLink href='#' className="nav-item-link">
+                                        <MDBNavbarLink href='/agregar-cliente' className="nav-item-link">
                                             <MDBIcon icon="user-plus" className="me-1 mx-0" />
                                             Agregar Cliente
                                         </MDBNavbarLink>
                                     </MDBNavbarItem>
                                     <MDBNavbarItem>
-                                        <MDBNavbarLink href='#' className="nav-item-link">
+                                        <MDBNavbarLink href='/eliminar-cliente' className="nav-item-link">
                                             <MDBIcon icon="user-times" className="me-1 mx-0" />
                                             Eliminar Cliente
                                         </MDBNavbarLink>
                                     </MDBNavbarItem>
                                     <MDBNavbarItem>
-                                        <MDBNavbarLink href='#' className="nav-item-link">
+                                        <MDBNavbarLink href='/modificar-cliente' className="nav-item-link">
                                             <MDBIcon icon="user-edit" className="me-1 mx-0" />
                                             Modificar Cliente
                                         </MDBNavbarLink>
                                     </MDBNavbarItem>
                                 </div>
                             )}
-                            <MDBNavbarLink href='#' className="nav-item-link">
+                            <MDBNavbarLink href='/nuevo-cobro' className="nav-item-link">
                                 <MDBIcon icon="dollar-sign" className="me-2 mx-0 mt-2" />
                                 Nuevo Cobro
                             </MDBNavbarLink>
+                            <MDBNavbarLink href='/vendedores' className="nav-item-link">
+                                <MDBIcon fas icon="key" className="me-2 mx-0 mt-2" />
+                                Vendedores
+                            </MDBNavbarLink>
                         </MDBNavbarNav>
                     </div>
-
+                    
                     {/* PANEL ZONA */}
                     <div className="col-10 p-0" id="panel">
                         <header className="p-2 mx-4 mt-3 px-4 header rounded-5 shadow-3">{palabra}</header>
