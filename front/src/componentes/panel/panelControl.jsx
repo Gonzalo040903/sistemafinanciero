@@ -9,7 +9,8 @@ import {
     MDBBadge,
     MDBTable,
     MDBTableHead,
-    MDBTableBody
+    MDBTableBody,
+    MDBBtn
 } from 'mdb-react-ui-kit';
 import { useState } from 'react';
 
@@ -21,7 +22,7 @@ export function PanelControl() {
     };
 
     let palabra = "Panel de control > Tabla Clientes";
-    
+
     return (
         <MDBContainer fluid className='col-10' id="container">
             <MDBCard className="row" id="color">
@@ -30,7 +31,7 @@ export function PanelControl() {
                         <h5 className="mt-4 text-center mb-5 admintitulo">Administracion</h5>
                         <MDBNavbarNav>
                             <MDBNavbarLink active aria-current='page' href='#' className="aaa nav-item-link">
-                                <MDBIcon icon="table" className="me-2 mx-0"/>
+                                <MDBIcon icon="table" className="me-2 mx-0" />
                                 Tabla Clientes
                             </MDBNavbarLink>
                             <MDBNavbarLink href='#' onClick={toggleGestionClientes} className="nav-item-link">
@@ -81,7 +82,9 @@ export function PanelControl() {
                                     <th scope='col'>Direccion</th>
                                     <th scope='col'>Telefono</th>
                                     <th scope='col'>Telefono 2</th>
-                                    <th scope='col'>Estado</th>
+                                    <th scope='col'>Telefono 3</th>
+                                    <th scope='col'>Debiente</th>
+                                    <th scope='col'>Maps</th>
                                 </tr>
                             </MDBTableHead>
                             <MDBTableBody>
@@ -91,10 +94,17 @@ export function PanelControl() {
                                     <td>1234 Elm St</td>
                                     <td>555-1234</td>
                                     <td>555-5678</td>
+                                    <td>555-5678</td>
                                     <td>
-                                        <MDBBadge color='warning' pill>
-                                            Pendiente
+                                        <MDBBadge color='success' pill>
+                                            0
                                         </MDBBadge>
+                                    </td>
+                                    <td>
+                                        <MDBBtn color="success">
+                                            <MDBIcon fas icon="map-marker-alt" size="md" color="light" />
+                                        </MDBBtn>
+
                                     </td>
                                 </tr>
                                 <tr>
@@ -103,10 +113,17 @@ export function PanelControl() {
                                     <td>av belrnao 1200</td>
                                     <td>555-5678</td>
                                     <td>555-1234</td>
+                                    <td>555-1234</td>
                                     <td>
-                                        <MDBBadge color='success' pill>
-                                            Pago
+                                        <MDBBadge color='danger' pill>
+                                            101.000
                                         </MDBBadge>
+                                    </td>
+                                    <td>
+                                        <MDBBtn color="success">
+                                            <MDBIcon fas icon="map-marker-alt" size="md" color="light" />
+                                        </MDBBtn>
+
                                     </td>
                                 </tr>
                                 <tr>
@@ -114,11 +131,18 @@ export function PanelControl() {
                                     <td>45678912</td>
                                     <td>910 Maple Ave</td>
                                     <td>555-9101</td>
-                                    <td>555-1112</td>
+                                    <td>555-1234</td>
+                                    <td>555-1234</td>
                                     <td>
                                         <MDBBadge color='danger' pill>
-                                            No Pago
+                                            31.000
                                         </MDBBadge>
+                                    </td>
+                                    <td>
+                                        <MDBBtn color="success">
+                                            <MDBIcon fas icon="map-marker-alt" size="md" color="light" />
+                                        </MDBBtn>
+
                                     </td>
                                 </tr>
                             </MDBTableBody>
@@ -126,6 +150,6 @@ export function PanelControl() {
                     </div>
                 </div>
             </MDBCard>
-        </MDBContainer>
+        </MDBContainer >
     );
 }

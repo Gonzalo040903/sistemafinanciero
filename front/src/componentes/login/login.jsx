@@ -16,27 +16,19 @@ const CustomInput = ({ label, type, id, value, onChange }) => (
 );
 
 export function Login() {
-    const [email, setEmail] = useState('');
+    const [nombre, setNombre] = useState('');
     const [password, setPassword] = useState('');
 
-    const handleLogin = () => {
-        if (email === 'admin@gmail.com' && password === 'admin123') {
-            toast.success('Inicio de sesión exitoso');
-            // Redireccionar o realizar alguna acción adicional
-        } else {
-            toast.error('Credenciales incorrectas');
-        }
-    };
 
     return (
         <MDBContainer fluid className='p-4'>
             <Toaster position="top-center" reverseOrder={false} />
-            
+
             <MDBRow className='contenedorLogin'>
                 <MDBCol md='5' className='text-center text-md-start d-flex flex-column justify-content-center me-4'>
                     <h1 className="my-5 display-3 fw-bold ls-tight px-3">
                         Inicia Sesión <br /> Con tu cuenta de <br />
-                        <span className="text-custom-color">Admin</span>
+                        <span className="text-custom-color"><b>Vendedor</b></span>
                     </h1>
 
                     <p className='px-3 text-muted'>
@@ -50,11 +42,11 @@ export function Login() {
                     <MDBCard className='my-5'>
                         <MDBCardBody className='p-5'>
                             <CustomInput
-                                label='Email'
-                                id='formEmail'
-                                type='email'
-                                value={email}
-                                onChange={(e) => setEmail(e.target.value)}
+                                label='Nombre'
+                                id='formNombre'
+                                type='string'
+                                value={nombre}
+                                onChange={(e) => setNombre(e.target.value)}
                             />
                             <CustomInput
                                 label='Contraseña'
@@ -68,7 +60,6 @@ export function Login() {
                                 className='w-100 mb-4'
                                 size='md'
                                 style={{ backgroundColor: '#15b1e5' }}
-                                onClick={handleLogin}
                             >
                                 Iniciar sesión
                             </MDBBtn>

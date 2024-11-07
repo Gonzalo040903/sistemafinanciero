@@ -10,12 +10,13 @@ import { AgregarclientePage } from "./paginas/agregarclientePage.jsx";
 import { EliminarclientePage } from './paginas/eliminarclientePage.jsx';
 import { ModificarclientePage } from './paginas/modificarclientePage.jsx';
 import { NuevocobroPage } from './paginas/nuevocobroPage.jsx';
+import { Nuevocobro } from './componentes/nuevo cobro/nuevocobro.jsx';
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
   <React.StrictMode>
     <div className='mt-5'>
-      <LoginPage />
+      <Nuevocobro />
     </div>
   </React.StrictMode>
 );
