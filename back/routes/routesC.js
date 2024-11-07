@@ -6,8 +6,8 @@ const router = Router();
 //crear cliente
 router.post('/', async (req, res) => {
 
-    const {nombre, apellido, dni, direccion, telefonoPersonal, telefonoReferencia} = req.body;
-    if(!nombre || !apellido || !dni || !direccion || !telefonoPersonal || !telefonoReferencia){
+    const {nombre, apellido, dni, direccion, telefonoPersonal, telefonoReferencia, telefonoTres} = req.body;
+    if(!nombre || !apellido || !dni || !direccion || !telefonoPersonal || !telefonoReferencia || !telefonoTres){
         return res.status(400).json({message:'Todos los campos son obligarorios'});
     }
 
@@ -17,7 +17,8 @@ router.post('/', async (req, res) => {
         dni,
         direccion,
         telefonoPersonal,
-        telefonoReferencia
+        telefonoReferencia,
+        telefonoTres
     });
 
     try {
@@ -56,13 +57,14 @@ router.patch('/:apellido', async (req, res) => {
         if(cliente == null){
             return res.status(404).json({message: 'Cliente no encontrado'});
         }
-        const {nombre, apellido, dni, direccion, telefonoPersonal, telefonoReferencia } = req.body;
+        const {nombre, apellido, dni, direccion, telefonoPersonal, telefonoReferencia, telefonoTres} = req.body;
         if(nombre) cliente.nombre = nombre;
         if(apellido) cliente.apellido = apellido;
         if(dni) cliente.dni = dni;
         if(direccion) cliente.direccion = direccion;
         if(telefonoPersonal) cliente.telefonoPersonal = telefonoPersonal;
         if(telefonoReferencia) cliente.telefonoReferencia = telefonoReferencia;
+        if(telefonoTres) cliente.telefonoTres = telefonoTres;
         await cliente.save();
         res.json({message:'Cliente actualizado', cliente});
 
