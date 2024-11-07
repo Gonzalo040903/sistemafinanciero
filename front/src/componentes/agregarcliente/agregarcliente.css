@@ -98,3 +98,7 @@ header {
     min-height: 1.2em;
     /* Reservamos espacio */
 }
+
+#container{
+    margin-top: 2.5rem;
+}

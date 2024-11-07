@@ -166,7 +166,7 @@ export function Vendedores() {
             </MDBCard>
             {/* MODAL */}
             <MDBModal open={basicModal} onClose={() => setBasicModal(false)} tabIndex='-1'>
-                <MDBModalDialog size="xl">
+                <MDBModalDialog size="md">
                     <MDBModalContent>
 
 
@@ -177,7 +177,7 @@ export function Vendedores() {
                                 <h2 className=""><b>Nuevo Vendedor</b></h2>
                                 <MDBBtn className='btn-close' color='none' onClick={toggleOpen}></MDBBtn>
                             </MDBModalHeader>
-                            <div className="col-5 my-3">
+                            <div className="col-10 my-3">
                                 <MDBRow>
                                     <CustomInput label='Nombres' id='formNombre' type='text' />
                                     <CustomInput label='Apellidos' id='formApellido' type='text' />

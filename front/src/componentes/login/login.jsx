@@ -21,7 +21,7 @@ export function Login() {
 
 
     return (
-        <MDBContainer fluid className='p-4'>
+        <MDBContainer fluid className='p-4 pt-5 mt-4'>
             <Toaster position="top-center" reverseOrder={false} />
 
             <MDBRow className='contenedorLogin'>
