@@ -4,8 +4,6 @@ import cors from 'cors';
 
 import clientesRouter from './routes/routesC.js';
 import prestamosRouter from './routes/routesP.js';
-import autenticar from './middlewares/autenticar.js';
-import adiminRouter from './routes/routesAuth.js';
 
 const app = express();
 const PORT = process.env.PORT || 3001;
@@ -20,9 +18,9 @@ mongoose.connect(uri)
     .then(() => console.log('Connected to MongoDB'))
     .catch(err => console.log('Failed to connect to MongoDB', err));
 //Rutas de cliente y prestamo
-app.use('/api/clientes', autenticar, clientesRouter);
-app.use('/api/prestamos', autenticar, prestamosRouter);
-app.post('/api/login',adiminRouter)
+app.use('/api/clientes',  clientesRouter);
+app.use('/api/prestamos', prestamosRouter);
+
 //inicia el servidor
 app.listen(PORT,()=>{
     console.log(`Server running on port ${PORT}`);
