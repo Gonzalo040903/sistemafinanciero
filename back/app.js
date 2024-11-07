@@ -11,12 +11,11 @@ const PORT = process.env.PORT || 3001;
 app.use(cors());
 app.use(express.json());
 
-
 //conexion a MongoDB
-const uri = 'mongodb://localhost:27017/Sistema-Financiero';
+const uri = 'mongodb+srv://solheredia555:SistemaFinancieroFH@clustersistemafinancier.fxp2b.mongodb.net/Sistema-Financiero?retryWrites=true&w=majority';
 mongoose.connect(uri)
-    .then(() => console.log('Connected to MongoDB'))
-    .catch(err => console.log('Failed to connect to MongoDB', err));
+    .then(() => console.log('Connected to MongoDB Atlas'))
+    .catch(err => console.log('Failed to connect to MongoDB Atlas', err));
 //Rutas de cliente y prestamo
 app.use('/api/clientes',  clientesRouter);
 app.use('/api/prestamos', prestamosRouter);
@@ -25,4 +24,4 @@ app.use('/api/prestamos', prestamosRouter);
 app.listen(PORT,()=>{
     console.log(`Server running on port ${PORT}`);
 });
-//Pronto me mato
+
