@@ -11,12 +11,13 @@ import { EliminarclientePage } from './paginas/eliminarclientePage.jsx';
 import { ModificarclientePage } from './paginas/modificarclientePage.jsx';
 import { NuevocobroPage } from './paginas/nuevocobroPage.jsx';
 import { Nuevocobro } from './componentes/nuevo cobro/nuevocobro.jsx';
+import { Vendedores } from './componentes/vendedores/vendedores.jsx';
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
   <React.StrictMode>
     <div className='mt-5'>
-      <Nuevocobro />
+      <Vendedores />
     </div>
   </React.StrictMode>
 );

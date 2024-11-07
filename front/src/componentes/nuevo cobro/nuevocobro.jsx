@@ -50,10 +50,6 @@ export function Nuevocobro() {
         toggleOpen2()
     }
 
-    // const cuotas = 12;
-    // let cuotasP = document.getElementById("cuotaspagadas").value;
-    // console.log(cuotasP)
-
     const CustomInput = ({ label, type, id, value, onChange }) => (
         <MDBInput wrapperClass='mb-4' label={label} id={id} type={type} value={value} onChange={onChange} />
     );
@@ -101,6 +97,10 @@ export function Nuevocobro() {
                             <MDBNavbarLink href='#' className="nav-item-link">
                                 <MDBIcon icon="dollar-sign" className="me-2 mx-0 mt-2" />
                                 Nuevo Cobro
+                            </MDBNavbarLink>
+                            <MDBNavbarLink href='#' className="nav-item-link">
+                                <MDBIcon fas icon="key" className="me-2 mx-0 mt-2" />
+                                Vendedores
                             </MDBNavbarLink>
                         </MDBNavbarNav>
                     </div>
