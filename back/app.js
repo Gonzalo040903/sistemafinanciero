@@ -4,6 +4,8 @@ import cors from 'cors';
 
 import clientesRouter from './routes/routesC.js';
 import prestamosRouter from './routes/routesP.js';
+import vendedorRouter from './routes/routesV.js';
+//import initAdmin from './initAdmin.js';
 
 const app = express();
 const PORT = process.env.PORT || 3001;
@@ -15,16 +17,19 @@ app.use(express.json());
 const uri = 'mongodb+srv://solheredia555:SistemaFinancieroFH@clustersistemafinancier.fxp2b.mongodb.net/Sistema-Financiero?retryWrites=true&w=majority&appName=ClusterSistemaFinanciero';
 
 mongoose.connect(uri)
-    .then(() => console.log('Connected to MongoDB'))
+    .then(() => {console.log('Connected to MongoDB')
+    //initAdmin();
+    })
     .catch(err => console.error('Failed to connect to MongoDB:', err.message));
 
 //Rutas de cliente y prestamo
 app.use('/api/clientes', clientesRouter);
 app.use('/api/prestamos', prestamosRouter);
-console.log('Attempting to connect to MongoDB Atlas...');
-mongoose.connect(uri)
-    .then(() => console.log('Connected to MongoDB'))
-    .catch(err => console.error('Failed to connect to MongoDB:', err.message));
+app.use('/api/vendedores', vendedorRouter);
+//console.log('Attempting to connect to MongoDB Atlas...');
+//mongoose.connect(uri)
+  //  .then(() => console.log('Connected to MongoDB Atlas'))
+   // .catch(err => console.error('Failed to connect to MongoDB:', err.message));
 //inicia el servidor
 app.listen(PORT, () => {
     console.log(`Server running on port ${PORT}`);

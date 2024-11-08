@@ -22,5 +22,4 @@ prestamoSchema.pre('save', function(next){
 });
 
 const Prestamo = model('Prestamo', prestamoSchema);
-
-export default Prestamo;
+export default Prestamo; 

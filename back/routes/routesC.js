@@ -5,27 +5,49 @@ const router = Router();
 
 //crear cliente
 router.post('/', async (req, res) => {
-
-    const {nombre, apellido, dni, direccion, telefonoPersonal, telefonoReferencia, telefonoTres} = req.body;
-    if(!nombre || !apellido || !dni || !direccion || !telefonoPersonal || !telefonoReferencia || !telefonoTres){
-        return res.status(400).json({message:'Todos los campos son obligarorios'});
-    }
-
-    const nuevoCliente = new Cliente({
+    const {
         nombre,
         apellido,
         dni,
         direccion,
+        googleMaps,
         telefonoPersonal,
         telefonoReferencia,
-        telefonoTres
-    });
+        telefonoTres,
+        vendedorId,
+        prestamo,
+        historialPrestamos
+    } = req.body;
+
+    if (!nombre || !apellido || !dni || !direccion || !telefonoPersonal || !telefonoReferencia || !telefonoTres || !vendedorId || !prestamo) {
+        return res.status(400).json({ message: 'Todos los campos son obligatorios' });
+    }
 
     try {
-      const clienteGuardado = await nuevoCliente.save();
-      res.status(201).json(clienteGuardado);
+        // Verifica que el vendedor existe
+        const vendedor = await vendedor.findById(vendedorId);
+        if (!vendedor) {
+            return res.status(404).json({ message: 'Vendedor no encontrado' });
+        }
+
+        const nuevoCliente = new Cliente({
+            nombre,
+            apellido,
+            dni,
+            direccion,
+            googleMaps,
+            telefonoPersonal,
+            telefonoReferencia,
+            telefonoTres,
+            vendedor: vendedor._id,
+            prestamoActual: prestamo,
+            historialPrestamos: historialPrestamos || []
+        });
+
+        const clienteGuardado = await nuevoCliente.save();
+        res.status(201).json(clienteGuardado);
     } catch (error) {
-      res.status(500).json({message: error.message});
+        res.status(500).json({ message: error.message });
     }
 });
 
@@ -38,10 +60,10 @@ router.get('/', async (req, res) => {
         res.status(500).json({message: error.message});
     }   
 });
-//obtener por apellido
-router.get('/:apellido', async (req, res) => {
+//obtener por dni
+router.get('/:dni', async (req, res) => {
     try {
-        const cliente = await Cliente.find({ apellido:  req.params.apellido});
+        const cliente = await Cliente.find({ dni:  req.params.dni});
         if(cliente.length === 0){
             return res.status(404).json({message: 'Cliente no encontrado'});
         }
@@ -51,20 +73,23 @@ router.get('/:apellido', async (req, res) => {
     }
 });
 //actualizar cliente
-router.patch('/:apellido', async (req, res) => {
+router.patch('/:dni', async (req, res) => {
     try {
-        const cliente = await Cliente.findOne({ apellido: req.params.apellido});
+        const cliente = await Cliente.findOne({ dni: req.params.dni});
         if(cliente == null){
             return res.status(404).json({message: 'Cliente no encontrado'});
         }
-        const {nombre, apellido, dni, direccion, telefonoPersonal, telefonoReferencia, telefonoTres} = req.body;
+        const {nombre, apellido, dni, direccion, googleMaps, telefonoPersonal, telefonoReferencia, telefonoTres, vendedor, historialPrestamos} = req.body;
         if(nombre) cliente.nombre = nombre;
         if(apellido) cliente.apellido = apellido;
         if(dni) cliente.dni = dni;
         if(direccion) cliente.direccion = direccion;
+        if(googleMaps) cliente.googleMaps = googleMaps;
         if(telefonoPersonal) cliente.telefonoPersonal = telefonoPersonal;
         if(telefonoReferencia) cliente.telefonoReferencia = telefonoReferencia;
         if(telefonoTres) cliente.telefonoTres = telefonoTres;
+        if(vendedor) cliente.vendedor = vendedor;
+        if(historialPrestamos && Array.isArray(historialPrestamos)){cliente.historialPrestamos = cliente.historialPrestamos.conact(historialPrestamos)};
         await cliente.save();
         res.json({message:'Cliente actualizado', cliente});
 
@@ -73,13 +98,13 @@ router.patch('/:apellido', async (req, res) => {
     }
 });
 //eliminar cliente
-router.delete('/:apellido', async (req, res) => {
+router.delete('/:dni', async (req, res) => {
     try {
-        const cliente = await Cliente.findOne({ apellido: req.params.apellido});
+        const cliente = await Cliente.findOne({ dni: req.params.dni});
         if(cliente == null){
             return res.status(404).json({message: 'Cliente no encontrado'});
         }
-        await cliente.deleteOne({ apellido: req.params.apellido})
+        await cliente.deleteOne({ dni: req.params.dni})
         res.json({message: 'Cliente eliminado'});
 
     } catch (error) {

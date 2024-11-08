@@ -1,14 +1,38 @@
-import {Schema, model} from 'mongoose';
+import { Schema, model, trusted } from 'mongoose';
+
+const prestamoSchema = new Schema({
+    monto: { type: Number, required: true },
+    semanas: { type: Number, required: true },
+    intereses: { type: Number, required: true },
+    fechaInicio: { type: Date, default: Date.now },
+    montoFinal: { type: Number },
+    cuotasTotales: { type: Number },
+    montoAdeudado: { type: Number },
+    cuotasPagadas: { type: Number, default: 0 }
+});
+
+prestamoSchema.pre('save', function(next) {
+    if (this.isNew) {
+        this.montoFinal = this.monto + (this.monto * (this.intereses / 100));
+        this.montoAdeudado = this.montoFinal;
+        this.cuotasTotales = this.semanas;
+    }
+    next();
+});
 
 const clienteSchema = new Schema({
-    nombre: {type: String, required: true},
-    apellido: {type: String, required: true},
-    dni: {type: Number, required: true},
-    direccion: {type: String, required: true},
-    telefonoPersonal: {type: Number, required: true},
-    telefonoReferencia: {type: Number, required: true},
-    telefonoTres:{type:Number, required: true}
-},{collection:'Cliente', versionKey:false});
+    nombre: { type: String, required: true },
+    apellido: { type: String, required: true },
+    dni: { type: Number, required: true },
+    direccion: { type: String, required: true },
+    googleMaps: { type: String, required: true },
+    telefonoPersonal: { type: Number, required: true },
+    telefonoReferencia: { type: Number, required: true },
+    telefonoTres: { type: Number, required: true },
+    vendedor: { type: Schema.Types.ObjectId, ref: 'Vendedor', required: true },
+    prestamoActual: { type: prestamoSchema, required: true }, 
+    historialPrestamos: { type: [prestamoSchema], default: [] }
+}, { collection: 'Cliente', versionKey: false });
 
 const Cliente = model('Cliente', clienteSchema);
 export default Cliente;
