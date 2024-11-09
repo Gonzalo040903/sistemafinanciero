@@ -7,6 +7,7 @@ const router = Router();
 
 //router.use(autenticarUsuario);
 
+
 router.post('/', async(req, res)=> {
     try{
         const {nombre, apellido, contraseña } = req.body;
@@ -20,6 +21,15 @@ router.post('/', async(req, res)=> {
 
     }catch(error){
         res.status.apply(500).json({message: error.message});
+    }
+});
+
+router.get('/', async (req, res) => {
+    try {
+        const vendedores = await Vendedor.find({}, "nombre apellido contraseña");
+        res.json(vendedores);
+    } catch (error) {
+        res.status(500).json({ message: error.message });
     }
 });
 

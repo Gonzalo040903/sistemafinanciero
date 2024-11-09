@@ -18,7 +18,7 @@ router.post('/', async (req, res) => {
         historialPrestamos
     } = req.body;
 
-    if (!nombre || !apellido || !dni || !direccion || !telefonoPersonal || !telefonoReferencia || !telefonoTres || !prestamo) {
+    if (!nombre || !apellido || !dni || !direccion || !telefonoPersonal || !telefonoReferencia || !telefonoTres || !prestamoActual) {
         return res.status(400).json({ message: 'Todos los campos son obligatorios' });
     }
 
@@ -32,7 +32,7 @@ router.post('/', async (req, res) => {
             telefonoPersonal,
             telefonoReferencia,
             telefonoTres,
-            prestamoActual: prestamo || null, //opcional?
+            prestamoActual: prestamoActual || null, //opcional?
             historialPrestamos: historialPrestamos || []
         });
 

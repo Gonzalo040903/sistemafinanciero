@@ -1,4 +1,4 @@
-import { Schema, model, trusted } from 'mongoose';
+import { Schema, model} from 'mongoose';
 
 const prestamoSchema = new Schema({
     monto: { type: Number, required: true },
@@ -20,6 +20,8 @@ prestamoSchema.pre('save', function(next) {
     }
     next();
 });
+//const Prestamo = model('Prestamo', prestamoSchema);
+
 
 const clienteSchema = new Schema({
     nombre: { type: String, required: true },
@@ -36,3 +38,4 @@ const clienteSchema = new Schema({
 
 const Cliente = model('Cliente', clienteSchema);
 export default Cliente;
+//lol
