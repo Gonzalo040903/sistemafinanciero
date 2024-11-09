@@ -1,13 +1,13 @@
 import {Router} from 'express';
 import Vendedor from '../model/modelVendedor.js';
-import autenticarUsuario from '../middlewares/autencitarUsuario.js';
-import verificarAdmin from '../middlewares/verificarAdmin.js';
+//import autenticarUsuario from '../middlewares/autencitarUsuario.js';
+//import verificarAdmin from '../middlewares/verificarAdmin.js';
 
 const router = Router();
 
-router.use(autenticarUsuario);
+//router.use(autenticarUsuario);
 
-router.post('/', verificarAdmin, async(req, res)=> {
+router.post('/', async(req, res)=> {
     try{
         const {nombre, apellido, contraseña } = req.body;
         if(!nombre || !apellido || !contraseña){

@@ -9,7 +9,8 @@ const prestamoSchema = new Schema({
     montoFinal: { type: Number },
     cuotasTotales: { type: Number },
     montoAdeudado: { type: Number },
-    cuotasPagadas: { type: Number, default: 0 }
+    cuotasPagadas: { type: Number, default: 0 },
+    vendedor: { type: String, required: true }
 },{collection: 'Prestamo', versionKey: false});
 
 prestamoSchema.pre('save', function(next){

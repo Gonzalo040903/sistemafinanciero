@@ -14,22 +14,15 @@ router.post('/', async (req, res) => {
         telefonoPersonal,
         telefonoReferencia,
         telefonoTres,
-        vendedorId,
         prestamo,
         historialPrestamos
     } = req.body;
 
-    if (!nombre || !apellido || !dni || !direccion || !telefonoPersonal || !telefonoReferencia || !telefonoTres || !vendedorId || !prestamo) {
+    if (!nombre || !apellido || !dni || !direccion || !telefonoPersonal || !telefonoReferencia || !telefonoTres || !prestamo) {
         return res.status(400).json({ message: 'Todos los campos son obligatorios' });
     }
 
     try {
-        // Verifica que el vendedor existe
-        const vendedor = await vendedor.findById(vendedorId);
-        if (!vendedor) {
-            return res.status(404).json({ message: 'Vendedor no encontrado' });
-        }
-
         const nuevoCliente = new Cliente({
             nombre,
             apellido,
@@ -39,7 +32,6 @@ router.post('/', async (req, res) => {
             telefonoPersonal,
             telefonoReferencia,
             telefonoTres,
-            vendedor: vendedor._id,
             prestamoActual: prestamo,
             historialPrestamos: historialPrestamos || []
         });
@@ -63,7 +55,7 @@ router.get('/', async (req, res) => {
 //obtener por dni
 router.get('/:dni', async (req, res) => {
     try {
-        const cliente = await Cliente.find({ dni:  req.params.dni});
+        const cliente = await Cliente.find({ dni: req.params.dni});
         if(cliente.length === 0){
             return res.status(404).json({message: 'Cliente no encontrado'});
         }
@@ -79,7 +71,7 @@ router.patch('/:dni', async (req, res) => {
         if(cliente == null){
             return res.status(404).json({message: 'Cliente no encontrado'});
         }
-        const {nombre, apellido, dni, direccion, googleMaps, telefonoPersonal, telefonoReferencia, telefonoTres, vendedor, historialPrestamos} = req.body;
+        const {nombre, apellido, dni, direccion, googleMaps, telefonoPersonal, telefonoReferencia, telefonoTres, historialPrestamos} = req.body;
         if(nombre) cliente.nombre = nombre;
         if(apellido) cliente.apellido = apellido;
         if(dni) cliente.dni = dni;
@@ -88,7 +80,6 @@ router.patch('/:dni', async (req, res) => {
         if(telefonoPersonal) cliente.telefonoPersonal = telefonoPersonal;
         if(telefonoReferencia) cliente.telefonoReferencia = telefonoReferencia;
         if(telefonoTres) cliente.telefonoTres = telefonoTres;
-        if(vendedor) cliente.vendedor = vendedor;
         if(historialPrestamos && Array.isArray(historialPrestamos)){cliente.historialPrestamos = cliente.historialPrestamos.conact(historialPrestamos)};
         await cliente.save();
         res.json({message:'Cliente actualizado', cliente});

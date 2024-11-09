@@ -4,6 +4,32 @@ import Cliente from '../model/modelCliente.js';
 
 const router = Router();
 
+//Crear prestamo
+router.post('/', async (req, res) => {
+    const {dni, monto, semanas, intereses, fechaInicio, vendedor} = req.body;
+    try {
+        const cliente = await Cliente.findOne({dni});
+
+        if(!cliente) {
+            return res.status(404).json({message:"'Cliente no encontrado"});
+        }
+        if(!cliente || !monto || !semanas || !intereses || !fechaInicio || !vendedor){
+            return res.status(400).json({message: 'Todos los campos son obligatoorios'});
+        }
+        const nuevoPrestamo = new Prestamo({
+            cliente,
+            monto,
+            semanas,
+            intereses,
+            fechaInicio: fechaInicio || Date.now(),
+            vendedor
+        }); 
+        await nuevoPrestamo.save(); 
+        res.status(201).json(nuevoPrestamo);
+    } catch (error) {
+        res.status(500).json({message: error.message});
+    }
+});
 //get q me trae todos los prestamos
 router.get('/', async (req, res) => {
     try {
@@ -35,28 +61,6 @@ router.get('/:dni', async (req, res) => {
 });
 
 
-//Crear prestamo
-router.post('/', async (req, res) => {
-    const {dni, monto, semanas, intereses, fechaInicio} = req.body;
-    try {
-        const cliente = await Cliente.findOne({dni});
-
-        if(!cliente) {
-            return res.status(404).json({message:"'Cliente no encontrado"});
-        }
-        const nuevoPrestamo = new Prestamo({
-            cliente: cliente._id,
-            monto,
-            semanas,
-            intereses,
-            fechaInicio: fechaInicio || Date.now()
-        }); 
-        await nuevoPrestamo.save(); 
-        res.status(201).json(nuevoPrestamo);
-    } catch (error) {
-        res.status(500).json({message: error.message});
-    }
-});
 //actualizar prestamo(cuotas y montoadeudado)
 router.patch('/:dni', async (req, res) => {
     const {cuotasPagadas} = req.body;

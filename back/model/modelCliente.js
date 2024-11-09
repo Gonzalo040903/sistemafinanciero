@@ -8,7 +8,8 @@ const prestamoSchema = new Schema({
     montoFinal: { type: Number },
     cuotasTotales: { type: Number },
     montoAdeudado: { type: Number },
-    cuotasPagadas: { type: Number, default: 0 }
+    cuotasPagadas: { type: Number, default: 0 },
+    vendedor: { type: String, required: true }
 });
 
 prestamoSchema.pre('save', function(next) {
@@ -29,7 +30,6 @@ const clienteSchema = new Schema({
     telefonoPersonal: { type: Number, required: true },
     telefonoReferencia: { type: Number, required: true },
     telefonoTres: { type: Number, required: true },
-    vendedor: { type: Schema.Types.ObjectId, ref: 'Vendedor', required: true },
     prestamoActual: { type: prestamoSchema, required: true }, 
     historialPrestamos: { type: [prestamoSchema], default: [] }
 }, { collection: 'Cliente', versionKey: false });
