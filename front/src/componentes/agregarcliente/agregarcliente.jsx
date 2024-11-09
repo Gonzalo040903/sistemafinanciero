@@ -55,7 +55,7 @@ export function Agregarcliente() {
         formFecha: Yup.date().required('Campo obligatorio'),
     });
 
-    const submitCliente = async (values) => {
+    const submitCliente = async (values, { resetForm }) => {
         try {
             const response = await fetch("http://localhost:3001/api/clientes", {
                 method: "POST",
@@ -71,18 +71,20 @@ export function Agregarcliente() {
                     telefonoPersonal: values.formTel,
                     telefonoReferencia: values.formTel2,
                     telefonoTres: values.formTel3,
-                    vendedor: values.formVendedor,
                     prestamoActual: {
                         monto: values.formMonto,
                         semanas: parseInt(document.getElementById("formSemanas").value),
                         intereses: values.formIntereses,
-                        fechaInicio: values.formFecha
+                        fechaInicio: values.formFecha,
+                        vendedor: values.formVendedor
                     }
                 })
             });
 
             if (response.ok) {
                 toast.success("Nuevo Cliente Creado");
+                resetForm();
+                document.getElementById("formSemanas").value = 1
             } else {
                 toast.error("Error al crear el cliente");
             }

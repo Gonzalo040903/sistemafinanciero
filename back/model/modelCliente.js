@@ -1,10 +1,10 @@
-import { Schema, model} from 'mongoose';
+import { Schema, model } from 'mongoose';
 
 const prestamoSchema = new Schema({
     monto: { type: Number, required: true },
     semanas: { type: Number, required: true },
     intereses: { type: Number, required: true },
-    fechaInicio: { type: Date, default: Date.now },
+    fechaInicio: { type: String, required: true },
     montoFinal: { type: Number },
     cuotasTotales: { type: Number },
     montoAdeudado: { type: Number },
@@ -12,7 +12,7 @@ const prestamoSchema = new Schema({
     vendedor: { type: String, required: true }
 });
 
-prestamoSchema.pre('save', function(next) {
+prestamoSchema.pre('save', function (next) {
     if (this.isNew) {
         this.montoFinal = this.monto + (this.monto * (this.intereses / 100));
         this.montoAdeudado = this.montoFinal;
@@ -32,7 +32,7 @@ const clienteSchema = new Schema({
     telefonoPersonal: { type: Number, required: true },
     telefonoReferencia: { type: Number, required: true },
     telefonoTres: { type: Number, required: true },
-    prestamoActual: { type: prestamoSchema, required: true }, 
+    prestamoActual: { type: prestamoSchema, required: true },
     historialPrestamos: { type: [prestamoSchema], default: [] }
 }, { collection: 'Cliente', versionKey: false });
 
