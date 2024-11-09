@@ -16,22 +16,51 @@ import {
     MDBModalHeader,
     MDBModalTitle,
     MDBModalBody,
-    MDBModalFooter
+    MDBModalFooter,
+    MDBBadge
 } from 'mdb-react-ui-kit';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import toast, { Toaster } from 'react-hot-toast';
+import axios from 'axios';
 
 export function Eliminarcliente() {
     const [isGestionClientesOpen, setIsGestionClientesOpen] = useState(false);
     const [optSmModal, setOptSmModal] = useState(false);
-    const funcionSuccess = (e) => {
-        e.preventDefault();
+    const [clienteEliminar, setClienteEliminar] = useState(null);  // Almacenar cliente con DNI, nombre y apellido
+    const funcionSuccess = () => {
         toast.success('Cliente Eliminado');
-        toggleOpen()
+        toggleOpen();
+        // Vuelve a cargar los clientes después de eliminar uno
+        fetchClientes();
     };
+    
     const toggleOpen = () => setOptSmModal(!optSmModal);
     const toggleGestionClientes = () => {
         setIsGestionClientesOpen(!isGestionClientesOpen);
+    };
+
+    const [clientes, setClientes] = useState([]);
+    
+    const fetchClientes = async () => {
+        try {
+            const response = await axios.get('http://localhost:3001/api/clientes');
+            setClientes(response.data);
+        } catch (error) {
+            console.error("Error al obtener los clientes:", error);
+        }
+    };
+
+    useEffect(() => {
+        fetchClientes();
+    }, []);
+
+    const eliminarCliente = async (dni) => {
+        try {
+            await axios.delete(`http://localhost:3001/api/clientes/${dni}`);
+            funcionSuccess();  // Llamar a la función de éxito después de la eliminación
+        } catch (error) {
+            console.error("Error al eliminar el cliente:", error);
+        }
     };
 
     let palabra = "Panel de control > Registro Clientes > Eliminar Cliente";
@@ -41,7 +70,7 @@ export function Eliminarcliente() {
             <Toaster position="top-center" reverseOrder={false} />
             <MDBCard className="row" id="color">
                 <div className="row p-0" id="color">
-                <div className="col-2 text-center" id="nav">
+                    <div className="col-2 text-center" id="nav">
                         <h5 className="mt-4 text-center mb-5 admintitulo">Administracion</h5>
                         <MDBNavbarNav>
                             <MDBNavbarLink active aria-current='page' href='/panel' className="aaa nav-item-link">
@@ -100,49 +129,26 @@ export function Eliminarcliente() {
                                     <th scope='col'>Direccion</th>
                                     <th scope='col'>Telefono</th>
                                     <th scope='col'>Telefono 2</th>
+                                    <th scope='col'>Telefono 3</th>
                                     <th scope='col'></th>
                                 </tr>
                             </MDBTableHead>
                             <MDBTableBody>
-                                <tr>
-                                    <td>John Doe</td>
-                                    <td>12345678</td>
-                                    <td>1234 Elm St</td>
-                                    <td>555-1234</td>
-                                    <td>555-5678</td>
-                                    <td>
-                                        <MDBBtn color='danger' size='sm' onClick={toggleOpen}>
-                                            <MDBIcon icon="times" className="me-2" />
-                                            Eliminar
-                                        </MDBBtn>
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td>Alex Ray</td>
-                                    <td>87654321</td>
-                                    <td>av belrnao 1200</td>
-                                    <td>555-5678</td>
-                                    <td>555-1234</td>
-                                    <td>
-                                        <MDBBtn color='danger' size='sm' onClick={toggleOpen}>
-                                            <MDBIcon icon="times" className="me-2" />
-                                            Eliminar
-                                        </MDBBtn>
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td>Kate Hunington</td>
-                                    <td>45678912</td>
-                                    <td>910 Maple Ave</td>
-                                    <td>555-9101</td>
-                                    <td>555-1112</td>
-                                    <td>
-                                        <MDBBtn color='danger' size='sm' onClick={toggleOpen}>
-                                            <MDBIcon icon="times" className="me-2" />
-                                            Eliminar
-                                        </MDBBtn>
-                                    </td>
-                                </tr>
+                                {clientes.map((cliente) => (
+                                    <tr key={cliente.dni}>
+                                        <td>{cliente.nombre} {cliente.apellido}</td>
+                                        <td>{cliente.dni}</td>
+                                        <td>{cliente.direccion}</td>
+                                        <td>{cliente.telefonoPersonal}</td>
+                                        <td>{cliente.telefonoReferencia}</td>
+                                        <td>{cliente.telefonoTres}</td>
+                                        <td>
+                                            <MDBBtn color="danger" onClick={() => { setClienteEliminar(cliente); toggleOpen(); }}>
+                                                Eliminar
+                                            </MDBBtn>
+                                        </td>
+                                    </tr>
+                                ))}
                             </MDBTableBody>
                         </MDBTable>
                     </div>
@@ -150,28 +156,26 @@ export function Eliminarcliente() {
             </MDBCard>
 
             <MDBModal open={optSmModal} tabIndex='-1' onClose={() => setOptSmModal(false)}>
-                <MDBModalDialog size='sm'>
+                <MDBModalDialog size='md'>
                     <MDBModalContent>
                         <MDBModalHeader className="bg-danger text-center">
                             <MDBModalTitle className="text-light m-auto">¿Estas Seguro?</MDBModalTitle>
                         </MDBModalHeader>
                         <MDBModalBody className="text-center">
                             <MDBIcon icon="times" className="me-2 text-danger iconogrande" /><br />
-                            Desea eliminar "nombre de cliente"
+                            Desea eliminar el cliente con DNI {clienteEliminar?.dni} <br/> de nombre {clienteEliminar?.nombre} {clienteEliminar?.apellido}
                         </MDBModalBody>
                         <MDBModalFooter>
-                            <MDBBtn color='danger' onClick={funcionSuccess}>
+                            <MDBBtn color='danger' onClick={() => eliminarCliente(clienteEliminar.dni)}>
                                 Si
                             </MDBBtn>
                             <MDBBtn color="info" onClick={toggleOpen}>
-                                cancelar
+                                Cancelar
                             </MDBBtn>
                         </MDBModalFooter>
                     </MDBModalContent>
                 </MDBModalDialog>
             </MDBModal>
         </MDBContainer>
-
-
     );
 }
