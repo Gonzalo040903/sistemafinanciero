@@ -14,7 +14,7 @@ router.post('/', async (req, res) => {
         telefonoPersonal,
         telefonoReferencia,
         telefonoTres,
-        prestamo,
+        prestamoActual,
         historialPrestamos
     } = req.body;
 
@@ -32,7 +32,7 @@ router.post('/', async (req, res) => {
             telefonoPersonal,
             telefonoReferencia,
             telefonoTres,
-            prestamoActual: prestamo,
+            prestamoActual: prestamo || null, //opcional?
             historialPrestamos: historialPrestamos || []
         });
 
