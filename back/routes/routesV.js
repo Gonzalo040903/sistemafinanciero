@@ -35,8 +35,8 @@ router.get('/', async (req, res) => {
 
 router.get('/:nombre', async(req, res) =>{
     try{
-        const vendedor = await Vendedor.findOne(req.params.nombre);
-        if(!vendedor){
+        const vendedor = await Vendedor.find({nombre: req.params.nombre});
+        if(vendedor.length === 0){
             return res.status(404).json({message:'Vendedor no encontraado.'});
         }
         res.json(vendedor);

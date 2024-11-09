@@ -24,19 +24,16 @@ export function Agregarcliente() {
     const toggleGestionClientes = () => {
         setIsGestionClientesOpen(!isGestionClientesOpen);
     };
-    const success = (e) => {
-        e.preventDefault();
-        toast.success('Nuevo Cliente Creado');
-    }
+
     const calcular = (e) => {
         e.preventDefault();
         let monto = parseInt(document.getElementById("formMonto").value);
         let intereses = parseInt(document.getElementById("formIntereses").value);
-        let montoFinal = (monto * intereses / 100) + monto
+        let montoFinal = (monto * intereses / 100) + monto;
         let semana = parseInt(document.getElementById("formSemanas").value);
         let montoxsemana = montoFinal / semana;
-        let semanapaga = document.getElementById("formSemanaPaga")
-        let devuelve = document.getElementById("formDevuelve")
+        let semanapaga = document.getElementById("formSemanaPaga");
+        let devuelve = document.getElementById("formDevuelve");
         if (monto && intereses) {
             semanapaga.value = montoxsemana;
             devuelve.value = montoFinal;
@@ -52,11 +49,48 @@ export function Agregarcliente() {
         formTel3: Yup.string().matches(/^\d+$/, 'Solo números').max(11, 'Máximo 11 caracteres').required('Campo obligatorio'),
         formDirec: Yup.string().min(2, 'Mínimo 2 caracteres').max(50, 'Máximo 50 caracteres').required('Campo obligatorio'),
         formMaps: Yup.string().min(2, 'Mínimo 2 caracteres').max(300, 'Máximo 300 caracteres').required('Campo obligatorio'),
-        formVendedor: Yup.string().min(2, 'Mínimo 2 caracteres').max(20, 'Máximo 20 caracteres').required('Campo obligatorio'),
+        formVendedor: Yup.string().min(2, 'Mínimo 2 caracteres').max(20, 'Campo obligatorio').required('Campo obligatorio'),
         formMonto: Yup.number().required('Campo obligatorio'),
         formIntereses: Yup.number().max(99, 'Máximo 2 caracteres').required('Campo obligatorio'),
         formFecha: Yup.date().required('Campo obligatorio'),
     });
+
+    const submitCliente = async (values) => {
+        try {
+            const response = await fetch("http://localhost:3001/api/clientes", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify({
+                    nombre: values.formNombre,
+                    apellido: values.formApellido,
+                    dni: values.formDni,
+                    direccion: values.formDirec,
+                    googleMaps: values.formMaps,
+                    telefonoPersonal: values.formTel,
+                    telefonoReferencia: values.formTel2,
+                    telefonoTres: values.formTel3,
+                    vendedor: values.formVendedor,
+                    prestamoActual: {
+                        monto: values.formMonto,
+                        semanas: parseInt(document.getElementById("formSemanas").value),
+                        intereses: values.formIntereses,
+                        fechaInicio: values.formFecha
+                    }
+                })
+            });
+
+            if (response.ok) {
+                toast.success("Nuevo Cliente Creado");
+            } else {
+                toast.error("Error al crear el cliente");
+            }
+        } catch (error) {
+            console.error("Error en la solicitud:", error);
+            toast.error("Error en la solicitud");
+        }
+    };
 
     const CustomInput = ({ label, type, id, formik }) => (
         <div className="input-container">
@@ -67,17 +101,12 @@ export function Agregarcliente() {
 
     let palabra = "Panel de control > Registro Clientes > Agregar Cliente";
 
-    const funcionSuccess = (e) => {
-        e.preventDefault();
-        toast.success('Nuevo Cliente Creado');
-    };
-
     return (
         <MDBContainer fluid className='col-10' id="container">
             <Toaster position="top-center" reverseOrder={false} />
             <MDBCard className="row" id="color">
                 <div className="row p-0" id="color">
-                <div className="col-2 text-center" id="nav">
+                    <div className="col-2 text-center" id="nav">
                         <h5 className="mt-4 text-center mb-5 admintitulo">Administracion</h5>
                         <MDBNavbarNav>
                             <MDBNavbarLink active aria-current='page' href='/panel' className="aaa nav-item-link">
@@ -136,12 +165,13 @@ export function Agregarcliente() {
                                 formTel3: '',
                                 formDirec: '',
                                 formMaps: '',
+                                formVendedor: '',
                                 formMonto: '',
                                 formIntereses: '',
                                 formFecha: ''
                             }}
                             validationSchema={validationSchema}
-                            onSubmit={funcionSuccess}
+                            onSubmit={submitCliente}
                         >
                             {formik => (
                                 <Form className="p-5 mx-4 mt-0 px-4 rounded-5 shadow-3 mb-4 row" id="formulario">
@@ -229,7 +259,7 @@ export function Agregarcliente() {
                                         </MDBRow>
                                     </div>
                                     <div className="col-6 mt-3">
-                                        <MDBBtn className='w-100' href='/error' size='md' style={{ backgroundColor: '#15b1e5' }} type="submit" onClick={success}>Registrar Nuevo Cliente</MDBBtn>
+                                        <MDBBtn className='w-100' href='' size='md' style={{ backgroundColor: '#15b1e5' }} type="submit">Registrar Nuevo Cliente</MDBBtn>
                                     </div>
                                 </Form>
                             )}
