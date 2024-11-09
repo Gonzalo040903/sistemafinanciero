@@ -12,14 +12,30 @@ import {
     MDBTableBody,
     MDBBtn
 } from 'mdb-react-ui-kit';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
+import axios from 'axios';
 
 export function PanelControl() {
     const [isGestionClientesOpen, setIsGestionClientesOpen] = useState(false);
+    const [clientes, setClientes] = useState([]);
 
     const toggleGestionClientes = () => {
         setIsGestionClientesOpen(!isGestionClientesOpen);
     };
+
+    useEffect(() => {
+        // Llamada a la API para obtener clientes
+        const fetchClientes = async () => {
+            try {
+                const response = await axios.get('http://localhost:3001/api/clientes');
+                setClientes(response.data);
+            } catch (error) {
+                console.error("Error al obtener los clientes:", error);
+            }
+        };
+
+        fetchClientes();
+    }, []);
 
     let palabra = "Panel de control > Tabla Clientes";
 
@@ -27,7 +43,7 @@ export function PanelControl() {
         <MDBContainer fluid className='col-10' id="container">
             <MDBCard className="row" id="color">
                 <div className="row p-0" id="color">
-                <div className="col-2 text-center" id="nav">
+                    <div className="col-2 text-center" id="nav">
                         <h5 className="mt-4 text-center mb-5 admintitulo">Administracion</h5>
                         <MDBNavbarNav>
                             <MDBNavbarLink active aria-current='page' href='/panel' className="aaa nav-item-link">
@@ -72,12 +88,10 @@ export function PanelControl() {
                         </MDBNavbarNav>
                     </div>
 
-                    {/* PANEL ZONA */}
                     <div className="col-10 p-0" id="panel">
                         <header className="p-2 mx-4 mt-3 px-4 header rounded-5 shadow-3">{palabra}</header>
                         <h3 className="px-4 textogris mt-5"><b>Tabla Clientes</b></h3>
 
-                        {/* TABLA */}
                         <MDBTable id="tabla" className="shadow-3 rounded-5 mx-4 mt-4 text-center">
                             <MDBTableHead>
                                 <tr>
@@ -92,68 +106,31 @@ export function PanelControl() {
                                 </tr>
                             </MDBTableHead>
                             <MDBTableBody>
-                                <tr>
-                                    <td>John Doe</td>
-                                    <td>12345678</td>
-                                    <td>1234 Elm St</td>
-                                    <td>555-1234</td>
-                                    <td>555-5678</td>
-                                    <td>555-5678</td>
-                                    <td>
-                                        <MDBBadge color='success' pill>
-                                            0
-                                        </MDBBadge>
-                                    </td>
-                                    <td>
-                                        <MDBBtn color="success">
-                                            <MDBIcon fas icon="map-marker-alt" size="md" color="light" />
-                                        </MDBBtn>
-
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td>Alex Ray</td>
-                                    <td>87654321</td>
-                                    <td>av belrnao 1200</td>
-                                    <td>555-5678</td>
-                                    <td>555-1234</td>
-                                    <td>555-1234</td>
-                                    <td>
-                                        <MDBBadge color='danger' pill>
-                                            101.000
-                                        </MDBBadge>
-                                    </td>
-                                    <td>
-                                        <MDBBtn color="success">
-                                            <MDBIcon fas icon="map-marker-alt" size="md" color="light" />
-                                        </MDBBtn>
-
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td>Kate Hunington</td>
-                                    <td>45678912</td>
-                                    <td>910 Maple Ave</td>
-                                    <td>555-9101</td>
-                                    <td>555-1234</td>
-                                    <td>555-1234</td>
-                                    <td>
-                                        <MDBBadge color='danger' pill>
-                                            31.000
-                                        </MDBBadge>
-                                    </td>
-                                    <td>
-                                        <MDBBtn color="success">
-                                            <MDBIcon fas icon="map-marker-alt" size="md" color="light" />
-                                        </MDBBtn>
-
-                                    </td>
-                                </tr>
+                                {clientes.map((cliente) => (
+                                    <tr key={cliente.dni}>
+                                        <td>{cliente.nombre} {cliente.apellido}</td>
+                                        <td>{cliente.dni}</td>
+                                        <td>{cliente.direccion}</td>
+                                        <td>{cliente.telefonoPersonal}</td>
+                                        <td>{cliente.telefonoReferencia}</td>
+                                        <td>{cliente.telefonoTres}</td>
+                                        <td>
+                                            <MDBBadge color={cliente.prestamoActual.montoAdeudado > 0 ? 'danger' : 'success'} pill>
+                                                {cliente.prestamoActual.montoAdeudado}
+                                            </MDBBadge>
+                                        </td>
+                                        <td>
+                                            <MDBBtn color="success" href={cliente.googleMaps} target="_blank">
+                                                <MDBIcon fas icon="map-marker-alt" size="md" color="light" />
+                                            </MDBBtn>
+                                        </td>
+                                    </tr>
+                                ))}
                             </MDBTableBody>
                         </MDBTable>
                     </div>
                 </div>
             </MDBCard>
-        </MDBContainer >
+        </MDBContainer>
     );
 }
