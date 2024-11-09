@@ -21,26 +21,18 @@ import {
     MDBRow,
     MDBCol
 } from 'mdb-react-ui-kit';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
+import axios from 'axios';
 import toast, { Toaster } from 'react-hot-toast';
+import { Formik, Form, Field } from 'formik';
+import * as Yup from 'yup';
 
 export function Modificarcliente() {
-    const calcular = (e) => {
-        e.preventDefault();
-        let monto = parseInt(document.getElementById("formMonto").value);
-        let intereses = parseInt(document.getElementById("formIntereses").value);
-        let montoFinal = (monto * intereses / 100) + monto
-        let semana = parseInt(document.getElementById("formSemanas").value);
-        let montoxsemana = montoFinal / semana;
-        let semanapaga = document.getElementById("formSemanaPaga")
-        let devuelve = document.getElementById("formDevuelve")
-        if (monto && intereses) {
-            semanapaga.value = montoxsemana;
-            devuelve.value = montoFinal;
-        }
-    }
     const [isGestionClientesOpen, setIsGestionClientesOpen] = useState(false);
     const [basicModal, setBasicModal] = useState(false);
+    const [clientes, setClientes] = useState([]);
+    const [clienteSeleccionado, setClienteSeleccionado] = useState(null);
+
     const toggleOpen = () => setBasicModal(!basicModal);
     const toggleGestionClientes = () => {
         setIsGestionClientesOpen(!isGestionClientesOpen);
@@ -48,21 +40,91 @@ export function Modificarcliente() {
 
     const funcionSuccess = (e) => {
         e.preventDefault();
-        toast.success('Cliente Modificado')
-        toggleOpen()
-    }
+        toast.success('Cliente Modificado');
+        toggleOpen();
+    };
 
-    const CustomInput = ({ label, type, id, value, onChange }) => (
-        <MDBInput wrapperClass='mb-4' label={label} id={id} type={type} value={value} onChange={onChange} />
+    const validationSchema = Yup.object({
+        formNombre: Yup.string().min(2, 'Mínimo 2 caracteres').max(20, 'Máximo 20 caracteres').required('Campo obligatorio'),
+        formApellido: Yup.string().min(2, 'Mínimo 2 caracteres').max(20, 'Máximo 20 caracteres').required('Campo obligatorio'),
+        formDni: Yup.string().matches(/^\d+$/, 'Solo números').length(8, 'Debe tener 8 caracteres').required('Campo obligatorio'),
+        formTel: Yup.string().matches(/^\d+$/, 'Solo números').max(11, 'Máximo 11 caracteres').required('Campo obligatorio'),
+        formTel2: Yup.string().matches(/^\d+$/, 'Solo números').max(11, 'Máximo 11 caracteres').required('Campo obligatorio'),
+        formTel3: Yup.string().matches(/^\d+$/, 'Solo números').max(11, 'Máximo 11 caracteres').required('Campo obligatorio'),
+        formDirec: Yup.string().min(2, 'Mínimo 2 caracteres').max(50, 'Máximo 50 caracteres').required('Campo obligatorio'),
+        formMaps: Yup.string().min(2, 'Mínimo 2 caracteres').max(300, 'Máximo 300 caracteres').required('Campo obligatorio'),
+    });
+
+    const CustomInput = ({ label, type, id, field, form }) => (
+        <MDBInput
+            wrapperClass='mb-4'
+            label={label}
+            id={id}
+            type={type}
+            {...field} // Pasa automáticamente los props de `Field` (value, onChange, onBlur)
+        />
     );
-    let palabra = "Panel de control > Registro Clientes > Modificar Cliente";
+
+    const submitCliente = async (values, { resetForm }) => {
+        try {
+            const response = await fetch(`http://localhost:3001/api/clientes/${clienteSeleccionado.dni}`, {
+                method: "PATCH",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify({
+                    nombre: values.formNombre,
+                    apellido: values.formApellido,
+                    dni: values.formDni,
+                    direccion: values.formDirec,
+                    googleMaps: values.formMaps,
+                    telefonoPersonal: values.formTel,
+                    telefonoReferencia: values.formTel2,
+                    telefonoTres: values.formTel3,
+                })
+            });
+
+            if (response.ok) {
+                toast.success("Cliente Modificado");
+                resetForm();
+                setClienteSeleccionado(null);
+                toggleOpen();
+            } else {
+                toast.error("Error al modificar el cliente");
+            }
+        } catch (error) {
+            console.error("Error en la solicitud:", error);
+            toast.error("Error en la solicitud");
+        }
+    };
+
+    useEffect(() => {
+        // Llamada a la API para obtener clientes
+        const fetchClientes = async () => {
+            try {
+                const response = await axios.get('http://localhost:3001/api/clientes');
+                setClientes(response.data);
+            } catch (error) {
+                console.error("Error al obtener los clientes:", error);
+            }
+        };
+
+        fetchClientes();
+    }, []);
+
+    const handleEditarCliente = (cliente) => {
+        setClienteSeleccionado(cliente);
+        toggleOpen();
+    };
+
+    const palabra = "Panel de control > Registro Clientes > Modificar Cliente";
 
     return (
         <MDBContainer fluid className='col-10' id="container">
             <Toaster position="top-center" reverseOrder={false} />
             <MDBCard className="row" id="color">
                 <div className="row p-0" id="color">
-                <div className="col-2 text-center" id="nav">
+                    <div className="col-2 text-center" id="nav">
                         <h5 className="mt-4 text-center mb-5 admintitulo">Administracion</h5>
                         <MDBNavbarNav>
                             <MDBNavbarLink active aria-current='page' href='/panel' className="aaa nav-item-link">
@@ -106,7 +168,7 @@ export function Modificarcliente() {
                             </MDBNavbarLink>
                         </MDBNavbarNav>
                     </div>
-                    
+
                     {/* PANEL ZONA */}
                     <div className="col-10 p-0" id="panel">
                         <header className="p-2 mx-4 mt-3 px-4 header rounded-5 shadow-3">{palabra}</header>
@@ -121,152 +183,112 @@ export function Modificarcliente() {
                                     <th scope='col'>Direccion</th>
                                     <th scope='col'>Telefono</th>
                                     <th scope='col'>Telefono 2</th>
+                                    <th scope='col'>Telefono 3</th>
                                     <th scope='col'></th>
                                 </tr>
                             </MDBTableHead>
                             <MDBTableBody>
-                                <tr>
-                                    <td>John Doe</td>
-                                    <td>12345678</td>
-                                    <td>1234 Elm St</td>
-                                    <td>555-1234</td>
-                                    <td>555-5678</td>
-                                    <td>
-                                        <MDBBtn color='warning' size='sm' onClick={toggleOpen}>
-                                            <MDBIcon icon="pencil-alt" className="me-2" />
-                                            Modificar
-                                        </MDBBtn>
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td>Alex Ray</td>
-                                    <td>87654321</td>
-                                    <td>av belrnao 1200</td>
-                                    <td>555-5678</td>
-                                    <td>555-1234</td>
-                                    <td>
-                                        <MDBBtn color='warning' size='sm' onClick={toggleOpen}>
-                                            <MDBIcon icon="pencil-alt" className="me-2" />
-                                            Modificar
-                                        </MDBBtn>
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td>Kate Hunington</td>
-                                    <td>45678912</td>
-                                    <td>910 Maple Ave</td>
-                                    <td>555-9101</td>
-                                    <td>555-1112</td>
-                                    <td>
-                                        <MDBBtn color='warning' size='sm' onClick={toggleOpen}>
-                                            <MDBIcon icon="pencil-alt" className="me-2" />
-                                            Modificar
-                                        </MDBBtn>
-                                    </td>
-                                </tr>
+                                {clientes.map((cliente) => (
+                                    <tr key={cliente.dni}>
+                                        <td>{cliente.nombre} {cliente.apellido}</td>
+                                        <td>{cliente.dni}</td>
+                                        <td>{cliente.direccion}</td>
+                                        <td>{cliente.telefonoPersonal}</td>
+                                        <td>{cliente.telefonoReferencia}</td>
+                                        <td>{cliente.telefonoTres}</td>
+                                        <td>
+                                            <MDBBtn color="warning" onClick={() => handleEditarCliente(cliente)}>
+                                                modificar
+                                            </MDBBtn>
+                                        </td>
+                                    </tr>
+                                ))}
                             </MDBTableBody>
                         </MDBTable>
                     </div>
                 </div>
             </MDBCard>
 
-
-
             {/* MODAL */}
             <MDBModal open={basicModal} onClose={() => setBasicModal(false)} tabIndex='-1'>
-                <MDBModalDialog size="xl">
+                <MDBModalDialog size="md">
                     <MDBModalContent>
 
-
-
                         {/* FORMULARIO */}
-                        <div className="rounded-5 shadow-3 p-4 row" id="formulario">
-                            <MDBModalHeader className="mb-4">
-                                <h2 className=""><b>Modificar Cliente</b></h2>
-                                <MDBBtn className='btn-close' color='none' onClick={toggleOpen}></MDBBtn>
-                            </MDBModalHeader>
-                            <div className="col-5">
-                                <h3 className="text-center text-muted mb-3">Cliente</h3>
-                                <MDBRow>
-                                    <MDBCol col='3'>
-                                        <CustomInput label='Nombres' id='formNombre' type='text' />
-                                    </MDBCol>
-
-                                    <MDBCol col='3'>
-                                        <CustomInput label='Apellidos' id='formApellido' type='text' />
-                                    </MDBCol>
-                                </MDBRow>
-                                <CustomInput label='DNI' id='formDni' type='number' />
-                                <CustomInput label='Direccion' id='formDirec' type='text' />
-                                <MDBRow>
-                                    <MDBCol>
-                                        <CustomInput label='Telefono' id='formTel' type='number' />
-                                    </MDBCol>
-                                    <MDBCol>
-                                        <CustomInput label='Telefono 2' id='formTel2' type='number' />
-                                    </MDBCol>
-                                </MDBRow>
-
-                            </div>
-                            <div className="col-5">
-                                <h3 className="text-center text-muted mb-3">Prestamo</h3>
-                                <MDBRow>
-                                    <MDBCol col='3'>
-                                        <CustomInput label='Monto' id='formMonto' type='number' />
-                                    </MDBCol>
-
-                                    <MDBCol col='3'>
-                                        <CustomInput label='%Intereses' id='formIntereses' type='number' />
-                                    </MDBCol>
-                                </MDBRow>
-                                <MDBRow>
-                                    <MDBCol col='3'>
-                                        <CustomInput label='Fecha Inicio' id='formFecha' type='date' />
-                                    </MDBCol>
-
-                                    {/* Select de Semanas */}
-                                    <MDBCol col='3'>
-                                        <select id="formSemanas" className="form-select mb-4">
-                                            <option value={1}>1 Semana</option>
-                                            <option value={2}>2 Semanas</option>
-                                            <option value={3}>3 Semanas</option>
-                                            <option value={4}>4 Semanas</option>
-                                            <option value={5}>5 Semanas</option>
-                                            <option value={6}>6 Semanas</option>
-                                            <option value={7}>7 Semanas</option>
-                                            <option value={8}>8 Semanas</option>
-                                            <option value={9}>9 Semanas</option>
-                                            <option value={10}>10 Semanas</option>
-                                            <option value={11}>11 Semanas</option>
-                                            <option value={12}>12 Semanas</option>
-
-
-                                        </select>
-                                    </MDBCol>
-                                </MDBRow>
-
-                                <MDBRow className="">
-                                    <MDBCol col='3'>
-                                        <MDBInput label="Monto Final" id="formDevuelve" value={" "} type="text" disabled />
-                                    </MDBCol>
-                                    <MDBCol col='3'>
-                                        <MDBInput label="Por Semana paga:" value={" "} id="formSemanaPaga" type="text" disabled />
-                                    </MDBCol>
-                                </MDBRow>
-                                <MDBRow>
-                                    <MDBCol col='3'>
-                                        <MDBBtn className='w-100 mt-3' href='/error' size='md' color="dark" onClick={calcular}>Calcular intereses</MDBBtn>
-                                    </MDBCol>
-                                </MDBRow>
-                            </div>
-
-                            <div className="col-6 mt-3">
-                                <MDBBtn className='w-100 mb-4' href='/error' color="warning" size='md' onClick={funcionSuccess}>Modificar Cliente</MDBBtn>
-                            </div>
+                        <div className="modal-header">
+                            <MDBModalTitle>Modificar Cliente</MDBModalTitle>
+                            <MDBBtn className="btn-close" color="none" onClick={() => setBasicModal(false)} />
                         </div>
+
+                        <MDBModalBody>
+                            {clienteSeleccionado && (
+                                <Formik
+                                    initialValues={{
+                                        formNombre: clienteSeleccionado.nombre,
+                                        formApellido: clienteSeleccionado.apellido,
+                                        formDni: clienteSeleccionado.dni,
+                                        formTel: clienteSeleccionado.telefonoPersonal,
+                                        formTel2: clienteSeleccionado.telefonoReferencia,
+                                        formTel3: clienteSeleccionado.telefonoTres,
+                                        formDirec: clienteSeleccionado.direccion,
+                                        formMaps: clienteSeleccionado.googleMaps
+                                    }}
+                                    validationSchema={validationSchema}
+                                    onSubmit={submitCliente}
+                                >
+                                    {({ isSubmitting, resetForm }) => (
+                                        <Form className="row">
+                                            <MDBRow>
+                                                <MDBCol col='6'>
+                                                    <Field name="formNombre" type="text" component={CustomInput} label="Nombres" />
+                                                </MDBCol>
+                                                <MDBCol col='6'>
+                                                    <Field name="formApellido" type="text" component={CustomInput} label="Apellidos" />
+                                                </MDBCol>
+                                            </MDBRow>
+                                            <MDBRow>
+                                                <MDBCol col='6'>
+                                                    <Field name="formDni" type="text" component={CustomInput} label="DNI" />
+                                                </MDBCol>
+                                                <MDBCol col='6'>
+                                                    <Field name="formTel" type="text" component={CustomInput} label="Telefono" />
+                                                </MDBCol>
+                                            </MDBRow>
+                                            <MDBRow>
+                                                <MDBCol col='6'>
+                                                    <Field name="formTel2" type="text" component={CustomInput} label="Telefono 2" />
+                                                </MDBCol>
+                                                <MDBCol col='6'>
+                                                    <Field name="formTel3" type="text" component={CustomInput} label="Telefono 3" />
+                                                </MDBCol>
+                                            </MDBRow>
+                                            <MDBRow>
+                                                <MDBCol col='12'>
+                                                    <Field name="formDirec" type="text" component={CustomInput} label="Dirección" />
+                                                </MDBCol>
+                                            </MDBRow>
+                                            <MDBRow>
+                                                <MDBCol col='12'>
+                                                    <Field name="formMaps" type="text" component={CustomInput} label="Google Maps" />
+                                                </MDBCol>
+                                            </MDBRow>
+                                            <MDBModalFooter>
+                                                <MDBBtn type="submit" color="success" disabled={isSubmitting}>
+                                                    Modificar Cliente
+                                                </MDBBtn>
+                                                <MDBBtn color="secondary" onClick={() => setBasicModal(false)}>
+                                                    Cerrar
+                                                </MDBBtn>
+                                            </MDBModalFooter>
+                                        </Form>
+                                    )}
+                                </Formik>
+                            )}
+                        </MDBModalBody>
+
                     </MDBModalContent>
                 </MDBModalDialog>
             </MDBModal>
-        </MDBContainer >
+        </MDBContainer>
     );
 }

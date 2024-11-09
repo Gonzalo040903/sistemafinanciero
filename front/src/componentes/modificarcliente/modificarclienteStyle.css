@@ -11,11 +11,6 @@ body {
 
 }
 
-#contenedorA{
-    display: flex;
-    justify-content: space-between;
-}
-
 #nav {
     color: rgb(234, 233, 233);
     background-color: #15b1e5;
@@ -75,7 +70,35 @@ header {
 }
 
 .nav-item-link:hover {
-    background: linear-gradient(90deg, rgba(255,255,255,1) 0%, rgb(0, 255, 255) 96%) !important;
-    color: #4b4b4b !important; 
+    background: linear-gradient(90deg, rgba(255, 255, 255, 1) 0%, rgb(0, 255, 255) 96%) !important;
+    color: #4b4b4b !important;
     cursor: pointer;
+}
+
+
+#formulario {
+    display: flex;
+    justify-content: space-evenly;
+    background-color: white;
+}
+
+.input-container {
+    position: relative;
+    margin-bottom: 1.5rem;
+    /* Espacio consistente entre inputs */
+}
+
+.error-message {
+    color: red;
+    font-size: 0.9rem;
+    position: absolute;
+    bottom: -1.5em;
+    /* Coloca el mensaje debajo del input */
+    left: 0;
+    min-height: 1.2em;
+    /* Reservamos espacio */
+}
+
+#container{
+    margin-top: 2.5rem;
 }
