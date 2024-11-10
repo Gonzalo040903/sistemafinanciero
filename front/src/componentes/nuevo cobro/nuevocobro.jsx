@@ -260,7 +260,7 @@ export function Nuevocobro() {
 
             {/* modal2 */}
             <MDBModal open={basicModal2} onClose={() => setBasicModal2(false)} tabIndex='-1'>
-                <MDBModalDialog size="xl">
+                <MDBModalDialog size="md">
                     <MDBModalContent>
 
 
@@ -271,7 +271,7 @@ export function Nuevocobro() {
                                 <h2 className=""><b>Nuevo Prestamo</b></h2>
                                 <MDBBtn className='btn-close' color='none' onClick={toggleOpen2}></MDBBtn>
                             </MDBModalHeader>
-                            <div className="col-8">
+                            <div className="col-12">
                                 <h3 className="text-center text-muted mb-3">Prestamo</h3>
                                 <MDBRow>
                                     <MDBCol col='3'>
