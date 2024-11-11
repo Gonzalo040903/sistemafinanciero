@@ -53,13 +53,13 @@ router.get('/', async (req, res) => {
     }   
 });
 //obtener por dni
-router.get('/:dni', async (req, res) => {
+router.get('/:dni/prestamo', async (req, res) => {
     try {
-        const cliente = await Cliente.find({ dni: req.params.dni});
+        const cliente = await Cliente.findOne({ dni: req.params.dni});
         if(cliente.length === 0){
             return res.status(404).json({message: 'Cliente no encontrado'});
         }
-        res.json(cliente);
+        res.json(cliente.prestamoActual);
     } catch (error) {
         res.status(500).json({message: error.message});
     }

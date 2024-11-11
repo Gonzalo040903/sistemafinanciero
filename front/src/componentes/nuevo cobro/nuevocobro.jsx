@@ -20,6 +20,7 @@ import {
 } from 'mdb-react-ui-kit';
 import { useState } from 'react';
 import toast, { Toaster } from 'react-hot-toast';
+import axios from 'axios';
 
 export function Nuevocobro() {
     const calcular = (e) => {
@@ -39,6 +40,7 @@ export function Nuevocobro() {
     const [isGestionClientesOpen, setIsGestionClientesOpen] = useState(false);
     const [basicModal, setBasicModal] = useState(false);
     const [basicModal2, setBasicModal2] = useState(false);
+    const [prestamoActual, setPrestamoActual] = useState(null);
     const toggleOpen = () => setBasicModal(!basicModal);
     const toggleOpen2 = () => setBasicModal2(!basicModal2);
     const toggleGestionClientes = () => {
@@ -54,6 +56,20 @@ export function Nuevocobro() {
         <MDBInput wrapperClass='mb-4' label={label} id={id} type={type} value={value} onChange={onChange} />
     );
     let palabra = "Panel de control > Nuevo Cobro";
+
+    const obtenerPrestamo = async (dni) => {
+        try{
+            const response = await axios.get('/api/clientes/${dni}');
+            setPrestamoActual(response.data.prestamoActual);
+            toast.success('Informacion del prestamo crgada correctamente');
+        }catch (error){
+            console.error('Error al obtener la informacion del prestamo.', error);
+            toast.error('Error al cargar la informacion del prestamo');
+        }
+    };
+    const handleMasInfo = (dni) =>{
+        obtenerPrestamo(dni);
+    }
 
     return (
         <MDBContainer fluid className='col-10' id="container">
