@@ -33,11 +33,11 @@ router.get('/', async (req, res) => {
     }
 });
 
-router.get('/:nombre', async(req, res) =>{
+router.get('/:id', async(req, res) =>{
     try{
-        const vendedor = await Vendedor.find({nombre: req.params.nombre});
-        if(vendedor.length === 0){
-            return res.status(404).json({message:'Vendedor no encontraado.'});
+        const vendedor = await Vendedor.findById(req.params.id);
+        if(!vendedor){
+            return res.status(404).json({message:'Vendedor no encontrado.'});
         }
         res.json(vendedor);
     }catch(error){
@@ -45,15 +45,15 @@ router.get('/:nombre', async(req, res) =>{
     }
 });
 
-router.delete('/nombre', async(req, res) =>{
+router.delete('/id', async(req, res) =>{
     try{
-        const vendedor = await Vendedor.findOne(req.params.id);
+        const vendedor = await Vendedor.findById(req.params.id);
         if(!vendedor){
             return res.status(404).json({message:'Vendedor no encontrado.'});
         }
         await vendedor.deleteOne();
         res.json({message: 'Vendedor eliminado con exito.'});
-    }catch(error){
+    }catch (error) {
         res.status(500).json({message: error.message});
     }
 });
