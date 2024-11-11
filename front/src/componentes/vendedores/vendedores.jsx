@@ -31,6 +31,7 @@ export function Vendedores() {
     const [basicModal, setBasicModal] = useState(false);
     const [basicModal3, setBasicModal3] = useState(false);
     const [vendedores, setVendedores] = useState([]);
+    const [vendedorAEliminar, setVendedorAEliminar] = useState(null);
 
     const toggleGestionClientes = () => {
         setIsGestionClientesOpen(!isGestionClientesOpen);
@@ -73,6 +74,20 @@ export function Vendedores() {
             traerVendedores(); // Recargar la lista de vendedores
         } catch (error) {
             toast.error("Error al crear el vendedor");
+            console.error(error);
+        }
+    };
+
+
+    const eliminarVendedor = async () => {
+        if (!vendedorAEliminar) return;
+        try {
+            const response = await axios.delete(`http://localhost:3001/api/vendedores/${vendedorAEliminar._id}`);
+            toast.success(response.data.message);
+            setOptSmModal(false); // Cerrar el modal después de eliminar el vendedor
+            traerVendedores(); // Recargar la lista de vendedores
+        } catch (error) {
+            toast.error("Error al eliminar el vendedor");
             console.error(error);
         }
     };
@@ -160,7 +175,10 @@ export function Vendedores() {
                                             </MDBBtn>
                                         </td>
                                         <td>
-                                            <MDBBtn color='danger' size='sm' onClick={toggleOpen2}>
+                                            <MDBBtn color='danger' size='sm' onClick={() => {
+                                                setVendedorAEliminar(vendedor); // Asignar el vendedor a eliminar
+                                                toggleOpen2();
+                                            }}>
                                                 <MDBIcon icon="times" className="me-2" />
                                                 Eliminar
                                             </MDBBtn>
@@ -226,10 +244,10 @@ export function Vendedores() {
                         </MDBModalHeader>
                         <MDBModalBody className="text-center">
                             <MDBIcon icon="times" className="me-2 text-danger iconogrande" /><br />
-                            Desea eliminar el Vendedor de nombre "nombre de vendor"
+                            Desea eliminar el Vendedor de nombre <b>{vendedorAEliminar?.nombre}</b>
                         </MDBModalBody>
                         <MDBModalFooter>
-                            <MDBBtn color='danger'>
+                            <MDBBtn color='danger' onClick={eliminarVendedor}>
                                 Si
                             </MDBBtn>
                             <MDBBtn color="info" onClick={toggleOpen2}>

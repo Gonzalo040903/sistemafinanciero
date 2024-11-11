@@ -45,7 +45,7 @@ router.get('/:id', async(req, res) =>{
     }
 });
 
-router.delete('/id', async(req, res) =>{
+router.delete('/:id', async(req, res) =>{
     try{
         const vendedor = await Vendedor.findById(req.params.id);
         if(!vendedor){
