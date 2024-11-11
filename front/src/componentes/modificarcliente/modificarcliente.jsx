@@ -24,8 +24,8 @@ import {
 import { useState, useEffect } from 'react';
 import axios from 'axios';
 import toast, { Toaster } from 'react-hot-toast';
-import { Formik, Form, Field } from 'formik';
 import * as Yup from 'yup';
+import { Formik, Form, Field, ErrorMessage } from 'formik';
 
 export function Modificarcliente() {
     const [isGestionClientesOpen, setIsGestionClientesOpen] = useState(false);
@@ -56,14 +56,26 @@ export function Modificarcliente() {
     });
 
     const CustomInput = ({ label, type, id, field, form }) => (
-        <MDBInput
-            wrapperClass='mb-4'
-            label={label}
-            id={id}
-            type={type}
-            {...field} // Pasa automáticamente los props de `Field` (value, onChange, onBlur)
-        />
+        <div className="input-container">
+            <MDBInput
+                wrapperClass='mb-4'
+                label={label}
+                id={id}
+                type={type}
+                {...field}
+            />
+            <ErrorMessage name={id} component="div" className="error-message" />
+        </div>
     );
+
+    const fetchClientes = async () => {
+        try {
+            const response = await axios.get('http://localhost:3001/api/clientes');
+            setClientes(response.data);
+        } catch (error) {
+            console.error("Error al obtener los clientes:", error);
+        }
+    };
 
     const submitCliente = async (values, { resetForm }) => {
         try {
@@ -89,6 +101,7 @@ export function Modificarcliente() {
                 resetForm();
                 setClienteSeleccionado(null);
                 toggleOpen();
+                fetchClientes(); // Recargar los clientes después de la modificación
             } else {
                 toast.error("Error al modificar el cliente");
             }
@@ -99,16 +112,6 @@ export function Modificarcliente() {
     };
 
     useEffect(() => {
-        // Llamada a la API para obtener clientes
-        const fetchClientes = async () => {
-            try {
-                const response = await axios.get('http://localhost:3001/api/clientes');
-                setClientes(response.data);
-            } catch (error) {
-                console.error("Error al obtener los clientes:", error);
-            }
-        };
-
         fetchClientes();
     }, []);
 
@@ -182,8 +185,8 @@ export function Modificarcliente() {
                                     <th scope='col'>DNI</th>
                                     <th scope='col'>Direccion</th>
                                     <th scope='col'>Telefono</th>
-                                    <th scope='col'>Telefono 2</th>
-                                    <th scope='col'>Telefono 3</th>
+                                    <th scope='col'>Telefono2</th>
+                                    <th scope='col'>Telefono3</th>
                                     <th scope='col'></th>
                                 </tr>
                             </MDBTableHead>
@@ -217,75 +220,66 @@ export function Modificarcliente() {
                         {/* FORMULARIO */}
                         <div className="modal-header">
                             <MDBModalTitle>Modificar Cliente</MDBModalTitle>
-                            <MDBBtn className="btn-close" color="none" onClick={() => setBasicModal(false)} />
+                            <MDBBtn className='btn-close' color='none' onClick={toggleOpen}></MDBBtn>
                         </div>
 
-                        <MDBModalBody>
-                            {clienteSeleccionado && (
-                                <Formik
-                                    initialValues={{
-                                        formNombre: clienteSeleccionado.nombre,
-                                        formApellido: clienteSeleccionado.apellido,
-                                        formDni: clienteSeleccionado.dni,
-                                        formTel: clienteSeleccionado.telefonoPersonal,
-                                        formTel2: clienteSeleccionado.telefonoReferencia,
-                                        formTel3: clienteSeleccionado.telefonoTres,
-                                        formDirec: clienteSeleccionado.direccion,
-                                        formMaps: clienteSeleccionado.googleMaps
-                                    }}
-                                    validationSchema={validationSchema}
-                                    onSubmit={submitCliente}
-                                >
-                                    {({ isSubmitting, resetForm }) => (
-                                        <Form className="row">
-                                            <MDBRow>
-                                                <MDBCol col='6'>
-                                                    <Field name="formNombre" type="text" component={CustomInput} label="Nombres" />
-                                                </MDBCol>
-                                                <MDBCol col='6'>
-                                                    <Field name="formApellido" type="text" component={CustomInput} label="Apellidos" />
-                                                </MDBCol>
-                                            </MDBRow>
-                                            <MDBRow>
-                                                <MDBCol col='6'>
-                                                    <Field name="formDni" type="text" component={CustomInput} label="DNI" />
-                                                </MDBCol>
-                                                <MDBCol col='6'>
-                                                    <Field name="formTel" type="text" component={CustomInput} label="Telefono" />
-                                                </MDBCol>
-                                            </MDBRow>
-                                            <MDBRow>
-                                                <MDBCol col='6'>
-                                                    <Field name="formTel2" type="text" component={CustomInput} label="Telefono 2" />
-                                                </MDBCol>
-                                                <MDBCol col='6'>
-                                                    <Field name="formTel3" type="text" component={CustomInput} label="Telefono 3" />
-                                                </MDBCol>
-                                            </MDBRow>
-                                            <MDBRow>
-                                                <MDBCol col='12'>
-                                                    <Field name="formDirec" type="text" component={CustomInput} label="Dirección" />
-                                                </MDBCol>
-                                            </MDBRow>
-                                            <MDBRow>
-                                                <MDBCol col='12'>
-                                                    <Field name="formMaps" type="text" component={CustomInput} label="Google Maps" />
-                                                </MDBCol>
-                                            </MDBRow>
-                                            <MDBModalFooter>
-                                                <MDBBtn type="submit" color="success" disabled={isSubmitting}>
-                                                    Modificar Cliente
-                                                </MDBBtn>
-                                                <MDBBtn color="secondary" onClick={() => setBasicModal(false)}>
-                                                    Cerrar
-                                                </MDBBtn>
-                                            </MDBModalFooter>
-                                        </Form>
-                                    )}
-                                </Formik>
-                            )}
-                        </MDBModalBody>
-
+                        <Formik
+                            initialValues={{
+                                formNombre: clienteSeleccionado ? clienteSeleccionado.nombre : "",
+                                formApellido: clienteSeleccionado ? clienteSeleccionado.apellido : "",
+                                formDni: clienteSeleccionado ? clienteSeleccionado.dni : "",
+                                formTel: clienteSeleccionado ? clienteSeleccionado.telefonoPersonal : "",
+                                formTel2: clienteSeleccionado ? clienteSeleccionado.telefonoReferencia : "",
+                                formTel3: clienteSeleccionado ? clienteSeleccionado.telefonoTres : "",
+                                formDirec: clienteSeleccionado ? clienteSeleccionado.direccion : "",
+                                formMaps: clienteSeleccionado ? clienteSeleccionado.googleMaps : "",
+                            }}
+                            validationSchema={validationSchema}
+                            onSubmit={submitCliente}
+                            enableReinitialize={true}
+                        >
+                            <Form>
+                                <MDBModalBody className="py-1 pt-3">
+                                    <MDBRow>
+                                        <MDBCol md="6">
+                                            <Field name="formNombre" label="Nombre" id="formNombre" component={CustomInput} type="text" />
+                                        </MDBCol>
+                                        <MDBCol md="6">
+                                            <Field name="formApellido" label="Apellido" id="formApellido" component={CustomInput} type="text" />
+                                        </MDBCol>
+                                    </MDBRow>
+                                    <MDBRow>
+                                        <MDBCol md="6">
+                                            <Field name="formDni" label="DNI" id="formDni" component={CustomInput} type="text" />
+                                        </MDBCol>
+                                        <MDBCol md="6">
+                                            <Field name="formTel" label="Teléfono" id="formTel" component={CustomInput} type="text" />
+                                        </MDBCol>
+                                    </MDBRow>
+                                    <MDBRow>
+                                        <MDBCol md="6">
+                                            <Field name="formTel2" label="Teléfono 2" id="formTel2" component={CustomInput} type="text" />
+                                        </MDBCol>
+                                        <MDBCol md="6">
+                                            <Field name="formTel3" label="Teléfono 3" id="formTel3" component={CustomInput} type="text" />
+                                        </MDBCol>
+                                    </MDBRow>
+                                    <MDBRow>
+                                        <MDBCol md="12">
+                                            <Field name="formDirec" label="Dirección" id="formDirec" component={CustomInput} type="text" />
+                                        </MDBCol>
+                                        <MDBCol md="12">
+                                            <Field name="formMaps" label="Google Maps" id="formMaps" component={CustomInput} type="text" />
+                                        </MDBCol>
+                                    </MDBRow>
+                                </MDBModalBody>
+                                <MDBModalFooter>
+                                    <MDBBtn color='success' type="submit" className="w-100">
+                                        Guardar Cambios
+                                    </MDBBtn>
+                                </MDBModalFooter>
+                            </Form>
+                        </Formik>
                     </MDBModalContent>
                 </MDBModalDialog>
             </MDBModal>

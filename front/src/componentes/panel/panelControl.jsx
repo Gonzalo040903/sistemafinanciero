@@ -99,8 +99,8 @@ export function PanelControl() {
                                     <th scope='col'>DNI</th>
                                     <th scope='col'>Direccion</th>
                                     <th scope='col'>Telefono</th>
-                                    <th scope='col'>Telefono 2</th>
-                                    <th scope='col'>Telefono 3</th>
+                                    <th scope='col'>Telefono2</th>
+                                    <th scope='col'>Telefono3</th>
                                     <th scope='col'>Debiente</th>
                                     <th scope='col'>Maps</th>
                                 </tr>
