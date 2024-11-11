@@ -4,10 +4,11 @@ import bcrypt from 'bcrypt';
 const vendedorSchema = new Schema({
     nombre: {type:String, required: true},
     apellido: {type: String, requerid: true},
-    constraseña:{type: String, requerid: true}
+    constraseña:{type: String, requerid: true},
+    rol:{type: String, required: true}
 },{collection:'Vendedor', versionKey:false});
 
-// encriotando la contrase;a andes de guardar el vendedor
+// encriptando la contrase;a antes de guardar el vendedor
 vendedorSchema.pre('save', async function(next) {
     if (this.isModified('contraseña')) {
         const salt = await bcrypt.genSalt(10);
@@ -18,3 +19,20 @@ vendedorSchema.pre('save', async function(next) {
 
 const Vendedor = model('Vendedor', vendedorSchema);
 export default Vendedor;
+
+export async function crearAdmin(){
+    const admin = await Vendedor.findOne({nombre: "Facundo", apellido: "Heredia"});
+    if(!admin){
+        const nuevoAdmin = new Vendedor({
+            nombre: "Facundo",
+            apellido:"Heredia", 
+            contraseña:await bcrypt.hash("financieraFacHe", 10),
+            rol:"administrador"
+        });
+        await nuevoAdmin.save();
+        console.log("Cuenta de administrador 'Facundo Heredia' creada.");
+    }else{
+        console.log("La cuenta de administrador 'Facundo Heredia' ya existe.");
+        
+    }
+}

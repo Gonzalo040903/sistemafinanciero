@@ -1,6 +1,7 @@
 import express from 'express';
 import mongoose from 'mongoose';
 import cors from 'cors';
+import { crearAdmin } from './model/modelVendedor.js';
 
 import clientesRouter from './routes/routesC.js';
 import prestamosRouter from './routes/routesP.js';
@@ -17,7 +18,9 @@ app.use(express.json());
 const uri = 'mongodb+srv://solheredia555:SistemaFinancieroFH@clustersistemafinancier.fxp2b.mongodb.net/Sistema-Financiero?retryWrites=true&w=majority&appName=ClusterSistemaFinanciero';
 
 mongoose.connect(uri)
-    .then(() => {console.log('Connected to MongoDB')
+    .then(() => {
+        console.log('Connected to MongoDB');
+        crearAdmin();
     //initAdmin();
     })
     .catch(err => console.error('Failed to connect to MongoDB:', err.message));

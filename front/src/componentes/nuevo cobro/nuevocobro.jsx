@@ -41,6 +41,7 @@ export function Nuevocobro() {
     const [basicModal, setBasicModal] = useState(false);
     const [basicModal2, setBasicModal2] = useState(false);
     const [prestamoActual, setPrestamoActual] = useState(null);
+    const [dni, setDni] = useState('');
     const toggleOpen = () => setBasicModal(!basicModal);
     const toggleOpen2 = () => setBasicModal2(!basicModal2);
     const toggleGestionClientes = () => {
@@ -58,18 +59,23 @@ export function Nuevocobro() {
     let palabra = "Panel de control > Nuevo Cobro";
 
     const obtenerPrestamo = async (dni) => {
-        try{
+        try {
             const response = await axios.get('/api/clientes/${dni}');
-            setPrestamoActual(response.data.prestamoActual);
-            toast.success('Informacion del prestamo crgada correctamente');
+            setPrestamoActual(response.data[0]?.prestamoActual);
+            toast.success('Informacion del prestamo cargada correctamente');
         }catch (error){
             console.error('Error al obtener la informacion del prestamo.', error);
             toast.error('Error al cargar la informacion del prestamo');
         }
     };
-    const handleMasInfo = (dni) =>{
-        obtenerPrestamo(dni);
-    }
+    const handleMasInfo = () => {
+        if (dni){
+            obtenerPrestamo(dni);
+        } else {
+            toast.error("Por favor ingrese un dni valido");
+        }
+    };
+//??
 
     return (
         <MDBContainer fluid className='col-10' id="container">
@@ -202,6 +208,7 @@ export function Nuevocobro() {
                 <MDBModalDialog size="xl">
                     <MDBModalContent>
                         {/* FORMULARIO */}
+
                         <div className="rounded-5 shadow-3 p-4 row" id="formulario">
                             <MDBModalHeader className="mb-4">
                                 <h2 className=""><b>Nuevo Cobro</b></h2>
