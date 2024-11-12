@@ -177,7 +177,6 @@ export function Vendedores() {
                                     <th scope='col'>Nombre</th>
                                     <th scope='col'>Contraseña</th>
                                     <th scope='col'></th>
-                                    <th scope='col'></th>
                                 </tr>
                             </MDBTableHead>
                             <MDBTableBody>
@@ -185,12 +184,6 @@ export function Vendedores() {
                                     <tr key={vendedor._id}>
                                         <td>{vendedor.nombre}</td>
                                         <td>{vendedor.contraseña}</td>
-                                        <td>
-                                            <MDBBtn color='warning' size='sm' onClick={toggleOpen3}>
-                                                <MDBIcon icon="pencil-alt" className="me-2" />
-                                                Modificar
-                                            </MDBBtn>
-                                        </td>
                                         <td>
                                             <MDBBtn color='danger' size='sm' onClick={() => {
                                                 setVendedorAEliminar(vendedor); // Asignar el vendedor a eliminar
@@ -223,28 +216,6 @@ export function Vendedores() {
                                     <CustomInput label='Nombre' id='formNombre' type='text' />
                                     <CustomInput label='Contraseña' id='formContraseña' type='password' />
                                     <MDBBtn className='w-100 mb-4' color="success" size='md' onClick={agregarVendedor}>Crear Vendedor</MDBBtn>
-                                </MDBRow>
-                            </div>
-                        </div>
-                    </MDBModalContent>
-                </MDBModalDialog>
-            </MDBModal>
-
-            {/* MODAL Modificar*/}
-            <MDBModal open={basicModal3} onClose={() => setBasicModal3(false)} tabIndex='-1'>
-                <MDBModalDialog size="md">
-                    <MDBModalContent>
-                        {/* FORMULARIO */}
-                        <div className="rounded-5 shadow-3 p-4 row" id="formulario">
-                            <MDBModalHeader className="mb-4">
-                                <h2 className=""><b>Modificar Vendedor</b></h2>
-                                <MDBBtn className='btn-close' color='none' onClick={toggleOpen3}></MDBBtn>
-                            </MDBModalHeader>
-                            <div className="col-10 my-3">
-                                <MDBRow>
-                                    <CustomInput label='Nombre' id='formNombre' type='text' />
-                                    <CustomInput label='Contraseña' id='formContraseña' type='password' />
-                                    <MDBBtn className='w-100 mb-4' href='/error' color="warning" size='md'>Modificar Vendedor</MDBBtn>
                                 </MDBRow>
                             </div>
                         </div>
