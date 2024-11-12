@@ -29,14 +29,12 @@ export function Vendedores() {
     const [optSmModal, setOptSmModal] = useState(false);
     const [isGestionClientesOpen, setIsGestionClientesOpen] = useState(false);
     const [basicModal, setBasicModal] = useState(false);
-    const [basicModal3, setBasicModal3] = useState(false);
     const [vendedores, setVendedores] = useState([]);
     const [vendedorAEliminar, setVendedorAEliminar] = useState(null);
 
     const toggleGestionClientes = () => {
         setIsGestionClientesOpen(!isGestionClientesOpen);
     };
-    const toggleOpen3 = () => setBasicModal3(!basicModal3);
     const toggleOpen2 = () => setOptSmModal(!optSmModal);
     const toggleOpen = () => setBasicModal(!basicModal);
 
