@@ -26,7 +26,7 @@ router.post('/login', async (req, res) => {
         }
 
         // Generar y devolver el token de autenticación si la validación es exitosa
-        const token = jwt.sign({ id: vendedor._id, rol: vendedor.rol }, 'financiera2024', { expiresIn: '1h' });
+        const token = jwt.sign({ id: vendedor._id, rol: vendedor.rol }, '2024', { expiresIn: '1h' });
         res.json({ token, role: vendedor.rol, vendedor });
     } catch (error) {
         console.error('Error en el login:', error);

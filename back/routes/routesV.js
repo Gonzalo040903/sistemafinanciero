@@ -1,12 +1,13 @@
 import {Router} from 'express';
 import Vendedor from '../model/modelVendedor.js';
-import autenticarUsuario from '../middlewares/autenticarUsuario.js';
+import autenticarUsuario  from '../middlewares/autenticarUsuario.js';
 import verificarAdmin from '../middlewares/verificarAdmin.js';
 
 const router = Router();
 router.use(autenticarUsuario);
+router.use(verificarAdmin);
 
-router.post('/api',verificarAdmin, async(req, res)=> {
+router.post('/api', autenticarUsuario, verificarAdmin, async(req, res)=> {
     try{
         const {nombre, contraseña } = req.body;
         if(!nombre || !contraseña){
@@ -43,7 +44,7 @@ router.get('/:id',async(req, res) =>{
     }
 });
 
-router.delete('/:id',verificarAdmin, async(req, res) =>{
+router.delete('/:id',autenticarUsuario,verificarAdmin, async(req, res) =>{
     try{
         const vendedor = await Vendedor.findById(req.params.id);
         if(!vendedor){
