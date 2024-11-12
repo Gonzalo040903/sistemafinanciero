@@ -1,4 +1,6 @@
-import "./nuevocobro.css";
+import { useEffect, useState } from 'react';
+import axios from 'axios';
+import toast, { Toaster } from 'react-hot-toast';
 import {
     MDBContainer,
     MDBCard,
@@ -18,11 +20,12 @@ import {
     MDBModalDialog,
     MDBModalContent
 } from 'mdb-react-ui-kit';
-import { useState } from 'react';
-import toast, { Toaster } from 'react-hot-toast';
-import axios from 'axios';
+import "./nuevocobro.css";
 
 export function Nuevocobro() {
+    const CustomInput = ({ label, type, id, value, onChange }) => (
+        <MDBInput wrapperClass='mb-4' label={label} id={id} type={type} value={value} onChange={onChange} />
+    );
     const calcular = (e) => {
         e.preventDefault();
         let monto = parseInt(document.getElementById("formMonto").value);
@@ -37,45 +40,45 @@ export function Nuevocobro() {
             devuelve.value = montoFinal;
         }
     }
-    const [isGestionClientesOpen, setIsGestionClientesOpen] = useState(false);
-    const [basicModal, setBasicModal] = useState(false);
-    const [basicModal2, setBasicModal2] = useState(false);
-    const [prestamoActual, setPrestamoActual] = useState(null);
-    const [dni, setDni] = useState('');
-    const toggleOpen = () => setBasicModal(!basicModal);
-    const toggleOpen2 = () => setBasicModal2(!basicModal2);
-    const toggleGestionClientes = () => {
-        setIsGestionClientesOpen(!isGestionClientesOpen);
+    const calcularMontoFaltante = () => {
+        if (clienteSeleccionado && clienteSeleccionado.prestamoActual) {
+            const cuotaValor = clienteSeleccionado.prestamoActual.montoFinal / clienteSeleccionado.prestamoActual.cuotasTotales;
+            const cuotasRestantes = clienteSeleccionado.prestamoActual.cuotasTotales - clienteSeleccionado.prestamoActual.cuotasPagadas;
+            return cuotaValor * cuotasRestantes;
+        }
+        return 0;
     };
     const funcionSuccess = (e) => {
         e.preventDefault();
         toast.success('Prestamo Creado')
         toggleOpen2()
     }
+    const [clientes, setClientes] = useState([]);
+    const [isGestionClientesOpen, setIsGestionClientesOpen] = useState(false);
+    const [basicModal, setBasicModal] = useState(false);
+    const [basicModal2, setBasicModal2] = useState(false);
+    const [clienteSeleccionado, setClienteSeleccionado] = useState({}); // Inicializar con un objeto vacío
 
-    const CustomInput = ({ label, type, id, value, onChange }) => (
-        <MDBInput wrapperClass='mb-4' label={label} id={id} type={type} value={value} onChange={onChange} />
-    );
-    let palabra = "Panel de control > Nuevo Cobro";
+    const toggleOpen = (cliente) => {
+        setClienteSeleccionado(cliente || {}); // Evitar nulos
+        setBasicModal(!basicModal);
+    };
 
-    const obtenerPrestamo = async (dni) => {
-        try {
-            const response = await axios.get('/api/clientes/${dni}');
-            setPrestamoActual(response.data[0]?.prestamoActual);
-            toast.success('Informacion del prestamo cargada correctamente');
-        }catch (error){
-            console.error('Error al obtener la informacion del prestamo.', error);
-            toast.error('Error al cargar la informacion del prestamo');
-        }
-    };
-    const handleMasInfo = () => {
-        if (dni){
-            obtenerPrestamo(dni);
-        } else {
-            toast.error("Por favor ingrese un dni valido");
-        }
-    };
-//??
+    const toggleOpen2 = () => setBasicModal2(!basicModal2);
+    const toggleGestionClientes = () => setIsGestionClientesOpen(!isGestionClientesOpen);
+
+    // Función para obtener los datos de los clientes desde la API
+    useEffect(() => {
+        const fetchClientes = async () => {
+            try {
+                const response = await axios.get('http://localhost:3001/api/clientes');
+                setClientes(response.data);
+            } catch (error) {
+                console.error("Error al obtener los clientes:", error);
+            }
+        };
+        fetchClientes();
+    }, []);
 
     return (
         <MDBContainer fluid className='col-10' id="container">
@@ -129,7 +132,7 @@ export function Nuevocobro() {
 
                     {/* PANEL ZONA */}
                     <div className="col-10 p-0" id="panel">
-                        <header className="p-2 mx-4 mt-3 px-4 header rounded-5 shadow-3">{palabra}</header>
+                        <header className="p-2 mx-4 mt-3 px-4 header rounded-5 shadow-3">Panel de control > Nuevo Cobro</header>
                         <h3 className="px-4 textogris mt-5 mx-1"><b>Nuevo Cobro</b></h3>
 
                         {/* TABLA */}
@@ -146,63 +149,33 @@ export function Nuevocobro() {
                                 </tr>
                             </MDBTableHead>
                             <MDBTableBody>
-                                <tr>
-                                    <td>John Doe</td>
-                                    <td>12345678</td>
-                                    <td>31/12/2024</td>
-                                    <td>12</td>
-                                    <td>6</td>
-                                    <td>
-                                        <MDBBtn color='info' size='sm' onClick={toggleOpen}>
-                                            <MDBIcon icon="pencil-alt" className="me-2" />
-                                            Mas Info
-                                        </MDBBtn>
-                                    </td>
-                                    <td>
-
-                                    </td>
-
-                                </tr>
-                                <tr>
-                                    <td>Alex Ray</td>
-                                    <td>87654321</td>
-                                    <td>12/11/2023</td>
-                                    <td>11</td>
-                                    <td>11</td>
-                                    <td>
-                                        <MDBBtn color='info' size='sm' onClick={toggleOpen}>
-                                            <MDBIcon icon="pencil-alt" className="me-2" />
-                                            Mas Info
-                                        </MDBBtn>
-                                    </td>
-                                    <td>
-                                        <MDBBtn color='success' size='sm' onClick={toggleOpen2}>
-                                            <MDBIcon icon="dollar-sign" className="me-2" />
-                                            Nuevo Prestamo
-                                        </MDBBtn>
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td>Kate Hunington</td>
-                                    <td>45678912</td>
-                                    <td>04/09/2024</td>
-                                    <td>3</td>
-                                    <td>0</td>
-                                    <td>
-                                        <MDBBtn color='info' size='sm' onClick={toggleOpen}>
-                                            <MDBIcon icon="pencil-alt" className="me-2" />
-                                            Mas Info
-                                        </MDBBtn>
-                                    </td>
-                                    <td>
-
-                                    </td>
-                                </tr>
+                                {clientes.map(cliente => (
+                                    <tr key={cliente.dni}>
+                                        <td>{cliente.nombre} <br />{cliente.apellido}</td>
+                                        <td>{cliente.dni}</td>
+                                        <td>{cliente.prestamoActual.fechaInicio}</td>
+                                        <td>{cliente.prestamoActual.cuotasTotales}</td>
+                                        <td>{cliente.prestamoActual.cuotasPagadas}</td>
+                                        <td>
+                                            <MDBBtn color='info' size='sm' onClick={() => toggleOpen(cliente)}>
+                                                <MDBIcon icon="pencil-alt" className="me-2" />
+                                                Mas Info
+                                            </MDBBtn>
+                                        </td>
+                                        <td>
+                                            <MDBBtn color='success' size='sm' onClick={toggleOpen2}>
+                                                <MDBIcon icon="dollar-sign" className="me-2" />
+                                                Nuevo Prestamo
+                                            </MDBBtn>
+                                        </td>
+                                    </tr>
+                                ))}
                             </MDBTableBody>
                         </MDBTable>
                     </div>
                 </div>
             </MDBCard>
+
             {/* <MODAL></MODAL> */}
             <MDBModal open={basicModal} onClose={() => setBasicModal(false)} tabIndex='-1'>
                 <MDBModalDialog size="xl">
@@ -217,24 +190,24 @@ export function Nuevocobro() {
                             <div className="col-4">
                                 <h3 className="text-center text-muted mb-3">Cliente</h3>
                                 <ul>
-                                    <li className="p-1"><b className="pe-2">Nombre:</b> ramon ignacio martinez</li>
-                                    <li className="p-1"><b className="pe-2">DNI:</b> 44989031</li>
+                                    <li className="p-1"><b className="pe-2">Nombre:</b>{clienteSeleccionado.nombre || ''} {clienteSeleccionado.apellido || ''}</li>
+                                    <li className="p-1"><b className="pe-2">DNI:</b> {clienteSeleccionado.dni || ''}</li>
                                 </ul>
                             </div>
                             <div className="col-8 row text-center">
                                 <h3 className="text-center text-muted mb-3">Prestamo</h3>
                                 <div className="col-5">
                                     <ul>
-                                        <li className="p-1"><b className="pe-2">Fecha Inicio:</b> 12/12/2025</li>
-                                        <li className="p-1"><b className="pe-2">Monto Prestado:</b> 100.000</li>
-                                        <li className="p-1"><b className="pe-2">Monto Pagado:</b> 75.000</li>
+                                        <li className="p-1"><b className="pe-2">Fecha Inicio:</b> {clienteSeleccionado.prestamoActual?.fechaInicio || ''}</li>
+                                        <li className="p-1"><b className="pe-2">Monto Prestado:</b> {clienteSeleccionado.prestamoActual?.monto || ''}</li>
+                                        <li className="p-1"><b className="pe-2">Monto Pagado:</b> {clienteSeleccionado.prestamoActual?.montoPagado || '0'}</li>
                                     </ul>
                                 </div>
                                 <div className="col-5">
                                     <ul>
-                                        <li className="p-1"><b className="pe-2">Intereses:</b> 15%</li>
-                                        <li className="p-1"><b className="pe-2">Monto Devule:</b> 115.000</li>
-                                        <li className="p-1"><b className="pe-2">Monto Faltante:</b> 50.000</li>
+                                        <li className="p-1"><b className="pe-2">Intereses:</b> {clienteSeleccionado.prestamoActual?.intereses || ''}%</li>
+                                        <li className="p-1"><b className="pe-2">Monto Devule:</b> {clienteSeleccionado.prestamoActual?.montoFinal || ''}</li>
+                                        <li className="p-1"><b className="pe-2">Monto Faltante:</b> {calcularMontoFaltante()}</li>
 
                                     </ul>
                                 </div>
@@ -247,7 +220,7 @@ export function Nuevocobro() {
                                 </h5>
                                 <div className="col-5">
                                     <ul>
-                                        <li className="p-1"><b className="pe-2">Cuotas:</b> 12</li>
+                                        <li className="p-1"><b className="pe-2">Cuotas:</b> {clienteSeleccionado.prestamoActual?.cuotasTotales || ''}</li>
                                         <li className="p-1"><select id="cuotaspagadas" className="form-select mb-4">
                                             <option value={0}>0 Cuotas Pagadas</option>
                                             <option value={1}>1 Cuotas Pagadas</option>
@@ -267,8 +240,8 @@ export function Nuevocobro() {
                                 </div>
                                 <div className="col-5">
                                     <ul>
-                                        <li className="p-1"><b className="pe-2">Semanas:</b> 12</li>
-                                        <li className="p-1"><b className="pe-2">Cuotas Faltantes:</b> 5</li>
+                                        <li className="p-1"><b className="pe-2">Semanas:</b> {clienteSeleccionado.prestamoActual?.semanas || ''}</li>
+                                        <li className="p-1"><b className="pe-2">Cuotas Faltantes:</b> {clienteSeleccionado.prestamoActual?.pagadas || '0'}</li>
 
                                     </ul>
                                 </div>

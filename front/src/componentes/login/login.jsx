@@ -65,7 +65,7 @@ export function Login() {
                     </p>
                 </MDBCol>
 
-                <MDBCol md='6' className='offset-md-1'>
+                <MDBCol md='5' className='offset-md-1'>
                     <MDBCard className='my-5'>
                         <MDBCardBody className='p-5'>
                             <h2 className="text-center mb-4">Inicio de Sesión</h2>
@@ -79,12 +79,12 @@ export function Login() {
                                 />
                                 <CustomInput
                                     label="Contraseña"
-                                    type="contraseña"
+                                    type="password"
                                     id="contraseña"
                                     value={contraseña}
                                     onChange={(e) => setContraseña(e.target.value)}
                                 />
-                                <MDBBtn type="submit" className="mb-4 w-100">Iniciar Sesión</MDBBtn>
+                                <MDBBtn type="submit" className="mb-4 w-100" color='info'>Iniciar Sesión</MDBBtn>
                             </form>
                         </MDBCardBody>
                     </MDBCard>
