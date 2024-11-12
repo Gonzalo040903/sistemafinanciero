@@ -3,9 +3,8 @@ import bcrypt from 'bcrypt';
 
 const vendedorSchema = new Schema({
     nombre: {type:String, required: true},
-    apellido: {type: String, required: true},
     contraseña:{type: String, required: true},
-    rol:{type: String,enum:['vendedor', 'admin'], required: true}
+    rol:{type: String,enum:['vendedor', 'admin'], default: 'vendedor'}
 },{collection:'Vendedor', versionKey:false});
 
 // encriptando la contrase;a antes de guardar el vendedor
@@ -21,11 +20,10 @@ const Vendedor = model('Vendedor', vendedorSchema);
 export default Vendedor;
 
 export async function crearAdmin(){
-    const admin = await Vendedor.findOne({nombre: "Facundo", apellido: "Heredia"});
+    const admin = await Vendedor.findOne({nombre: "Facundo"});
     if(!admin){
         const nuevoAdmin = new Vendedor({
             nombre: "Facundo",
-            apellido:"Heredia", 
             contraseña: await bcrypt.hash("financieraFacHe", 10),
             rol:"admin"
         });

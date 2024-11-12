@@ -1,24 +1,24 @@
 import jwt from 'jsonwebtoken';
 
 const autenticarUsuario = (req, res, next) => {
-    const token = req.header('Autorizar')?.replace('Bearer', '');
-    if(!token) {
-        return res.status(401).json({message: 'No se proporciono un token. Acesso denegado.'});
-    }
-    try {
-        const decoded = jwt.verify(token, 'financiera2024');
-        req.usuario = decoded;
-        next()
-    } catch (error) {
-        res.status(401).json({message: 'Token no valiod. Acceso denegado.'});
-    }
-    /*const {vendedor} = req.body;
-    if(!vendedor) {
-        return res.status(401).json({message: 'Acceso dednegado. No autenticado.'});
-    }
-    next()*/
-    /*req.usuario = { nombre: 'Facundo Heredia' }; 
-    next();*/
+  const authHeader = req.header('Authorization');
+  if (!authHeader || typeof authHeader !== 'string') {
+    return res.status(403).json({ message: 'No se proporcionó un token. Acceso denegado.' });
+  }
+
+  const token = authHeader.split(' ')[1];
+  if (!token) {
+    return res.status(403).json({ message: 'Formato de token incorrecto.' });
+  }
+
+  try {
+    const decoded = jwt.verify(token,'financiera2024');
+    req.usuario = decoded;
+    next();
+  } catch (error) {
+    res.status(401).json({ message: 'Token no válido. Acceso denegado.' });
+  }
 };
+
 
 export default autenticarUsuario;

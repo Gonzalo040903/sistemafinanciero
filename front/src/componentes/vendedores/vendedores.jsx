@@ -46,7 +46,12 @@ export function Vendedores() {
 
     const traerVendedores = async () => {
         try {
-            const response = await axios.get('http://localhost:3001/api/vendedores');
+            const token = localStorage.getItem('token');
+            const response = await axios.get('http://localhost:3001/api/vendedores', {
+                headers: {
+                    Authorization: `Bearer ${token}`
+                }
+            });
             setVendedores(response.data);
         } catch (error) {
             console.error("Error al traer los vendedores:", error);
@@ -56,19 +61,26 @@ export function Vendedores() {
 
     const agregarVendedor = async () => {
         const nombre = document.getElementById('formNombre').value;
-        const apellido = document.getElementById('formApellido').value;
+        const contraseña = document.getElementById('formContraseña').value;
+        const rol = 'vendedor'; // Asignar automáticamente el rol de 'vendedor'
 
-        if (!nombre || !apellido) {
+        if (!nombre || !contraseña) {
             toast.error('Por favor, complete todos los campos.');
             return;
         }
 
         try {
+            const token = localStorage.getItem('token');
             const response = await axios.post('http://localhost:3001/api/vendedores', {
                 nombre,
-                apellido,
-                contraseña: apellido // El apellido será la contraseña
+                contraseña,
+                rol
+            }, {
+                headers: {
+                    Authorization: `Bearer ${token}`
+                }
             });
+
             toast.success(response.data.message);
             setBasicModal(false); // Cerrar el modal después de crear el vendedor
             traerVendedores(); // Recargar la lista de vendedores
@@ -82,10 +94,17 @@ export function Vendedores() {
     const eliminarVendedor = async () => {
         if (!vendedorAEliminar) return;
         try {
-            const response = await axios.delete(`http://localhost:3001/api/vendedores/${vendedorAEliminar._id}`);
+            const token = localStorage.getItem('token');
+            const response = await axios.delete(`http://localhost:3001/api/vendedores/${vendedorAEliminar._id}`,{
+                headers:{
+                    Authorization:`Bearer ${token}`
+                }
+            });
+
             toast.success(response.data.message);
             setOptSmModal(false); // Cerrar el modal después de eliminar el vendedor
-            traerVendedores(); // Recargar la lista de vendedores
+            traerVendedores();
+            setVendedorAEliminar(null); // Recargar la lista de vendedores
         } catch (error) {
             toast.error("Error al eliminar el vendedor");
             console.error(error);
@@ -158,7 +177,7 @@ export function Vendedores() {
                             <MDBTableHead>
                                 <tr>
                                     <th scope='col'>Nombre</th>
-                                    <th scope='col'>Apellido</th>
+                                    <th scope='col'>Contraseña</th>
                                     <th scope='col'></th>
                                     <th scope='col'></th>
                                 </tr>
@@ -167,7 +186,7 @@ export function Vendedores() {
                                 {vendedores.map((vendedor) => (
                                     <tr key={vendedor._id}>
                                         <td>{vendedor.nombre}</td>
-                                        <td>{vendedor.apellido}</td>
+                                        <td>{vendedor.contraseña}</td>
                                         <td>
                                             <MDBBtn color='warning' size='sm' onClick={toggleOpen3}>
                                                 <MDBIcon icon="pencil-alt" className="me-2" />
@@ -203,8 +222,8 @@ export function Vendedores() {
                             </MDBModalHeader>
                             <div className="col-10 my-3">
                                 <MDBRow>
-                                    <CustomInput label='Nombres' id='formNombre' type='text' />
-                                    <CustomInput label='Apellidos' id='formApellido' type='text' />
+                                    <CustomInput label='Nombre' id='formNombre' type='text' />
+                                    <CustomInput label='Contraseña' id='formContraseña' type='password' />
                                     <MDBBtn className='w-100 mb-4' color="success" size='md' onClick={agregarVendedor}>Crear Vendedor</MDBBtn>
                                 </MDBRow>
                             </div>
@@ -225,8 +244,8 @@ export function Vendedores() {
                             </MDBModalHeader>
                             <div className="col-10 my-3">
                                 <MDBRow>
-                                    <CustomInput label='Nombres' id='formNombre' type='text' />
-                                    <CustomInput label='Apellidos' id='formApellido' type='text' />
+                                    <CustomInput label='Nombre' id='formNombre' type='text' />
+                                    <CustomInput label='Contraseña' id='formContraseña' type='password' />
                                     <MDBBtn className='w-100 mb-4' href='/error' color="warning" size='md'>Modificar Vendedor</MDBBtn>
                                 </MDBRow>
                             </div>

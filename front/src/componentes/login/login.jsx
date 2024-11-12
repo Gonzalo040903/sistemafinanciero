@@ -19,17 +19,19 @@ const CustomInput = ({ label, type, id, value, onChange }) => (
 
 export function Login() {
     const [nombre, setNombre] = useState('');
-    const [password, setPassword] = useState('');
+    const [contraseña, setContraseña] = useState('');
     const navigate = useNavigate();
 
     const handleSubmit = async (e) => {
         e.preventDefault();
-
+    
         try {
-            // Enviar la solicitud al backend
-            const res = await axios.post('http://localhost:3000/api/login', { nombre, password });
-            const { role, vendedor } = res.data;
-
+            const res = await axios.post('http://localhost:3000/api/login', { nombre, contraseña });
+            const { token, role, vendedor } = res.data;
+    
+            // Guardar el token en localStorage
+            localStorage.setItem('token', token);
+    
             // Verificar el rol y redirigir a la página correspondiente
             if (role === 'admin') {
                 toast.success('Inicio de sesión como administrador');
@@ -45,6 +47,7 @@ export function Login() {
             toast.error('Error en las credenciales. Verifique su nombre y contraseña.');
         }
     };
+    
 
 
     return (
@@ -76,10 +79,10 @@ export function Login() {
                                 />
                                 <CustomInput
                                     label="Contraseña"
-                                    type="password"
-                                    id="password"
-                                    value={password}
-                                    onChange={(e) => setPassword(e.target.value)}
+                                    type="contraseña"
+                                    id="contraseña"
+                                    value={contraseña}
+                                    onChange={(e) => setContraseña(e.target.value)}
                                 />
                                 <MDBBtn type="submit" className="mb-4 w-100">Iniciar Sesión</MDBBtn>
                             </form>
