@@ -3,14 +3,14 @@ import bcrypt from 'bcrypt';
 
 const vendedorSchema = new Schema({
     nombre: {type:String, required: true},
-    apellido: {type: String, requerid: true},
-    constraseña:{type: String, requerid: true},
-    rol:{type: String, required: true}
+    apellido: {type: String, required: true},
+    contraseña:{type: String, required: true},
+    rol:{type: String,enum:['vendedor', 'admin'], required: true}
 },{collection:'Vendedor', versionKey:false});
 
 // encriptando la contrase;a antes de guardar el vendedor
 vendedorSchema.pre('save', async function(next) {
-    if (this.isModified('contraseña')) {
+    if (this.isModified('contraseña') && this.rol === 'admin') {
         const salt = await bcrypt.genSalt(10);
         this.contraseña = await bcrypt.hash(this.contraseña, salt);
     }
@@ -26,8 +26,8 @@ export async function crearAdmin(){
         const nuevoAdmin = new Vendedor({
             nombre: "Facundo",
             apellido:"Heredia", 
-            contraseña:await bcrypt.hash("financieraFacHe", 10),
-            rol:"administrador"
+            contraseña: await bcrypt.hash("financieraFacHe", 10),
+            rol:"admin"
         });
         await nuevoAdmin.save();
         console.log("Cuenta de administrador 'Facundo Heredia' creada.");
