@@ -1,4 +1,5 @@
 const verificarAdmin = (req, res, next) => {
+    console.log('Usuario en el req:', req.usuario);
     if (req.usuario && req.usuario.nombre === "Facundo" && req.usuario.rol === "admin"){
         next();
     } else {

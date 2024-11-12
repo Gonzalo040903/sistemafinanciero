@@ -1,9 +1,10 @@
 import { Router } from "express";
 import Vendedor from "../model/modelVendedor.js";
 import bcrypt from 'bcrypt';
+import jwt from 'jsonwebtoken';
 
 const router = Router();
-router.post('/login', async (req, res) => {
+router.post('/api/login', async (req, res) => {
     try {
         const { nombre, contraseña } = req.body;
         const vendedor = await Vendedor.findOne({ nombre });
@@ -33,6 +34,5 @@ router.post('/login', async (req, res) => {
         return res.status(500).json({ message: 'Error en el servidor' });
     }
 });
-
 
 export default router;

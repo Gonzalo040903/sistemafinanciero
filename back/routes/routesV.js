@@ -7,7 +7,7 @@ const router = Router();
 router.use(autenticarUsuario);
 router.use(verificarAdmin);
 
-router.post('/api', autenticarUsuario, verificarAdmin, async(req, res)=> {
+router.post('/api', async(req, res)=> {
     try{
         const {nombre, contraseña } = req.body;
         if(!nombre || !contraseña){
@@ -23,7 +23,7 @@ router.post('/api', autenticarUsuario, verificarAdmin, async(req, res)=> {
 });
 
 
-router.get('/',autenticarUsuario, verificarAdmin,  async (req, res) => {
+router.get('/',  async (req, res) => {
     try {
         const vendedores = await Vendedor.find({}, "nombre contraseña");
         res.json(vendedores);
@@ -44,7 +44,7 @@ router.get('/:id',async(req, res) =>{
     }
 });
 
-router.delete('/:id',autenticarUsuario,verificarAdmin, async(req, res) =>{
+router.delete('/:id', async(req, res) =>{
     try{
         const vendedor = await Vendedor.findById(req.params.id);
         if(!vendedor){
