@@ -10,6 +10,8 @@ import {
 } from 'mdb-react-ui-kit';
 import './styleLogin.css';
 import toast, { Toaster } from 'react-hot-toast';
+import axios from 'axios';
+import { useNavigate } from 'react-router-dom';
 
 const CustomInput = ({ label, type, id, value, onChange }) => (
     <MDBInput wrapperClass='mb-4' label={label} id={id} type={type} value={value} onChange={onChange} />
@@ -28,7 +30,7 @@ export function Login() {
                 <MDBCol md='5' className='text-center text-md-start d-flex flex-column justify-content-center me-4'>
                     <h1 className="my-5 display-3 fw-bold ls-tight px-3">
                         Inicia Sesión <br /> Con tu cuenta de <br />
-                        <span className="text-custom-color"><b>Vendedor</b></span>
+                        <span className="text-custom-color"><b>Sistema Financiero</b></span>
                     </h1>
 
                     <p className='px-3 text-muted'>

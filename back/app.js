@@ -5,6 +5,7 @@ import { crearAdmin } from './model/modelVendedor.js';
 import clientesRouter from './routes/routesC.js';
 import prestamosRouter from './routes/routesP.js';
 import vendedorRouter from './routes/routesV.js';
+import authRouter from './routes/routesAuth.js';
 
 const app = express();
 const PORT = process.env.PORT || 3001;
@@ -26,6 +27,7 @@ mongoose.connect(uri)
 app.use('/api/clientes', clientesRouter);
 app.use('/api/prestamos', prestamosRouter);
 app.use('/api/vendedores', vendedorRouter);
+app.use('/api', authRouter);
 
 app.listen(PORT, () => {
     console.log(`Server running on port ${PORT}`);

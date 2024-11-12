@@ -1,7 +1,7 @@
 import {Router} from 'express';
 import Vendedor from '../model/modelVendedor.js';
-//import autenticarUsuario from '../middlewares/autenticarUsuario.js';
-//import verificarAdmin from '../middlewares/verificarAdmin.js';
+import autenticarUsuario from '../middlewares/autenticarUsuario.js';
+import verificarAdmin from '../middlewares/verificarAdmin.js';
 
 const router = Router();
 router.use(autenticarUsuario);
@@ -42,7 +42,7 @@ router.get('/:id', async(req, res) =>{
     }
 });
 
-router.delete('/:id', autenticarUsuario, async(req, res) =>{
+router.delete('/:id', verificarAdmin, async(req, res) =>{
     try{
         const vendedor = await Vendedor.findById(req.params.id);
         if(!vendedor){
