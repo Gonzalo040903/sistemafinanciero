@@ -38,4 +38,3 @@ const clienteSchema = new Schema({
 
 const Cliente = model('Cliente', clienteSchema);
 export default Cliente;
-//lol

@@ -53,6 +53,7 @@ export function Nuevocobro() {
         toast.success('Prestamo Creado')
         toggleOpen2()
     }
+    let palabra = "Panel de control > Nuevo Cobro"
     const [clientes, setClientes] = useState([]);
     const [isGestionClientesOpen, setIsGestionClientesOpen] = useState(false);
     const [basicModal, setBasicModal] = useState(false);
@@ -132,7 +133,7 @@ export function Nuevocobro() {
 
                     {/* PANEL ZONA */}
                     <div className="col-10 p-0" id="panel">
-                        <header className="p-2 mx-4 mt-3 px-4 header rounded-5 shadow-3">Panel de control > Nuevo Cobro</header>
+                        <header className="p-2 mx-4 mt-3 px-4 header rounded-5 shadow-3">{palabra}</header>
                         <h3 className="px-4 textogris mt-5 mx-1"><b>Nuevo Cobro</b></h3>
 
                         {/* TABLA */}
