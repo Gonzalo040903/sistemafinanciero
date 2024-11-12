@@ -1,9 +1,10 @@
 import { Router } from "express";
 import Vendedor from "../model/modelVendedor.js";
 import bcrypt from 'bcrypt';
+import jwt from 'jsonwebtoken';
 
 const router = Router();
-router.post('/login', async (req, res) => {
+router.post('/api/login', async (req, res) => {
     try {
         const { nombre, contraseña } = req.body;
         const vendedor = await Vendedor.findOne({ nombre });
@@ -26,13 +27,12 @@ router.post('/login', async (req, res) => {
         }
 
         // Generar y devolver el token de autenticación si la validación es exitosa
-        const token = jwt.sign({ id: vendedor._id, rol: vendedor.rol }, 'financiera2024', { expiresIn: '1h' });
+        const token = jwt.sign({ id: vendedor._id, rol: vendedor.rol }, '2024', { expiresIn: '1h' });
         res.json({ token, role: vendedor.rol, vendedor });
     } catch (error) {
         console.error('Error en el login:', error);
         return res.status(500).json({ message: 'Error en el servidor' });
     }
 });
-
 
 export default router;

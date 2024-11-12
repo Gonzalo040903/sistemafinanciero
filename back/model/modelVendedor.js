@@ -31,6 +31,6 @@ export async function crearAdmin(){
         console.log("Cuenta de administrador 'Facundo Heredia' creada.");
     }else{
         console.log("La cuenta de administrador 'Facundo Heredia' ya existe.");
-        
+    
     }
 }

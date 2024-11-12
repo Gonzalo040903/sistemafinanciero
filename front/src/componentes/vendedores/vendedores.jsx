@@ -45,9 +45,10 @@ export function Vendedores() {
     const traerVendedores = async () => {
         try {
             const token = localStorage.getItem('token');
+            console.log('Token:', token);
             const response = await axios.get('http://localhost:3001/api/vendedores', {
                 headers: {
-                    Authorization: `Bearer ${token}`
+                    'Authorization': `Bearer ${token}`,
                 }
             });
             setVendedores(response.data);
@@ -75,7 +76,7 @@ export function Vendedores() {
                 rol
             }, {
                 headers: {
-                    Authorization: `Bearer ${token}`
+                    'Authorization': `Bearer ${token}`,
                 }
             });
 
