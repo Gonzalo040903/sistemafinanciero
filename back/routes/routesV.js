@@ -1,19 +1,16 @@
 import {Router} from 'express';
 import Vendedor from '../model/modelVendedor.js';
-//import autenticarUsuario from '../middlewares/autencitarUsuario.js';
+//import autenticarUsuario from '../middlewares/autenticarUsuario.js';
 //import verificarAdmin from '../middlewares/verificarAdmin.js';
 
 const router = Router();
+router.use(autenticarUsuario);
 
-//router.use(autenticarUsuario);
-
-
-router.post('/', async(req, res)=> {
+router.post('/', verificarAdmin, async(req, res)=> {
     try{
         const {nombre, apellido, contraseña } = req.body;
         if(!nombre || !apellido || !contraseña){
             return res.status(400).json({message: 'Todos los campos son obligatorios.'});
-
         }
         const nuevoVendedor = new Vendedor({nombre, apellido, contraseña});
         await nuevoVendedor.save();
@@ -24,7 +21,7 @@ router.post('/', async(req, res)=> {
     }
 });
 
-router.get('/', async (req, res) => {
+router.get('/',  async (req, res) => {
     try {
         const vendedores = await Vendedor.find({}, "nombre apellido contraseña");
         res.json(vendedores);
@@ -45,7 +42,7 @@ router.get('/:id', async(req, res) =>{
     }
 });
 
-router.delete('/:id', async(req, res) =>{
+router.delete('/:id', autenticarUsuario, async(req, res) =>{
     try{
         const vendedor = await Vendedor.findById(req.params.id);
         if(!vendedor){
