@@ -1,11 +1,12 @@
 import { Router } from 'express';
 import Vendedor from '../model/modelVendedor.js';
-import autenticarUsuario from '../middlewares/autenticarUsuario.js';
-import verificarAdmin from '../middlewares/verificarAdmin.js';
+// import autenticarUsuario from '../middlewares/autenticarUsuario.js';
+// import verificarAdmin from '../middlewares/verificarAdmin.js';
 
 const router = Router();
-
-router.post('/', autenticarUsuario, verificarAdmin, async (req, res) => {
+// router.use(autenticarUsuario);
+// router.use(verificarAdmin);
+router.post('/', async (req, res) => {
     try {
         const { nombre, contraseña } = req.body;
         if (!nombre || !contraseña) {
@@ -19,7 +20,7 @@ router.post('/', autenticarUsuario, verificarAdmin, async (req, res) => {
     }
 });
 
-router.get('/', autenticarUsuario, verificarAdmin, async (req, res) => {
+router.get('/', async (req, res) => {
     try {
         const vendedores = await Vendedor.find({}, 'nombre contraseña');
         res.json(vendedores);
