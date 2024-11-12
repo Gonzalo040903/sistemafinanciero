@@ -1,10 +1,11 @@
-import { Router } from "express";
-import Vendedor from "../model/modelVendedor.js";
+import { Router } from 'express';
+import Vendedor from '../model/modelVendedor.js';
 import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
 
 const router = Router();
-router.post('/api/login', async (req, res) => {
+
+router.post('/login', async (req, res) => {
     try {
         const { nombre, contraseña } = req.body;
         const vendedor = await Vendedor.findOne({ nombre });
@@ -13,20 +14,17 @@ router.post('/api/login', async (req, res) => {
             return res.status(404).json({ message: 'Usuario no encontrado' });
         }
 
-        // Verificar contraseña basada en el rol
+        let contraseñaValida;
         if (vendedor.rol === 'admin') {
-            const contraseñaValida = await bcrypt.compare(contraseña, vendedor.contraseña);
-            if (!contraseñaValida) {
-                return res.status(401).json({ message: 'Contraseña incorrecta' });
-            }
+            contraseñaValida = await bcrypt.compare(contraseña, vendedor.contraseña);
         } else {
-            // Comparar directamente para los vendedores con contraseña sin encriptar
-            if (vendedor.contraseña !== contraseña) {
-                return res.status(401).json({ message: 'Contraseña incorrecta' });
-            }
+            contraseñaValida = vendedor.contraseña === contraseña;
         }
 
-        // Generar y devolver el token de autenticación si la validación es exitosa
+        if (!contraseñaValida) {
+            return res.status(401).json({ message: 'Contraseña incorrecta' });
+        }
+
         const token = jwt.sign({ id: vendedor._id, rol: vendedor.rol }, '2024', { expiresIn: '1h' });
         res.json({ token, role: vendedor.rol, vendedor });
     } catch (error) {

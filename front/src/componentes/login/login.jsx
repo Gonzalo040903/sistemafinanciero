@@ -1,15 +1,7 @@
 import React, { useState } from 'react';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
-import {
-    MDBBtn,
-    MDBContainer,
-    MDBRow,
-    MDBCol,
-    MDBCard,
-    MDBCardBody,
-    MDBInput,
-} from 'mdb-react-ui-kit';
+import { MDBBtn, MDBContainer, MDBRow, MDBCol, MDBCard, MDBCardBody, MDBInput } from 'mdb-react-ui-kit';
 import './styleLogin.css';
 import toast, { Toaster } from 'react-hot-toast';
 
@@ -26,7 +18,7 @@ export function Login() {
         e.preventDefault();
     
         try {
-            const res = await axios.post('http://localhost:3000/api/login', { nombre, contraseña });
+            const res = await axios.post('http://localhost:3001/api/login', { nombre, contraseña });
             const { token, role, vendedor } = res.data;
     
             // Guardar el token en localStorage
@@ -35,20 +27,19 @@ export function Login() {
             // Verificar el rol y redirigir a la página correspondiente
             if (role === 'admin') {
                 toast.success('Inicio de sesión como administrador');
-                navigate('/admin');
+                navigate('/panel');
             } else if (role === 'vendedor') {
                 toast.success('Inicio de sesión como vendedor');
-                navigate('/vendedores', { state: { vendedor } });
+                navigate('/panel', { state: { vendedor } });
             } else {
                 toast.error('Rol no autorizado');
             }
-        } catch (err) {
-            console.error('Error de inicio de sesión:', err);
-            toast.error('Error en las credenciales. Verifique su nombre y contraseña.');
+        }catch (err) {
+            console.error('Error de inicio de sesión:', err.response?.data || err.message);
+            toast.error(err.response?.data?.message || 'Error en las credenciales. Verifique su nombre y contraseña.');
         }
+        
     };
-    
-
 
     return (
         <MDBContainer fluid className='p-4 pt-5 mt-4'>

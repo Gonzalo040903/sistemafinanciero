@@ -1,7 +1,7 @@
 import express from 'express';
 import mongoose from 'mongoose';
 import cors from 'cors';
-import { crearAdmin } from './model/modelVendedor.js';
+// import { crearAdmin } from './model/modelVendedor.js';
 import clientesRouter from './routes/routesC.js';
 import prestamosRouter from './routes/routesP.js';
 import vendedorRouter from './routes/routesV.js';
@@ -19,7 +19,7 @@ const uri = 'mongodb+srv://solheredia555:SistemaFinancieroFH@clustersistemafinan
 mongoose.connect(uri)
     .then(() => {
         console.log('Connected to MongoDB Atlas');
-        crearAdmin();
+        // crearAdmin();
     })
     .catch(err => console.error('Failed to connect to MongoDB Atlas:', err.message));
 

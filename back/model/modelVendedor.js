@@ -18,19 +18,3 @@ vendedorSchema.pre('save', async function(next) {
 
 const Vendedor = model('Vendedor', vendedorSchema);
 export default Vendedor;
-
-export async function crearAdmin(){
-    const admin = await Vendedor.findOne({nombre: "Facundo"});
-    if(!admin){
-        const nuevoAdmin = new Vendedor({
-            nombre: "Facundo",
-            contraseña: await bcrypt.hash("financieraFacHe", 10),
-            rol:"admin"
-        });
-        await nuevoAdmin.save();
-        console.log("Cuenta de administrador 'Facundo Heredia' creada.");
-    }else{
-        console.log("La cuenta de administrador 'Facundo Heredia' ya existe.");
-    
-    }
-}
