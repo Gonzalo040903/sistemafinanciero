@@ -6,8 +6,6 @@ import verificarAdmin from '../middlewares/verificarAdmin.js';
 const router = Router();
 router.use('/', autenticarUsuario, verificarAdmin);
 
-//router.use(autenticarUsuario);
-// router.use(verificarAdmin);
 router.post('/', async (req, res) => {
     try {
         const { nombre, contraseña } = req.body;

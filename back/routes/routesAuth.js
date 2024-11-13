@@ -28,7 +28,7 @@ router.post('/login', async (req, res) => {
         const token = jwt.sign({ id: vendedor._id, rol: vendedor.rol }, '2024', { expiresIn: '1h' });
         res.json({ token, role: vendedor.rol, vendedor });
     } catch (error) {
-        console.error('Error en el login:', error);
+        //console.error('Error en el login:', error);
         return res.status(500).json({ message: 'Error en el servidor' });
     }
 });
