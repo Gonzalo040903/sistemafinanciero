@@ -52,8 +52,8 @@ export function Login() {
             <MDBRow className='contenedorLogin'>
                 <MDBCol md='5' className='text-center text-md-start d-flex flex-column justify-content-center me-4'>
                     <h1 className="my-5 display-3 fw-bold ls-tight px-3">
-                        Inicia Sesión <br /> Con tu cuenta de <br />
-                        <span className="text-custom-color"><b>Vendedor</b></span>
+                        Inicia Sesión <br /> a la  <br />
+                        <span className="text-custom-color"><b>Financiera</b></span>
                     </h1>
                     <p className='px-3 text-muted'>
                         Sistema Financiero, Gestión de Cuentas:<br />

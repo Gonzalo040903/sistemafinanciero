@@ -25,6 +25,7 @@ import { useState, useEffect } from 'react';
 import axios from 'axios';
 import toast, { Toaster } from 'react-hot-toast';
 
+
 export function Vendedores() {
     const [optSmModal, setOptSmModal] = useState(false);
     const [isGestionClientesOpen, setIsGestionClientesOpen] = useState(false);

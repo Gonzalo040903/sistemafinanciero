@@ -16,6 +16,7 @@ import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 
+
 export function PanelControl() {
     const [isGestionClientesOpen, setIsGestionClientesOpen] = useState(false);
     const [clientes, setClientes] = useState([]);
@@ -87,17 +88,44 @@ export function PanelControl() {
                             <MDBNavbarLink href='/nuevo-cobro' className="nav-item-link">
                                 <MDBIcon icon="dollar-sign" className="me-2 mx-0 mt-2" />
                                 Nuevo Cobro
-                            </MDBNavbarLink>
+                            </MDBNavbarLink >
                             <MDBNavbarLink href='/vendedores' className="nav-item-link">
                                 <MDBIcon fas icon="key" className="me-2 mx-0 mt-2" />
                                 Vendedores
                             </MDBNavbarLink>
                         </MDBNavbarNav>
                         {/* Botón de cerrar sesión */}
-                        <MDBBtn color="danger" className="mt-4" onClick={handleLogout}>
-                            <MDBIcon fas icon="sign-out-alt" className="me-2" />
-                            Cerrar Sesión
+                        <MDBBtn 
+                            color="none" 
+                            className="mt-4" 
+                            style={{
+                                backgroundColor: '#D9534F', // Fondo rojo suave
+                                color: 'white', // Texto blanco para contraste
+                                border: '1px solid #D9534F', // Borde sutil del mismo color del fondo
+                                borderRadius: '25px', 
+                                padding: '10px 20px',
+                                fontSize: '14px',
+                                fontWeight: '500',
+                                textTransform: 'none',
+                                display: 'flex',
+                                alignItems: 'center',
+                                justifyContent: 'center',
+                                transition: 'all 0.3s ease',
+                                boxShadow: 'none',
+                                textDecoration: 'none'
+                            }} 
+                            onClick={handleLogout}
+                            onMouseEnter={(e) => {
+                                e.target.style.backgroundColor = '#C9302C'; // Rojo más intenso al pasar el mouse
+                            }}
+                            onMouseLeave={(e) => {
+                                e.target.style.backgroundColor = '#D9534F'; // Rojo suave
+                            }}
+                        >
+                            <MDBIcon fas icon="sign-out-alt" className="me-2" style={{ fontSize: '16px' }} />
+                            <span style={{ fontSize: '14px', fontWeight: '500' }}>Cerrar sesión</span>
                         </MDBBtn>
+
                     </div>
 
                     <div className="col-10 p-0" id="panel">
