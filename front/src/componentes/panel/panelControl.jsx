@@ -13,14 +13,21 @@ import {
     MDBBtn
 } from 'mdb-react-ui-kit';
 import { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 
 export function PanelControl() {
     const [isGestionClientesOpen, setIsGestionClientesOpen] = useState(false);
     const [clientes, setClientes] = useState([]);
+    const navigate = useNavigate();
 
     const toggleGestionClientes = () => {
         setIsGestionClientesOpen(!isGestionClientesOpen);
+    };
+
+    const handleLogout = () => {
+        localStorage.removeItem('token');
+        navigate('/'); // Redirige al usuario al login
     };
 
     useEffect(() => {
@@ -44,7 +51,7 @@ export function PanelControl() {
             <MDBCard className="row" id="color">
                 <div className="row p-0" id="color">
                     <div className="col-2 text-center" id="nav">
-                        <h5 className="mt-4 text-center mb-5 admintitulo">Administracion</h5>
+                        <h5 className="mt-4 text-center mb-5 admintitulo">Administración</h5>
                         <MDBNavbarNav>
                             <MDBNavbarLink active aria-current='page' href='/panel' className="aaa nav-item-link">
                                 <MDBIcon icon="table" className="me-2 mx-0" />
@@ -86,6 +93,11 @@ export function PanelControl() {
                                 Vendedores
                             </MDBNavbarLink>
                         </MDBNavbarNav>
+                        {/* Botón de cerrar sesión */}
+                        <MDBBtn color="danger" className="mt-4" onClick={handleLogout}>
+                            <MDBIcon fas icon="sign-out-alt" className="me-2" />
+                            Cerrar Sesión
+                        </MDBBtn>
                     </div>
 
                     <div className="col-10 p-0" id="panel">
@@ -97,10 +109,10 @@ export function PanelControl() {
                                 <tr>
                                     <th scope='col'>Nombre</th>
                                     <th scope='col'>DNI</th>
-                                    <th scope='col'>Direccion</th>
-                                    <th scope='col'>Telefono</th>
-                                    <th scope='col'>Telefono2</th>
-                                    <th scope='col'>Telefono3</th>
+                                    <th scope='col'>Dirección</th>
+                                    <th scope='col'>Teléfono</th>
+                                    <th scope='col'>Teléfono2</th>
+                                    <th scope='col'>Teléfono3</th>
                                     <th scope='col'>Debiente</th>
                                     <th scope='col'>Maps</th>
                                 </tr>

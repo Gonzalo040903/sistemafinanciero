@@ -3,8 +3,9 @@ import { Navigate } from 'react-router-dom';
 
 // Componente de Ruta Privada
 export const RutaPrivada = ({ children }) => {
-  const isAuthenticated = !!localStorage.getItem('token'); // Verifica si hay un token guardado.
+  const isAuthenticated = Boolean(localStorage.getItem('token'));
 
-  // Si el usuario está autenticado, renderiza el componente hijo, de lo contrario redirige al login
+  
+  // Redirige al login si no está autenticado
   return isAuthenticated ? children : <Navigate to="/" replace />;
 };

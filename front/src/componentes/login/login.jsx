@@ -21,14 +21,6 @@ export function Login() {
         navigate('/panel');
     };
 
-    // Función para cerrar sesión (por si la necesitas)
-    const handleLogout = () => {
-        localStorage.removeItem('token');
-        navigate('/');
-    };
-
-
-
     const handleSubmit = async (e) => {
         e.preventDefault();
     
