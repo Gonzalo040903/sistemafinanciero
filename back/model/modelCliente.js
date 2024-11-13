@@ -15,7 +15,7 @@ const prestamoSchema = new Schema({
 prestamoSchema.pre('save', function (next) {
     if (this.isNew) {
         this.montoFinal = this.monto + (this.monto * (this.intereses / 100));
-        this.montoAdeudado = this.montoFinal;
+        this.montoAdeudado = this.cuotasPagadas * (this.montoFinal / this.semanas);
         this.cuotasTotales = this.semanas;
     }
     next();

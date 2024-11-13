@@ -1,22 +1,22 @@
-import mongoose, {Schema, model} from 'mongoose';
+import mongoose, { Schema, model } from 'mongoose';
 
 const prestamoSchema = new Schema({
-    cliente:{type:mongoose.Schema.Types.ObjectId, ref:'Cliente', required: true},
-    monto: {type: Number, required: true},
-    semanas: {type: Number, required: true},
-    intereses: {type: Number, required: true},
-    fechaInicio: {type: Date, default: Date.now},
+    cliente: { type: mongoose.Schema.Types.ObjectId, ref: 'Cliente', required: true },
+    monto: { type: Number, required: true },
+    semanas: { type: Number, required: true },
+    intereses: { type: Number, required: true },
+    fechaInicio: { type: Date, default: Date.now },
     montoFinal: { type: Number },
     cuotasTotales: { type: Number },
     montoAdeudado: { type: Number },
     cuotasPagadas: { type: Number, default: 0 },
     vendedor: { type: String, required: true }
-},{collection: 'Prestamo', versionKey: false});
+}, { collection: 'Prestamo', versionKey: false });
 
-prestamoSchema.pre('save', function(next){
-    if(this.isNew){
+prestamoSchema.pre('save', function (next) {
+    if (this.isNew) {
         this.montoFinal = this.monto + (this.monto * (this.intereses / 100));
-        this.montoAdeudado = this.montoFinal;  
+        this.montoAdeudado = this.cuotasPagadas * (this.montoFinal / this.semanas);
         this.cuotasTotales = this.semanas;
     }
     next();

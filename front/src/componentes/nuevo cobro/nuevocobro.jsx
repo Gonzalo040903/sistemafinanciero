@@ -40,6 +40,12 @@ export function Nuevocobro() {
             devuelve.value = montoFinal;
         }
     }
+    const montoAdeudadofunicion = () => {
+        if (clienteSeleccionado && clienteSeleccionado.prestamoActual) {
+            return clienteSeleccionado.prestamoActual.montoAdeudado;
+        }
+        return 0;
+    };
     const calcularMontoFaltante = () => {
         if (clienteSeleccionado && clienteSeleccionado.prestamoActual) {
             const cuotaValor = clienteSeleccionado.prestamoActual.montoFinal / clienteSeleccionado.prestamoActual.cuotasTotales;
@@ -102,24 +108,25 @@ export function Nuevocobro() {
                     method: "PATCH",
                     headers: {
                         "Content-Type": "application/json"
-                    }, body: JSON.stringify({
+                    },
+                    body: JSON.stringify({
                         cuotasPagadas: cuotasPagadas
                     })
                 });
+    
                 if (response.status === 200) {
+                    const updatedCliente = await response.json(); // Obtener la respuesta con el cliente actualizado
+    
+                    // Mostrar un mensaje de éxito
                     toast.success('Cuotas actualizadas correctamente');
+    
+                    // Actualizar clienteSeleccionado con los valores actualizados
                     setClienteSeleccionado(prev => ({
                         ...prev,
                         prestamoActual: {
-                            ...prev.prestamoActual,
-                            cuotasPagadas
+                            ...updatedCliente.prestamoActual, // Usamos los datos del cliente actualizado
                         }
                     }));
-
-                    // Recargar la lista de clientes
-                    const updatedClientes = await axios.get('http://localhost:3001/api/clientes');
-                    setClientes(updatedClientes.data);
-
                 } else {
                     throw new Error("La actualización no fue exitosa.");
                 }
@@ -131,7 +138,6 @@ export function Nuevocobro() {
             toast.error('Por favor, selecciona un valor de cuotas válido');
         }
     };
-
 
 
     return (
@@ -254,7 +260,7 @@ export function Nuevocobro() {
                                     <ul>
                                         <li className="p-1"><b className="pe-2">Fecha Inicio:</b> {clienteSeleccionado.prestamoActual?.fechaInicio || ''}</li>
                                         <li className="p-1"><b className="pe-2">Monto Prestado:</b> {clienteSeleccionado.prestamoActual?.monto || ''}</li>
-                                        <li className="p-1"><b className="pe-2">Monto Pagado:</b> {clienteSeleccionado.prestamoActual?.montoPagado || '0'}</li>
+                                        <li className="p-1"><b className="pe-2">Monto Pagado:</b> {montoAdeudadofunicion()}</li>
                                     </ul>
                                 </div>
                                 <div className="col-5">
@@ -277,14 +283,14 @@ export function Nuevocobro() {
                                         <li className="p-1"><b className="pe-2">Cuotas:</b> {clienteSeleccionado.prestamoActual?.cuotasTotales || ''}</li>
                                         <li className="p-1">
 
-                                                <select id="cuotaspagadas" className="form-select mb-4" value={cuotasPagadas} onChange={handleCuotasChange}>
-                                                    {[...Array(clienteSeleccionado.prestamoActual?.cuotasTotales + 1 || 1)].map((_, index) => (
-                                                        <option key={index} value={index} id={cuotaspagadas}>
-                                                            {index} Cuotas Pagadas
-                                                        </option>
-                                                    ))}
-                                                </select>
-                                                <MDBIcon icon="save" size="lg" onClick={actualizarCuotasPagadas} style={{ cursor: 'pointer', color: 'green' }} />
+                                            <select id="cuotaspagadas" className="form-select mb-4" value={cuotasPagadas} onChange={handleCuotasChange}>
+                                                {[...Array(clienteSeleccionado.prestamoActual?.cuotasTotales + 1 || 1)].map((_, index) => (
+                                                    <option key={index} value={index} id={cuotaspagadas}>
+                                                        {index} Cuotas Pagadas
+                                                    </option>
+                                                ))}
+                                            </select>
+                                            <MDBIcon icon="save" size="lg" onClick={actualizarCuotasPagadas} style={{ cursor: 'pointer', color: 'green' }} />
                                         </li>
                                     </ul>
                                 </div>

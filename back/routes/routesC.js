@@ -80,7 +80,7 @@ router.patch('/:dni', async (req, res) => {
         if (telefonoPersonal) cliente.telefonoPersonal = telefonoPersonal;
         if (telefonoReferencia) cliente.telefonoReferencia = telefonoReferencia;
         if (telefonoTres) cliente.telefonoTres = telefonoTres;
-        if (historialPrestamos && Array.isArray(historialPrestamos)) { cliente.historialPrestamos = cliente.historialPrestamos.conact(historialPrestamos) };
+        if (historialPrestamos && Array.isArray(historialPrestamos)) { cliente.historialPrestamos = cliente.historialPrestamos.concact(historialPrestamos) };
         await cliente.save();
         res.json({ message: 'Cliente actualizado', cliente });
 
@@ -103,34 +103,40 @@ router.delete('/:dni', async (req, res) => {
     }
 });
 
-// Actualizar cuotas pagadas de prestamoActual
+// Endpoint PATCH para actualizar cuotas y recalcular montoAdeudado
+// Endpoint PATCH para actualizar cuotas y recalcular montoAdeudado
 router.patch('/:dni/prestamo/cuotas', async (req, res) => {
+    const { dni } = req.params;
+    const { cuotasPagadas } = req.body;
+
     try {
-        const { dni } = req.params;
-        const { cuotasPagadas } = req.body;
+        const cliente = await Cliente.findOne({ dni }).populate('prestamoActual');
+        if (!cliente) return res.status(404).send("Cliente no encontrado");
 
-        // Verifica que cuotasPagadas esté presente en el body
-        if (typeof cuotasPagadas !== 'number') {
-            return res.status(400).json({ message: 'El campo cuotasPagadas es requerido y debe ser un número' });
+        // Verifica que exista un préstamo asociado al cliente
+        if (!cliente.prestamoActual) {
+            return res.status(400).json({ message: 'No hay préstamo asociado a este cliente' });
         }
 
-        // Encuentra el cliente por DNI
-        const cliente = await Cliente.findOne({ dni });
-        if (!cliente) {
-            return res.status(404).json({ message: 'Cliente no encontrado' });
-        }
+        // Actualizar el número de cuotas pagadas
+        cliente.prestamoActual.cuotasPagadas = cuotasPagadas;
 
-        // Verifica que tenga un prestamoActual y actualiza cuotasPagadas
-        if (cliente.prestamoActual) {
-            cliente.prestamoActual.cuotasPagadas = cuotasPagadas;
-            await cliente.save();
-            return res.json({ message: 'Cuotas pagadas actualizadas', cliente });
-        } else {
-            return res.status(404).json({ message: 'El cliente no tiene un préstamo actual' });
-        }
+        // Calcular el valor de cada cuota
+        const cuotaValor = cliente.prestamoActual.montoFinal / cliente.prestamoActual.cuotasTotales;
+
+        // Calcular el monto adeudado como el total pagado hasta el momento
+        cliente.prestamoActual.montoAdeudado = cuotaValor * cuotasPagadas;
+
+        // Guardar los cambios
+        await cliente.save();
+
+        // Retornar la respuesta con el cliente actualizado
+        res.status(200).send(cliente);
     } catch (error) {
-        res.status(500).json({ message: error.message });
+        console.error("Error al actualizar cuotas:", error);
+        res.status(500).send("Error al actualizar cuotas");
     }
 });
+
 
 export default router;

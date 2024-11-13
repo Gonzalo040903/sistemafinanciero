@@ -95,14 +95,14 @@ export function PanelControl() {
                             </MDBNavbarLink>
                         </MDBNavbarNav>
                         {/* Botón de cerrar sesión */}
-                        <MDBBtn 
-                            color="none" 
-                            className="mt-4" 
+                        <MDBBtn
+                            color="none"
+                            className="mt-4"
                             style={{
                                 backgroundColor: '#D9534F', // Fondo rojo suave
                                 color: 'white', // Texto blanco para contraste
                                 border: '1px solid #D9534F', // Borde sutil del mismo color del fondo
-                                borderRadius: '25px', 
+                                borderRadius: '25px',
                                 padding: '10px 20px',
                                 fontSize: '14px',
                                 fontWeight: '500',
@@ -113,7 +113,7 @@ export function PanelControl() {
                                 transition: 'all 0.3s ease',
                                 boxShadow: 'none',
                                 textDecoration: 'none'
-                            }} 
+                            }}
                             onClick={handleLogout}
                             onMouseEnter={(e) => {
                                 e.target.style.backgroundColor = '#C9302C'; // Rojo más intenso al pasar el mouse
@@ -155,8 +155,8 @@ export function PanelControl() {
                                         <td>{cliente.telefonoReferencia}</td>
                                         <td>{cliente.telefonoTres}</td>
                                         <td>
-                                            <MDBBadge color={cliente.prestamoActual.montoAdeudado > 0 ? 'danger' : 'success'} pill>
-                                                {cliente.prestamoActual.montoAdeudado}
+                                            <MDBBadge color={(cliente.prestamoActual.montoFinal - cliente.prestamoActual.montoAdeudado) > 0 ? 'danger' : 'success'} pill>
+                                                {cliente.prestamoActual.montoFinal - cliente.prestamoActual.montoAdeudado}
                                             </MDBBadge>
                                         </td>
                                         <td>
