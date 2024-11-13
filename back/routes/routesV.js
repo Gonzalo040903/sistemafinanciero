@@ -1,10 +1,12 @@
 import { Router } from 'express';
 import Vendedor from '../model/modelVendedor.js';
-// import autenticarUsuario from '../middlewares/autenticarUsuario.js';
-// import verificarAdmin from '../middlewares/verificarAdmin.js';
+import autenticarUsuario from '../middlewares/autenticarUsuario.js';
+import verificarAdmin from '../middlewares/verificarAdmin.js';
 
 const router = Router();
-// router.use(autenticarUsuario);
+router.use('/', autenticarUsuario, verificarAdmin);
+
+//router.use(autenticarUsuario);
 // router.use(verificarAdmin);
 router.post('/', async (req, res) => {
     try {
@@ -30,7 +32,7 @@ router.get('/', async (req, res) => {
 });
 
 
-router.get('/:id',async(req, res) =>{
+router.get('/:id',  async(req, res) =>{
     try{
         const vendedor = await Vendedor.findById(req.params.id);
         if(!vendedor){

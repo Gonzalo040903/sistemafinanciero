@@ -54,7 +54,7 @@ export function Vendedores() {
             setVendedores(response.data);
         } catch (error) {
             console.error("Error al traer los vendedores:", error);
-            toast.error("Error al cargar los vendedores");
+            toast.error("Acceso denegado");
         }
     };
 
