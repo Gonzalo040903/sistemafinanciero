@@ -8,17 +8,18 @@ import { EliminarclientePage } from './paginas/eliminarclientePage';
 import { ModificarclientePage } from './paginas/modificarclientePage';
 import { NuevocobroPage } from './paginas/nuevocobroPage';
 import { VendedoresPage } from './paginas/vendedoresPage';
+import { RutaPrivada } from './componentes/autenticacion/rutaPrivada'; // Asegúrate de que esta ruta sea correcta
 
 function App() {
     return (
         <Routes>
             <Route path="/" element={<LoginPage />} />
-            <Route path="/panel" element={<PanelPage />} />
-            <Route path="/agregar-cliente" element={<AgregarclientePage />} />
-            <Route path="/eliminar-cliente" element={<EliminarclientePage />} />
-            <Route path="/modificar-cliente" element={<ModificarclientePage />} />
-            <Route path="/nuevo-cobro" element={<NuevocobroPage />} />
-            <Route path='/vendedores' element={<VendedoresPage />} />
+            <Route path="/panel" element={<RutaPrivada><PanelPage /></RutaPrivada>} />
+            <Route path="/agregar-cliente" element={<RutaPrivada><AgregarclientePage /></RutaPrivada>} />
+            <Route path="/eliminar-cliente" element={<RutaPrivada><EliminarclientePage /></RutaPrivada>} />
+            <Route path="/modificar-cliente" element={<RutaPrivada><ModificarclientePage /></RutaPrivada>} />
+            <Route path="/nuevo-cobro" element={<RutaPrivada><NuevocobroPage /></RutaPrivada>} />
+            <Route path="/vendedores" element={<RutaPrivada><VendedoresPage /></RutaPrivada>} />
         </Routes>
     );
 }

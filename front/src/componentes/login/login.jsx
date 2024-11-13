@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import axios from 'axios';
+
 import { useNavigate } from 'react-router-dom';
 import { MDBBtn, MDBContainer, MDBRow, MDBCol, MDBCard, MDBCardBody, MDBInput } from 'mdb-react-ui-kit';
 import './styleLogin.css';
@@ -14,6 +15,20 @@ export function Login() {
     const [contraseña, setContraseña] = useState('');
     const navigate = useNavigate();
 
+       const handleLogin = (token) => {
+        localStorage.setItem('token', token);
+        // Redirigir al usuario a la ruta protegida
+        navigate('/panel');
+    };
+
+    // Función para cerrar sesión (por si la necesitas)
+    const handleLogout = () => {
+        localStorage.removeItem('token');
+        navigate('/');
+    };
+
+
+
     const handleSubmit = async (e) => {
         e.preventDefault();
     
@@ -21,10 +36,10 @@ export function Login() {
             const res = await axios.post('http://localhost:3001/api/login', { nombre, contraseña });
             const { token, role, vendedor } = res.data;
     
-            // Guardar el token en localStorage
-            localStorage.setItem('token', token);
+            // Llama a handleLogin para guardar el token y redirigir
+            handleLogin(token);
     
-            // Verificar el rol y redirigir a la página correspondiente
+            // Verificar el rol y mostrar mensajes apropiados
             if (role === 'admin') {
                 toast.success('Inicio de sesión como administrador');
                 navigate('/panel');
@@ -34,13 +49,11 @@ export function Login() {
             } else {
                 toast.error('Rol no autorizado');
             }
-        }catch (err) {
+        } catch (err) {
             console.error('Error de inicio de sesión:', err.response?.data || err.message);
             toast.error(err.response?.data?.message || 'Error en las credenciales. Verifique su nombre y contraseña.');
         }
-        
     };
-
     return (
         <MDBContainer fluid className='p-4 pt-5 mt-4'>
             <Toaster position="top-center" reverseOrder={false} />
