@@ -1,4 +1,4 @@
-import {Router} from 'express';
+import { Router } from 'express';
 import Cliente from '../model/modelCliente.js'
 
 const router = Router();
@@ -49,55 +49,85 @@ router.get('/', async (req, res) => {
         const clientes = await Cliente.find();
         res.json(clientes);
     } catch (error) {
-        res.status(500).json({message: error.message});
-    }   
+        res.status(500).json({ message: error.message });
+    }
 });
 //obtener por dni
 router.get('/:dni/prestamo', async (req, res) => {
     try {
-        const cliente = await Cliente.findOne({ dni: req.params.dni});
-        if(cliente.length === 0){
-            return res.status(404).json({message: 'Cliente no encontrado'});
+        const cliente = await Cliente.findOne({ dni: req.params.dni });
+        if (cliente.length === 0) {
+            return res.status(404).json({ message: 'Cliente no encontrado' });
         }
         res.json(cliente.prestamoActual);
     } catch (error) {
-        res.status(500).json({message: error.message});
+        res.status(500).json({ message: error.message });
     }
 });
 //actualizar cliente
 router.patch('/:dni', async (req, res) => {
     try {
-        const cliente = await Cliente.findOne({ dni: req.params.dni});
-        if(cliente == null){
-            return res.status(404).json({message: 'Cliente no encontrado'});
+        const cliente = await Cliente.findOne({ dni: req.params.dni });
+        if (cliente == null) {
+            return res.status(404).json({ message: 'Cliente no encontrado' });
         }
-        const {nombre, apellido, dni, direccion, googleMaps, telefonoPersonal, telefonoReferencia, telefonoTres, historialPrestamos} = req.body;
-        if(nombre) cliente.nombre = nombre;
-        if(apellido) cliente.apellido = apellido;
-        if(dni) cliente.dni = dni;
-        if(direccion) cliente.direccion = direccion;
-        if(googleMaps) cliente.googleMaps = googleMaps;
-        if(telefonoPersonal) cliente.telefonoPersonal = telefonoPersonal;
-        if(telefonoReferencia) cliente.telefonoReferencia = telefonoReferencia;
-        if(telefonoTres) cliente.telefonoTres = telefonoTres;
-        if(historialPrestamos && Array.isArray(historialPrestamos)){cliente.historialPrestamos = cliente.historialPrestamos.conact(historialPrestamos)};
+        const { nombre, apellido, dni, direccion, googleMaps, telefonoPersonal, telefonoReferencia, telefonoTres, historialPrestamos } = req.body;
+        if (nombre) cliente.nombre = nombre;
+        if (apellido) cliente.apellido = apellido;
+        if (dni) cliente.dni = dni;
+        if (direccion) cliente.direccion = direccion;
+        if (googleMaps) cliente.googleMaps = googleMaps;
+        if (telefonoPersonal) cliente.telefonoPersonal = telefonoPersonal;
+        if (telefonoReferencia) cliente.telefonoReferencia = telefonoReferencia;
+        if (telefonoTres) cliente.telefonoTres = telefonoTres;
+        if (historialPrestamos && Array.isArray(historialPrestamos)) { cliente.historialPrestamos = cliente.historialPrestamos.conact(historialPrestamos) };
         await cliente.save();
-        res.json({message:'Cliente actualizado', cliente});
+        res.json({ message: 'Cliente actualizado', cliente });
 
     } catch (error) {
-        res.status(500).json({message: error.message});
+        res.status(500).json({ message: error.message });
     }
 });
 //eliminar cliente
 router.delete('/:dni', async (req, res) => {
     try {
-        const cliente = await Cliente.findOne({ dni: req.params.dni});
-        if(cliente == null){
-            return res.status(404).json({message: 'Cliente no encontrado'});
+        const cliente = await Cliente.findOne({ dni: req.params.dni });
+        if (cliente == null) {
+            return res.status(404).json({ message: 'Cliente no encontrado' });
         }
-        await cliente.deleteOne({ dni: req.params.dni})
-        res.json({message: 'Cliente eliminado'});
+        await cliente.deleteOne({ dni: req.params.dni })
+        res.json({ message: 'Cliente eliminado' });
 
+    } catch (error) {
+        res.status(500).json({ message: error.message });
+    }
+});
+
+// Actualizar cuotas pagadas de prestamoActual
+router.patch('/:dni/prestamo/cuotas', async (req, res) => {
+    try {
+        const { dni } = req.params;
+        const { cuotasPagadas } = req.body;
+
+        // Verifica que cuotasPagadas esté presente en el body
+        if (typeof cuotasPagadas !== 'number') {
+            return res.status(400).json({ message: 'El campo cuotasPagadas es requerido y debe ser un número' });
+        }
+
+        // Encuentra el cliente por DNI
+        const cliente = await Cliente.findOne({ dni });
+        if (!cliente) {
+            return res.status(404).json({ message: 'Cliente no encontrado' });
+        }
+
+        // Verifica que tenga un prestamoActual y actualiza cuotasPagadas
+        if (cliente.prestamoActual) {
+            cliente.prestamoActual.cuotasPagadas = cuotasPagadas;
+            await cliente.save();
+            return res.json({ message: 'Cuotas pagadas actualizadas', cliente });
+        } else {
+            return res.status(404).json({ message: 'El cliente no tiene un préstamo actual' });
+        }
     } catch (error) {
         res.status(500).json({ message: error.message });
     }

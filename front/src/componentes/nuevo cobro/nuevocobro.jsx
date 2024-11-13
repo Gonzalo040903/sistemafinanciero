@@ -48,6 +48,13 @@ export function Nuevocobro() {
         }
         return 0;
     };
+    const calcularCuotasFaltantes = () => {
+        if (clienteSeleccionado && clienteSeleccionado.prestamoActual) {
+            const cuotasRestantes = clienteSeleccionado.prestamoActual.cuotasTotales - clienteSeleccionado.prestamoActual.cuotasPagadas;
+            return cuotasRestantes;
+        }
+        return 0;
+    };
     const funcionSuccess = (e) => {
         e.preventDefault();
         toast.success('Prestamo Creado')
@@ -59,11 +66,13 @@ export function Nuevocobro() {
     const [basicModal, setBasicModal] = useState(false);
     const [basicModal2, setBasicModal2] = useState(false);
     const [clienteSeleccionado, setClienteSeleccionado] = useState({}); // Inicializar con un objeto vacío
-
+    const [cuotasPagadas, setCuotasPagadas] = useState(0);
     const toggleOpen = (cliente) => {
         setClienteSeleccionado(cliente || {}); // Evitar nulos
+        setCuotasPagadas(cliente.prestamoActual ? cliente.prestamoActual.cuotasPagadas : 0); // Inicializar con el valor de cuotasPagadas del cliente
         setBasicModal(!basicModal);
     };
+
 
     const toggleOpen2 = () => setBasicModal2(!basicModal2);
     const toggleGestionClientes = () => setIsGestionClientesOpen(!isGestionClientesOpen);
@@ -80,6 +89,50 @@ export function Nuevocobro() {
         };
         fetchClientes();
     }, []);
+
+    const handleCuotasChange = (event) => {
+        setCuotasPagadas(Number(event.target.value));
+    };
+
+    let cuotaspagadas = 0
+    const actualizarCuotasPagadas = async () => {
+        if (clienteSeleccionado && cuotasPagadas >= 0) {
+            try {
+                const response = await fetch(`http://localhost:3001/api/clientes/${clienteSeleccionado.dni}/prestamo/cuotas`, {
+                    method: "PATCH",
+                    headers: {
+                        "Content-Type": "application/json"
+                    }, body: JSON.stringify({
+                        cuotasPagadas: cuotasPagadas
+                    })
+                });
+                if (response.status === 200) {
+                    toast.success('Cuotas actualizadas correctamente');
+                    setClienteSeleccionado(prev => ({
+                        ...prev,
+                        prestamoActual: {
+                            ...prev.prestamoActual,
+                            cuotasPagadas
+                        }
+                    }));
+
+                    // Recargar la lista de clientes
+                    const updatedClientes = await axios.get('http://localhost:3001/api/clientes');
+                    setClientes(updatedClientes.data);
+
+                } else {
+                    throw new Error("La actualización no fue exitosa.");
+                }
+            } catch (error) {
+                console.error("Error al actualizar cuotas pagadas:", error);
+                toast.error('Error al actualizar cuotas');
+            }
+        } else {
+            toast.error('Por favor, selecciona un valor de cuotas válido');
+        }
+    };
+
+
 
     return (
         <MDBContainer fluid className='col-10' id="container">
@@ -222,27 +275,23 @@ export function Nuevocobro() {
                                 <div className="col-5">
                                     <ul>
                                         <li className="p-1"><b className="pe-2">Cuotas:</b> {clienteSeleccionado.prestamoActual?.cuotasTotales || ''}</li>
-                                        <li className="p-1"><select id="cuotaspagadas" className="form-select mb-4">
-                                            <option value={0}>0 Cuotas Pagadas</option>
-                                            <option value={1}>1 Cuotas Pagadas</option>
-                                            <option value={2}>2 Cuotas Pagadas</option>
-                                            <option value={3}>3 Cuotas Pagadas</option>
-                                            <option value={4}>4 Cuotas Pagadas</option>
-                                            <option value={5}>5 Cuotas Pagadas</option>
-                                            <option value={6}>6 Cuotas Pagadas</option>
-                                            <option value={7}>7 Cuotas Pagadas</option>
-                                            <option value={8}>8 Cuotas Pagadas</option>
-                                            <option value={9}>9 Cuotas Pagadas</option>
-                                            <option value={10}>10 Cuotas Pagadas</option>
-                                            <option value={11}>11 Cuotas Pagadas</option>
-                                            <option value={12}>12 Cuotas Pagadas</option>
-                                        </select></li>
+                                        <li className="p-1">
+
+                                                <select id="cuotaspagadas" className="form-select mb-4" value={cuotasPagadas} onChange={handleCuotasChange}>
+                                                    {[...Array(clienteSeleccionado.prestamoActual?.cuotasTotales + 1 || 1)].map((_, index) => (
+                                                        <option key={index} value={index} id={cuotaspagadas}>
+                                                            {index} Cuotas Pagadas
+                                                        </option>
+                                                    ))}
+                                                </select>
+                                                <MDBIcon icon="save" size="lg" onClick={actualizarCuotasPagadas} style={{ cursor: 'pointer', color: 'green' }} />
+                                        </li>
                                     </ul>
                                 </div>
                                 <div className="col-5">
                                     <ul>
                                         <li className="p-1"><b className="pe-2">Semanas:</b> {clienteSeleccionado.prestamoActual?.semanas || ''}</li>
-                                        <li className="p-1"><b className="pe-2">Cuotas Faltantes:</b> {clienteSeleccionado.prestamoActual?.pagadas || '0'}</li>
+                                        <li className="p-1"><b className="pe-2">Cuotas Faltantes:</b> {calcularCuotasFaltantes()}</li>
 
                                     </ul>
                                 </div>
