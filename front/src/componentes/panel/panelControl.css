@@ -64,7 +64,8 @@ header {
 
 #tabla {
     background-color: white;
-    width: 95.4% !important;
+    /* width: 95.4% !important; */
+    
 }
 
 
@@ -113,3 +114,4 @@ header {
 .content.shift-down {
     margin-top: 100px;
 }
+

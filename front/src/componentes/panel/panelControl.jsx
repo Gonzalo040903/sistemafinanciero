@@ -164,46 +164,47 @@ export function PanelControl() {
 
                         {/* FIN DEL NAVBAR  */}
 
-                        <div className="col-10 p-0" id="panel">
+                        <div className="col-lg-10 col-md-12 p-0" id="panel">
                             <header className="p-2 mx-4 mt-3 px-4 header rounded-5 shadow-3">{palabra}</header>
-                            <h3 className="px-4 textogris mt-5"><b>Tabla Clientes</b></h3>
-
-                            <MDBTable id="tabla" className="shadow-3 rounded-5 mx-4 mt-4 text-center">
-                                <MDBTableHead>
-                                    <tr>
-                                        <th scope='col'>Nombre</th>
-                                        <th scope='col'>DNI</th>
-                                        <th scope='col'>Dirección</th>
-                                        <th scope='col'>Teléfono</th>
-                                        <th scope='col'>Teléfono2</th>
-                                        <th scope='col'>Teléfono3</th>
-                                        <th scope='col'>Debiente</th>
-                                        <th scope='col'>Maps</th>
-                                    </tr>
-                                </MDBTableHead>
-                                <MDBTableBody>
-                                    {clientes.map((cliente) => (
-                                        <tr key={cliente.dni}>
-                                            <td>{cliente.nombre} {cliente.apellido}</td>
-                                            <td>{cliente.dni}</td>
-                                            <td>{cliente.direccion}</td>
-                                            <td>{cliente.telefonoPersonal}</td>
-                                            <td>{cliente.telefonoReferencia}</td>
-                                            <td>{cliente.telefonoTres}</td>
-                                            <td>
-                                                <MDBBadge color={(cliente.prestamoActual.montoFinal - cliente.prestamoActual.montoAdeudado) > 0 ? 'danger' : 'success'} pill>
-                                                    {cliente.prestamoActual.montoFinal - cliente.prestamoActual.montoAdeudado}
-                                                </MDBBadge>
-                                            </td>
-                                            <td>
-                                                <MDBBtn color="success" href={cliente.googleMaps} target="_blank">
-                                                    <MDBIcon fas icon="map-marker-alt" size="md" color="light" />
-                                                </MDBBtn>
-                                            </td>
+                            <h3 className="px-4 textogris mt-5 mx-1"><b>Tabla Clientes</b></h3>
+                            <div style={{ maxHeight: '450px', overflowY: 'auto', scrollbarWidth: 'thin', scrollbarColor: '#cccccc #f5f5f5' }} className="mx-4 mt-4">
+                                <MDBTable id="tabla" className="shadow-3 mx-2 rounded-5 text-center">
+                                    <MDBTableHead>
+                                        <tr>
+                                            <th scope='col'>Nombre</th>
+                                            <th scope='col'>DNI</th>
+                                            <th scope='col'>Dirección</th>
+                                            <th scope='col'>Teléfono</th>
+                                            <th scope='col'>Teléfono2</th>
+                                            <th scope='col'>Teléfono3</th>
+                                            <th scope='col'>Debiente</th>
+                                            <th scope='col'>Maps</th>
                                         </tr>
-                                    ))}
-                                </MDBTableBody>
-                            </MDBTable>
+                                    </MDBTableHead>
+                                    <MDBTableBody>
+                                        {clientes.map((cliente) => (
+                                            <tr key={cliente.dni}>
+                                                <td>{cliente.nombre} {cliente.apellido}</td>
+                                                <td>{cliente.dni}</td>
+                                                <td>{cliente.direccion}</td>
+                                                <td>{cliente.telefonoPersonal}</td>
+                                                <td>{cliente.telefonoReferencia}</td>
+                                                <td>{cliente.telefonoTres}</td>
+                                                <td>
+                                                    <MDBBadge color={(cliente.prestamoActual.montoFinal - cliente.prestamoActual.montoAdeudado) > 0 ? 'danger' : 'success'} pill>
+                                                        {cliente.prestamoActual.montoFinal - cliente.prestamoActual.montoAdeudado}
+                                                    </MDBBadge>
+                                                </td>
+                                                <td>
+                                                    <MDBBtn color="success" href={cliente.googleMaps} target="_blank">
+                                                        <MDBIcon fas icon="map-marker-alt" size="md" color="light" />
+                                                    </MDBBtn>
+                                                </td>
+                                            </tr>
+                                        ))}
+                                    </MDBTableBody>
+                                </MDBTable>
+                            </div>
                         </div>
                     </div>
                 </MDBCard>
