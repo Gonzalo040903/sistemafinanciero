@@ -67,27 +67,33 @@ export function PanelControl() {
         <>{/* NAVBAR MOVIL (Visible en pantallas pequeñas) */}
             {isMobile && (
                 <div className="navbar-mobile">
-                    <MDBBtn onClick={() => setIsGestionClientesOpen(!isGestionClientesOpen)} className="mobile-menu-btn">
+                    <MDBBtn onClick={() => setIsGestionClientesOpen(!isGestionClientesOpen)} className="mobile-menu-btn" style={{ backgroundColor: '#15b1e5' }}>
                         <MDBIcon icon="bars" />
                     </MDBBtn>
                     {isGestionClientesOpen && (
                         <div className="dropdown-menu">
-                            <MDBNavbarLink href="/panel" className="nav-item-link">
+                            <MDBNavbarLink href="/panel" className="nav-item-link py-1">
+                                <MDBIcon icon="table" className="me-2 mx-0" />
                                 Tabla Clientes
                             </MDBNavbarLink>
-                            <MDBNavbarLink href="/agregar-cliente" className="nav-item-link">
+                            <MDBNavbarLink href="/agregar-cliente" className="nav-item-link py-1">
+                                <MDBIcon icon="user-plus" className="me-1 mx-0" />
                                 Agregar Cliente
                             </MDBNavbarLink>
-                            <MDBNavbarLink href="/eliminar-cliente" className="nav-item-link">
+                            <MDBNavbarLink href="/eliminar-cliente" className="nav-item-link py-1">
+                                <MDBIcon icon="user-times" className="me-1 mx-0" />
                                 Eliminar Cliente
                             </MDBNavbarLink>
-                            <MDBNavbarLink href="/modificar-cliente" className="nav-item-link">
+                            <MDBNavbarLink href="/modificar-cliente" className="nav-item-link py-1">
+                                <MDBIcon icon="user-edit" className="me-1 mx-0" />
                                 Modificar Cliente
                             </MDBNavbarLink>
-                            <MDBNavbarLink href="/nuevo-cobro" className="nav-item-link">
+                            <MDBNavbarLink href="/nuevo-cobro" className="nav-item-link py-1">
+                                <MDBIcon icon="dollar-sign" className="me-2 mx-0 mt-2" />
                                 Nuevo Cobro
                             </MDBNavbarLink>
-                            <MDBNavbarLink href="/vendedores" className="nav-item-link">
+                            <MDBNavbarLink href="/vendedores" className="nav-item-link py-1">
+                                <MDBIcon fas icon="key" className="me-2 mx-0 mt-2" />
                                 Vendedores
                             </MDBNavbarLink>
                             <MDBNavbarLink className="mt-4">

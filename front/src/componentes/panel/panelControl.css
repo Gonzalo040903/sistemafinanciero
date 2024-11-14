@@ -84,20 +84,23 @@ header {
     position: static;
     top: 0;
     left: 0;
-    background-color: #333;
+    background-color: #15b1e5;
     z-index: 1000;
     padding: 10px 0;
 }
 
 .mobile-menu-btn {
-    background-color: #444;
+    background-color: #15b1e5;
     color: white;
     width: 100%;
     text-align: center;
 }
 
 .dropdown-menu {
-    background-color: #444;
+    text-align: center;
+    font-size: 15px;
+    background-color: #15b1e5;
+    color: rgb(234, 233, 233);
     position: static;
     width: 100%;
     top: 50px;
@@ -109,7 +112,4 @@ header {
 
 .content.shift-down {
     margin-top: 100px;
-    /* Ajusta esto según el tamaño del navbar */
 }
-
-/* Ajusta según el estilo de tu navbar */
