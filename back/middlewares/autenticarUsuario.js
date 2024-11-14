@@ -9,9 +9,8 @@ const autenticarUsuario = (req, res, next) => {
     return res.status(403).json({ message: 'No se proporcionó un token. Acceso denegado.' });
   }
 
-  const token = authHeader.split(' ')[1]; // Acceder correctamente al token
- 
-  //console.log('Extracted Token:', token);
+  const token = authHeader.split(' ')[1]; 
+
 
   if (!token) {
     return res.status(403).json({ message: 'Formato de token incorrecto.' });
@@ -19,8 +18,6 @@ const autenticarUsuario = (req, res, next) => {
 
   try {
     const decoded = jwt.verify(token, '2024');
-
-    //console.log('Decoded Token:', decoded);
 
     req.usuario = decoded; 
     next(); 

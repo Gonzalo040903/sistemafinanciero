@@ -4,9 +4,9 @@ import autenticarUsuario from '../middlewares/autenticarUsuario.js';
 import verificarAdmin from '../middlewares/verificarAdmin.js';
 
 const router = Router();
-router.use('/', autenticarUsuario, verificarAdmin);
+router.use('/', autenticarUsuario);
 
-router.post('/', async (req, res) => {
+router.post('/', verificarAdmin, async (req, res) => {
     try {
         const { nombre, contraseña } = req.body;
         if (!nombre || !contraseña) {
@@ -20,7 +20,7 @@ router.post('/', async (req, res) => {
     }
 });
 
-router.get('/', async (req, res) => {
+router.get('/', verificarAdmin, async (req, res) => {
     try {
         const vendedores = await Vendedor.find({}, 'nombre contraseña');
         res.json(vendedores);
@@ -30,7 +30,7 @@ router.get('/', async (req, res) => {
 });
 
 
-router.get('/:id',  async(req, res) =>{
+router.get('/:id', verificarAdmin,  async(req, res) =>{
     try{
         const vendedor = await Vendedor.findById(req.params.id);
         if(!vendedor){
@@ -42,7 +42,7 @@ router.get('/:id',  async(req, res) =>{
     }
 });
 
-router.delete('/:id', async(req, res) =>{
+router.delete('/:id', verificarAdmin, async(req, res) =>{
     try{
         const vendedor = await Vendedor.findById(req.params.id);
         if(!vendedor){
