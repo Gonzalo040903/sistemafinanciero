@@ -15,13 +15,11 @@ const prestamoSchema = new Schema({
 prestamoSchema.pre('save', function (next) {
     if (this.isNew) {
         this.montoFinal = this.monto + (this.monto * (this.intereses / 100));
-        this.montoAdeudado = this.cuotasPagadas * (this.montoFinal / this.semanas);
         this.cuotasTotales = this.semanas;
+        this.montoAdeudado = this.cuotasPagadas * (this.montoFinal / this.cuotasTotales);
     }
     next();
 });
-//const Prestamo = model('Prestamo', prestamoSchema);
-
 
 const clienteSchema = new Schema({
     nombre: { type: String, required: true },

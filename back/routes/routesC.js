@@ -53,6 +53,17 @@ router.get('/', async (req, res) => {
     }
 });
 //obtener por dni
+router.get('/:dni', async (req, res) => {
+    try {
+        const cliente = await Cliente.findOne({ dni: req.params.dni });
+        if (cliente.length === 0) {
+            return res.status(404).json({ message: 'Cliente no encontrado' });
+        }
+        res.json(cliente);
+    } catch (error) {
+        res.status(500).json({ message: error.message });
+    }
+});
 router.get('/:dni/prestamo', async (req, res) => {
     try {
         const cliente = await Cliente.findOne({ dni: req.params.dni });
@@ -138,5 +149,31 @@ router.patch('/:dni/prestamo/cuotas', async (req, res) => {
     }
 });
 
+router.patch('/:dni/prestamo/nuevo', async (req, res) => {
+
+
+    const { dni } = req.params;
+    const { prestamoActual, moverHistorial } = req.body;
+
+    try {
+        const cliente = await Cliente.findOne({ dni });
+
+        if (moverHistorial && cliente.prestamoActual) {
+            // Mueve el préstamo actual al historial
+            cliente.historialPrestamos.push(cliente.prestamoActual);
+        }
+
+        // Actualiza el préstamo actual
+        cliente.prestamoActual = prestamoActual;
+
+        // Guarda los cambios
+        await cliente.save();
+
+        res.status(200).json(cliente);
+    } catch (error) {
+        console.error("Error al actualizar el cliente:", error);
+        res.status(500).json({ message: "Error al actualizar el cliente" });
+    }
+});
 
 export default router;

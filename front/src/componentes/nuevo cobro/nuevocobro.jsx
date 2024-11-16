@@ -75,13 +75,27 @@ export function Nuevocobro() {
     const [clienteSeleccionado, setClienteSeleccionado] = useState({}); // Inicializar con un objeto vacío
     const [cuotasPagadas, setCuotasPagadas] = useState(0);
     const toggleOpen = (cliente) => {
-        setClienteSeleccionado(cliente || {}); // Evitar nulos
-        setCuotasPagadas(cliente.prestamoActual ? cliente.prestamoActual.cuotasPagadas : 0); // Inicializar con el valor de cuotasPagadas del cliente
+        if (cliente) {
+            setClienteSeleccionado(cliente);
+            setCuotasPagadas(cliente.prestamoActual ? cliente.prestamoActual.cuotasPagadas : 0);
+        } else {
+            setClienteSeleccionado({});
+            setCuotasPagadas(0);
+        }
         setBasicModal(!basicModal);
     };
 
 
-    const toggleOpen2 = () => setBasicModal2(!basicModal2);
+    const toggleOpen2 = (cliente) => {
+        if (cliente) {
+            setClienteSeleccionado(cliente); // Selecciona el cliente
+            setCuotasPagadas(cliente.prestamoActual ? cliente.prestamoActual.cuotasPagadas : 0);
+        } else {
+            setClienteSeleccionado({});
+            setCuotasPagadas(0);
+        }
+        setBasicModal2(!basicModal2); // Abre el modal
+    };
     const toggleGestionClientes = () => setIsGestionClientesOpen(!isGestionClientesOpen);
 
     // Función para obtener los datos de los clientes desde la API
@@ -148,7 +162,7 @@ export function Nuevocobro() {
 
 
 
-    
+
     useEffect(() => {
         const handleResize = () => {
             if (window.innerWidth <= 1300) {
@@ -162,6 +176,41 @@ export function Nuevocobro() {
 
         return () => window.removeEventListener('resize', handleResize);
     }, []);
+
+    const crearPrestamo = async (nuevoPrestamo) => {
+        if (clienteSeleccionado && clienteSeleccionado.dni) { // Verifica que clienteSeleccionado tiene un DNI
+            try {
+                const response = await fetch(`http://localhost:3001/api/clientes/${clienteSeleccionado.dni}/prestamo/nuevo`, {
+                    method: "PATCH",
+                    headers: {
+                        "Content-Type": "application/json"
+                    },
+                    body: JSON.stringify({
+                        prestamoActual: nuevoPrestamo, // Asigna el nuevo préstamo
+                        moverHistorial: true // Indica que se debe mover el préstamo actual al historial
+                    })
+                });
+
+                if (response.status === 200) {
+                    const clienteActualizado = await response.json();
+
+                    // Actualiza el cliente seleccionado con los datos nuevos
+                    setClienteSeleccionado(clienteActualizado);
+
+                    toast.success("Préstamo creado y actualizado correctamente");
+                } else {
+                    throw new Error("Error al crear el préstamo.");
+                }
+            } catch (error) {
+                console.error("Error al crear el préstamo:", error);
+                toast.error("Hubo un problema al crear el préstamo.");
+            }
+        } else {
+            toast.error("Por favor, selecciona un cliente válido.");
+        }
+    };
+
+    // Ejemplo de uso en el botón "Crear Préstamo"
 
 
     return (
@@ -299,12 +348,12 @@ export function Nuevocobro() {
                                                     </MDBBtn>
                                                 </td>
                                                 <td>
-                                                    {cliente.prestamoActual.cuotasPagadas === cliente.prestamoActual.cuotasTotales &&(
+                                                    {cliente.prestamoActual.cuotasPagadas === cliente.prestamoActual.cuotasTotales && (
 
-                                                    <MDBBtn color='success' size='sm' onClick={toggleOpen2}>
-                                                        <MDBIcon icon="dollar-sign" className="me-2" />
-                                                        Nuevo Prestamo
-                                                    </MDBBtn>
+                                                        <MDBBtn color='success' size='sm' onClick={() => toggleOpen2(cliente)}>
+                                                            <MDBIcon icon="dollar-sign" className="me-2" />
+                                                            Nuevo Prestamo
+                                                        </MDBBtn>
                                                     )}
                                                 </td>
                                             </tr>
@@ -456,7 +505,19 @@ export function Nuevocobro() {
                                 </div>
 
                                 <div className="col-8 mt-3">
-                                    <MDBBtn className='w-100 mb-4 mt-4' href='/error' color="success" size='md' onClick={funcionSuccess}>Crear Prestamo</MDBBtn>
+                                    <MDBBtn className='w-100 mb-4 mt-4' color="success" onClick={() => {
+                                        const nuevoPrestamo = {
+                                            monto: parseInt(document.getElementById("formMonto").value),
+                                            semanas: parseInt(document.getElementById("formSemanas").value),
+                                            intereses: parseInt(document.getElementById("formIntereses").value),
+                                            fechaInicio: new Date(),
+                                            cuotasPagadas: 0,
+                                            montoFinal: parseFloat(document.getElementById("formDevuelve").value),
+                                            vendedor: "Vendedor ejemplo", // Reemplaza con el vendedor real
+                                            montoAdeudado: parseFloat(document.getElementById("formDevuelve").value)
+                                        };
+                                        crearPrestamo(nuevoPrestamo);
+                                    }}>Crear Préstamo</MDBBtn>
                                 </div>
                             </div>
                         </MDBModalContent>
