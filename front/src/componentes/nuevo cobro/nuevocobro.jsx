@@ -117,51 +117,51 @@ export function Nuevocobro() {
 
     let cuotaspagadas = 0
     const actualizarCuotasPagadas = async () => {
-    if (clienteSeleccionado && cuotasPagadas >= 0) {
-        try {
-            const response = await fetch(`http://localhost:3001/api/clientes/${clienteSeleccionado.dni}/prestamo/cuotas`, {
-                method: "PATCH",
-                headers: {
-                    "Content-Type": "application/json"
-                },
-                body: JSON.stringify({
-                    cuotasPagadas: cuotasPagadas
-                })
-            });
+        if (clienteSeleccionado && cuotasPagadas >= 0) {
+            try {
+                const response = await fetch(`http://localhost:3001/api/clientes/${clienteSeleccionado.dni}/prestamo/cuotas`, {
+                    method: "PATCH",
+                    headers: {
+                        "Content-Type": "application/json"
+                    },
+                    body: JSON.stringify({
+                        cuotasPagadas: cuotasPagadas
+                    })
+                });
 
-            if (response.status === 200) {
-                const updatedCliente = await response.json(); // Obtener la respuesta con el cliente actualizado
+                if (response.status === 200) {
+                    const updatedCliente = await response.json(); // Obtener la respuesta con el cliente actualizado
 
-                // Mostrar un mensaje de éxito
-                toast.success('Cuotas actualizadas correctamente');
+                    // Mostrar un mensaje de éxito
+                    toast.success('Cuotas actualizadas correctamente');
 
-                // Actualizar clienteSeleccionado con los valores actualizados
-                setClienteSeleccionado(prev => ({
-                    ...prev,
-                    prestamoActual: {
-                        ...updatedCliente.prestamoActual, // Usamos los datos del cliente actualizado
-                    }
-                }));
+                    // Actualizar clienteSeleccionado con los valores actualizados
+                    setClienteSeleccionado(prev => ({
+                        ...prev,
+                        prestamoActual: {
+                            ...updatedCliente.prestamoActual, // Usamos los datos del cliente actualizado
+                        }
+                    }));
 
-                // Actualizar el estado de la lista de clientes
-                setClientes(prevClientes => 
-                    prevClientes.map(cliente => 
-                        cliente.dni === updatedCliente.dni 
-                        ? { ...cliente, prestamoActual: updatedCliente.prestamoActual } 
-                        : cliente
-                    )
-                );
-            } else {
-                throw new Error("La actualización no fue exitosa.");
+                    // Actualizar el estado de la lista de clientes
+                    setClientes(prevClientes =>
+                        prevClientes.map(cliente =>
+                            cliente.dni === updatedCliente.dni
+                                ? { ...cliente, prestamoActual: updatedCliente.prestamoActual }
+                                : cliente
+                        )
+                    );
+                } else {
+                    throw new Error("La actualización no fue exitosa.");
+                }
+            } catch (error) {
+                console.error("Error al actualizar cuotas pagadas:", error);
+                toast.error('Error al actualizar cuotas');
             }
-        } catch (error) {
-            console.error("Error al actualizar cuotas pagadas:", error);
-            toast.error('Error al actualizar cuotas');
+        } else {
+            toast.error('Por favor, selecciona un valor de cuotas válido');
         }
-    } else {
-        toast.error('Por favor, selecciona un valor de cuotas válido');
-    }
-};
+    };
 
     const navigate = useNavigate();
     const handleLogout = () => {
@@ -541,32 +541,32 @@ export function Nuevocobro() {
                                 </div>
 
                                 <div className="col-8 mt-3">
-                                <MDBBtn className='w-100 mb-4 mt-4' color="success" onClick={() => {
-    const monto = parseInt(document.getElementById("formMonto").value);
-    const semanas = parseInt(document.getElementById("formSemanas").value);
-    const intereses = parseInt(document.getElementById("formIntereses").value);
+                                    <MDBBtn className='w-100 mb-4 mt-4' color="success" onClick={() => {
+                                        const monto = parseInt(document.getElementById("formMonto").value);
+                                        const semanas = parseInt(document.getElementById("formSemanas").value);
+                                        const intereses = parseInt(document.getElementById("formIntereses").value);
 
-    // Calcular montoFinal, montoAdeudado y cuotasTotales
-    const montoFinal = monto + (monto * (intereses / 100));
-    const montoAdeudado = 0 * (montoFinal / semanas); // Suponiendo que cuotasPagadas inicia en 0
-    const cuotasTotales = semanas;
+                                        // Calcular montoFinal, montoAdeudado y cuotasTotales
+                                        const montoFinal = monto + (monto * (intereses / 100));
+                                        const montoAdeudado = 0 * (montoFinal / semanas); // Suponiendo que cuotasPagadas inicia en 0
+                                        const cuotasTotales = semanas;
 
-    const nuevoPrestamo = {
-        monto: monto,
-        semanas: semanas,
-        intereses: intereses,
-        fechaInicio: new Date(),
-        cuotasPagadas: 0, // Inicialmente en 0
-        montoFinal: montoFinal,
-        vendedor: "Vendedor ejemplo", // Reemplaza con el vendedor real
-        montoAdeudado: montoAdeudado,
-        cuotasTotales: cuotasTotales
-    };
+                                        const nuevoPrestamo = {
+                                            monto: monto,
+                                            semanas: semanas,
+                                            intereses: intereses,
+                                            fechaInicio: new Date(),
+                                            cuotasPagadas: 0, // Inicialmente en 0
+                                            montoFinal: montoFinal,
+                                            vendedor: "Vendedor ejemplo", // Reemplaza con el vendedor real
+                                            montoAdeudado: montoAdeudado,
+                                            cuotasTotales: cuotasTotales
+                                        };
 
-    crearPrestamo(nuevoPrestamo);
-}}>
-    Crear Préstamo
-</MDBBtn>
+                                        crearPrestamo(nuevoPrestamo);
+                                    }}>
+                                        Crear Préstamo
+                                    </MDBBtn>
                                 </div>
                             </div>
                         </MDBModalContent>
