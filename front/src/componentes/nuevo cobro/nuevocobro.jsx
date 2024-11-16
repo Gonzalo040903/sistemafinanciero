@@ -97,17 +97,16 @@ export function Nuevocobro() {
         setBasicModal2(!basicModal2); // Abre el modal
     };
     const toggleGestionClientes = () => setIsGestionClientesOpen(!isGestionClientesOpen);
-
+    const fetchClientes = async () => {
+        try {
+            const response = await axios.get('http://localhost:3001/api/clientes');
+            setClientes(response.data);
+        } catch (error) {
+            console.error("Error al obtener los clientes:", error);
+        }
+    };
     // Función para obtener los datos de los clientes desde la API
     useEffect(() => {
-        const fetchClientes = async () => {
-            try {
-                const response = await axios.get('http://localhost:3001/api/clientes');
-                setClientes(response.data);
-            } catch (error) {
-                console.error("Error al obtener los clientes:", error);
-            }
-        };
         fetchClientes();
     }, []);
 
@@ -234,6 +233,8 @@ export function Nuevocobro() {
                     const clienteActualizado = await response.json();
                     setClienteSeleccionado(clienteActualizado);
                     toast.success("Préstamo creado y actualizado correctamente");
+                    fetchClientes();
+                    toggleOpen2();
                 } else {
                     throw new Error("Error al crear el préstamo.");
                 }
