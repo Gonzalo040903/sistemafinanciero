@@ -176,9 +176,38 @@ export function Nuevocobro() {
 
         return () => window.removeEventListener('resize', handleResize);
     }, []);
+    const calcular2 = (e) => {
+        e.preventDefault();
 
+        // Obtener los valores de los inputs
+        let monto = parseInt(document.getElementById("formMonto").value);
+        let intereses = parseInt(document.getElementById("formIntereses").value);
+        let semanas = parseInt(document.getElementById("formSemanas").value);
+
+        // Calcular monto final, monto adeudado y cuotas totales
+        let montoFinal = (monto * intereses / 100) + monto;
+        let montoAdeudado = (parseInt(document.getElementById("formSemanaPaga").value) * (montoFinal / semanas));
+        let cuotasTotales = semanas;
+
+        // Mostrar los resultados en los inputs correspondientes
+        document.getElementById("formDevuelve").value = montoFinal;
+        document.getElementById("formSemanaPaga").value = montoFinal / semanas;
+
+        // Almacenar estos valores en el estado o enviarlos a la base de datos al crear el préstamo
+        const nuevoPrestamo = {
+            montoFinal: montoFinal,
+            montoAdeudado: montoAdeudado,
+            cuotasTotales: cuotasTotales,
+            monto: monto,
+            intereses: intereses,
+            semanas: semanas,
+        };
+
+        // Crear préstamo
+        crearPrestamo(nuevoPrestamo);
+    };
     const crearPrestamo = async (nuevoPrestamo) => {
-        if (clienteSeleccionado && clienteSeleccionado.dni) { // Verifica que clienteSeleccionado tiene un DNI
+        if (clienteSeleccionado && clienteSeleccionado.dni) {
             try {
                 const response = await fetch(`http://localhost:3001/api/clientes/${clienteSeleccionado.dni}/prestamo/nuevo`, {
                     method: "PATCH",
@@ -193,10 +222,7 @@ export function Nuevocobro() {
 
                 if (response.status === 200) {
                     const clienteActualizado = await response.json();
-
-                    // Actualiza el cliente seleccionado con los datos nuevos
                     setClienteSeleccionado(clienteActualizado);
-
                     toast.success("Préstamo creado y actualizado correctamente");
                 } else {
                     throw new Error("Error al crear el préstamo.");
@@ -505,19 +531,32 @@ export function Nuevocobro() {
                                 </div>
 
                                 <div className="col-8 mt-3">
-                                    <MDBBtn className='w-100 mb-4 mt-4' color="success" onClick={() => {
-                                        const nuevoPrestamo = {
-                                            monto: parseInt(document.getElementById("formMonto").value),
-                                            semanas: parseInt(document.getElementById("formSemanas").value),
-                                            intereses: parseInt(document.getElementById("formIntereses").value),
-                                            fechaInicio: new Date(),
-                                            cuotasPagadas: 0,
-                                            montoFinal: parseFloat(document.getElementById("formDevuelve").value),
-                                            vendedor: "Vendedor ejemplo", // Reemplaza con el vendedor real
-                                            montoAdeudado: parseFloat(document.getElementById("formDevuelve").value)
-                                        };
-                                        crearPrestamo(nuevoPrestamo);
-                                    }}>Crear Préstamo</MDBBtn>
+                                <MDBBtn className='w-100 mb-4 mt-4' color="success" onClick={() => {
+    const monto = parseInt(document.getElementById("formMonto").value);
+    const semanas = parseInt(document.getElementById("formSemanas").value);
+    const intereses = parseInt(document.getElementById("formIntereses").value);
+
+    // Calcular montoFinal, montoAdeudado y cuotasTotales
+    const montoFinal = monto + (monto * (intereses / 100));
+    const montoAdeudado = 0 * (montoFinal / semanas); // Suponiendo que cuotasPagadas inicia en 0
+    const cuotasTotales = semanas;
+
+    const nuevoPrestamo = {
+        monto: monto,
+        semanas: semanas,
+        intereses: intereses,
+        fechaInicio: new Date(),
+        cuotasPagadas: 0, // Inicialmente en 0
+        montoFinal: montoFinal,
+        vendedor: "Vendedor ejemplo", // Reemplaza con el vendedor real
+        montoAdeudado: montoAdeudado,
+        cuotasTotales: cuotasTotales
+    };
+
+    crearPrestamo(nuevoPrestamo);
+}}>
+    Crear Préstamo
+</MDBBtn>
                                 </div>
                             </div>
                         </MDBModalContent>
