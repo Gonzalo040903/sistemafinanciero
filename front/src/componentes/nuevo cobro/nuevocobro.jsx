@@ -366,7 +366,7 @@ export function Nuevocobro() {
                                             <th scope='col'>Fecha Inicio</th>
                                             <th scope='col'>Cuotas</th>
                                             <th scope='col'>Cuotas Pagadas</th>
-                                            <th scope='col'></th>
+                                            <th scope='col'>Mas Info</th>
                                             <th scope='col'></th>
                                         </tr>
                                     </MDBTableHead>
@@ -380,8 +380,7 @@ export function Nuevocobro() {
                                                 <td>{cliente.prestamoActual.cuotasPagadas}</td>
                                                 <td>
                                                     <MDBBtn color='info' size='sm' onClick={() => toggleOpen(cliente)}>
-                                                        <MDBIcon icon="pencil-alt" className="me-2" />
-                                                        Mas Info
+                                                        <MDBIcon icon="plus" className="" />
                                                     </MDBBtn>
                                                 </td>
                                                 <td>
