@@ -146,6 +146,9 @@ export function Nuevocobro() {
     };
     const [isMobile, setIsMobile] = useState(false);
 
+
+
+    
     useEffect(() => {
         const handleResize = () => {
             if (window.innerWidth <= 1300) {
@@ -296,10 +299,13 @@ export function Nuevocobro() {
                                                     </MDBBtn>
                                                 </td>
                                                 <td>
+                                                    {cliente.prestamoActual.cuotasPagadas === cliente.prestamoActual.cuotasTotales &&(
+
                                                     <MDBBtn color='success' size='sm' onClick={toggleOpen2}>
                                                         <MDBIcon icon="dollar-sign" className="me-2" />
                                                         Nuevo Prestamo
                                                     </MDBBtn>
+                                                    )}
                                                 </td>
                                             </tr>
                                         ))}
