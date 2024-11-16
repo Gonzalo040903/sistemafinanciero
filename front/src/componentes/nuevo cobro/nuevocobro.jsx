@@ -117,42 +117,52 @@ export function Nuevocobro() {
 
     let cuotaspagadas = 0
     const actualizarCuotasPagadas = async () => {
-        if (clienteSeleccionado && cuotasPagadas >= 0) {
-            try {
-                const response = await fetch(`http://localhost:3001/api/clientes/${clienteSeleccionado.dni}/prestamo/cuotas`, {
-                    method: "PATCH",
-                    headers: {
-                        "Content-Type": "application/json"
-                    },
-                    body: JSON.stringify({
-                        cuotasPagadas: cuotasPagadas
-                    })
-                });
+    if (clienteSeleccionado && cuotasPagadas >= 0) {
+        try {
+            const response = await fetch(`http://localhost:3001/api/clientes/${clienteSeleccionado.dni}/prestamo/cuotas`, {
+                method: "PATCH",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify({
+                    cuotasPagadas: cuotasPagadas
+                })
+            });
 
-                if (response.status === 200) {
-                    const updatedCliente = await response.json(); // Obtener la respuesta con el cliente actualizado
+            if (response.status === 200) {
+                const updatedCliente = await response.json(); // Obtener la respuesta con el cliente actualizado
 
-                    // Mostrar un mensaje de éxito
-                    toast.success('Cuotas actualizadas correctamente');
+                // Mostrar un mensaje de éxito
+                toast.success('Cuotas actualizadas correctamente');
 
-                    // Actualizar clienteSeleccionado con los valores actualizados
-                    setClienteSeleccionado(prev => ({
-                        ...prev,
-                        prestamoActual: {
-                            ...updatedCliente.prestamoActual, // Usamos los datos del cliente actualizado
-                        }
-                    }));
-                } else {
-                    throw new Error("La actualización no fue exitosa.");
-                }
-            } catch (error) {
-                console.error("Error al actualizar cuotas pagadas:", error);
-                toast.error('Error al actualizar cuotas');
+                // Actualizar clienteSeleccionado con los valores actualizados
+                setClienteSeleccionado(prev => ({
+                    ...prev,
+                    prestamoActual: {
+                        ...updatedCliente.prestamoActual, // Usamos los datos del cliente actualizado
+                    }
+                }));
+
+                // Actualizar el estado de la lista de clientes
+                setClientes(prevClientes => 
+                    prevClientes.map(cliente => 
+                        cliente.dni === updatedCliente.dni 
+                        ? { ...cliente, prestamoActual: updatedCliente.prestamoActual } 
+                        : cliente
+                    )
+                );
+            } else {
+                throw new Error("La actualización no fue exitosa.");
             }
-        } else {
-            toast.error('Por favor, selecciona un valor de cuotas válido');
+        } catch (error) {
+            console.error("Error al actualizar cuotas pagadas:", error);
+            toast.error('Error al actualizar cuotas');
         }
-    };
+    } else {
+        toast.error('Por favor, selecciona un valor de cuotas válido');
+    }
+};
+
     const navigate = useNavigate();
     const handleLogout = () => {
         localStorage.removeItem('token');
