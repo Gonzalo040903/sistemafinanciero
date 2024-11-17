@@ -491,6 +491,11 @@ export function Nuevocobro() {
                                 <div className="col-12">
                                     <h3 className="text-center text-muted mb-3">Prestamo</h3>
                                     <MDBRow>
+                                    <MDBRow>
+                                        <MDBCol col='6'>
+                                            <CustomInput label='Vendedor' id='formVendedor' type='text' />
+                                        </MDBCol>
+                                        </MDBRow>
                                         <MDBCol col='3'>
                                             <CustomInput label='Monto' id='formMonto' type='number' />
                                         </MDBCol>
@@ -545,6 +550,7 @@ export function Nuevocobro() {
                                         const monto = parseInt(document.getElementById("formMonto").value);
                                         const semanas = parseInt(document.getElementById("formSemanas").value);
                                         const intereses = parseInt(document.getElementById("formIntereses").value);
+                                        const vendedor = document.getElementById("formVendedor").value;
 
                                         // Calcular montoFinal, montoAdeudado y cuotasTotales
                                         const montoFinal = monto + (monto * (intereses / 100));
@@ -558,7 +564,7 @@ export function Nuevocobro() {
                                             fechaInicio: new Date(),
                                             cuotasPagadas: 0, // Inicialmente en 0
                                             montoFinal: montoFinal,
-                                            vendedor: "Vendedor ejemplo", // Reemplaza con el vendedor real
+                                            vendedor: vendedor, 
                                             montoAdeudado: montoAdeudado,
                                             cuotasTotales: cuotasTotales
                                         };
