@@ -433,6 +433,7 @@ export function Nuevocobro() {
                                             <li className="p-1"><b className="pe-2">Intereses:</b> {clienteSeleccionado.prestamoActual?.intereses || ''}%</li>
                                             <li className="p-1"><b className="pe-2">Monto Devule:</b> {clienteSeleccionado.prestamoActual?.montoFinal || ''}</li>
                                             <li className="p-1"><b className="pe-2">Monto Faltante:</b> {calcularMontoFaltante()}</li>
+                                            <li className="p-1"><b className="pe-2">Vendedor:</b> {clienteSeleccionado.prestamoActual?.vendedor}</li>
 
                                         </ul>
                                     </div>
