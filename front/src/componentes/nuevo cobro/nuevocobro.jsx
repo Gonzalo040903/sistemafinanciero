@@ -415,8 +415,8 @@ export function Nuevocobro() {
                                 <div className="col-lg-5 col-md-12 text-center">
                                     <h3 className="text-center text-muted mb-3">Cliente</h3>
                                     <ul>
-                                        <li className="p-1"><b className="pe-2">Nombre:</b>{clienteSeleccionado.nombre || ''} {clienteSeleccionado.apellido || ''}</li>
-                                        <li className="p-1"><b className="pe-2">DNI:</b> {clienteSeleccionado.dni || ''}</li>
+                                        <li className="p-1"><b className="pe-2 azul">Nombre:</b>{clienteSeleccionado.nombre || ''} {clienteSeleccionado.apellido || ''}</li>
+                                        <li className="p-1"><b className="pe-2 azul">DNI:</b> {clienteSeleccionado.dni || ''}</li>
                                     </ul>
                                 </div>
 
@@ -424,17 +424,17 @@ export function Nuevocobro() {
                                     <h3 className="text-center text-muted mb-3">Prestamo</h3>
                                     <div className="col-5">
                                         <ul>
-                                            <li className="p-1"><b className="pe-2">Fecha Inicio:</b> {clienteSeleccionado.prestamoActual?.fechaInicio || ''}</li>
-                                            <li className="p-1"><b className="pe-2">Monto Prestado:</b> {clienteSeleccionado.prestamoActual?.monto || ''}</li>
-                                            <li className="p-1"><b className="pe-2">Monto Pagado:</b> {montoAdeudadofunicion()}</li>
+                                            <li className="p-1"><b className="pe-2 azul">Fecha Inicio:</b> {clienteSeleccionado.prestamoActual?.fechaInicio || ''}</li>
+                                            <li className="p-1"><b className="pe-2 azul">Monto Prestado:</b> {clienteSeleccionado.prestamoActual?.monto || ''}</li>
+                                            <li className="p-1"><b className="pe-2 azul">Monto Pagado:</b> {montoAdeudadofunicion()}</li>
                                         </ul>
                                     </div>
                                     <div className="col-5">
                                         <ul>
-                                            <li className="p-1"><b className="pe-2">Intereses:</b> {clienteSeleccionado.prestamoActual?.intereses || ''}%</li>
-                                            <li className="p-1"><b className="pe-2">Monto Devule:</b> {clienteSeleccionado.prestamoActual?.montoFinal || ''}</li>
-                                            <li className="p-1"><b className="pe-2">Monto Faltante:</b> {calcularMontoFaltante()}</li>
-                                            <li className="p-1"><b className="pe-2">Vendedor:</b> {clienteSeleccionado.prestamoActual?.vendedor}</li>
+                                            <li className="p-1"><b className="pe-2 azul">Intereses:</b> {clienteSeleccionado.prestamoActual?.intereses || ''}%</li>
+                                            <li className="p-1"><b className="pe-2 azul">Monto Devule:</b> {clienteSeleccionado.prestamoActual?.montoFinal || ''}</li>
+                                            <li className="p-1"><b className="pe-2 azul">Monto Faltante:</b> {calcularMontoFaltante()}</li>
+                                            <li className="p-1"><b className="pe-2 azul">Vendedor:</b> {clienteSeleccionado.prestamoActual?.vendedor}</li>
 
                                         </ul>
                                     </div>
@@ -447,18 +447,18 @@ export function Nuevocobro() {
                                             clienteSeleccionado.historialPrestamos.map((prestamo, index) => (
                                                 <React.Fragment key={index} className="mb-4">
                                                     <h6>Préstamo {index + 1}</h6>
-                                                    <div className="col-5">
+                                                    <div className="col-6">
                                                         <ul>
-                                                            <li className="p-1"><b className="pe-2">Fecha Inicio:</b> {prestamo.fechaInicio}</li>
-                                                            <li className="p-1"><b className="pe-2">Monto Prestado:</b> {prestamo.monto}</li>
-                                                            <li className="p-1"><b className="pe-2">Monto Devuelto:</b> {prestamo.montoFinal}</li>
+                                                            <li className="p-1"><b className="pe-2 azul">Fecha Inicio:</b> {prestamo.fechaInicio}</li>
+                                                            <li className="p-1"><b className="pe-2 azul">Monto Prestado:</b> {prestamo.monto}</li>
+                                                            <li className="p-1"><b className="pe-2 azul">Monto Devuelto:</b> {prestamo.montoFinal}</li>
                                                         </ul>
                                                     </div>
-                                                    <div className="col-5">
+                                                    <div className="col-6">
                                                         <ul>
-                                                            <li className="p-1"><b className="pe-2">Intereses:</b> {prestamo.intereses}%</li>
-                                                            <li className="p-1"><b className="pe-2">Cuotas:</b> {prestamo.cuotasTotales}</li>
-                                                            <li className="p-1"><b className="pe-2">Vendedor:</b> {prestamo.vendedor}</li>
+                                                            <li className="p-1"><b className="pe-2 azul">Intereses:</b> {prestamo.intereses}%</li>
+                                                            <li className="p-1"><b className="pe-2 azul">Cuotas:</b> {prestamo.cuotasTotales}</li>
+                                                            <li className="p-1"><b className="pe-2 azul">Vendedor:</b> {prestamo.vendedor}</li>
                                                         </ul>
                                                     </div>
                                                 </React.Fragment>
@@ -474,7 +474,7 @@ export function Nuevocobro() {
                                     </h5>
                                     <div className="col-5">
                                         <ul>
-                                            <li className="p-1"><b className="pe-2">Cuotas:</b> {clienteSeleccionado.prestamoActual?.cuotasTotales || ''}</li>
+                                            <li className="p-1"><b className="pe-2 azul">Cuotas:</b> {clienteSeleccionado.prestamoActual?.cuotasTotales || ''}</li>
                                             <li className="p-1">
 
                                                 <select id="cuotaspagadas" className="form-select mb-4" value={cuotasPagadas} onChange={handleCuotasChange}>
@@ -490,8 +490,8 @@ export function Nuevocobro() {
                                     </div>
                                     <div className="col-5">
                                         <ul>
-                                            <li className="p-1"><b className="pe-2">Semanas:</b> {clienteSeleccionado.prestamoActual?.semanas || ''}</li>
-                                            <li className="p-1"><b className="pe-2">Cuotas Faltantes:</b> {calcularCuotasFaltantes()}</li>
+                                            <li className="p-1"><b className="pe-2 azul">Semanas:</b> {clienteSeleccionado.prestamoActual?.semanas || ''}</li>
+                                            <li className="p-1"><b className="pe-2 azul">Cuotas Faltantes:</b> {calcularCuotasFaltantes()}</li>
 
                                         </ul>
                                     </div>

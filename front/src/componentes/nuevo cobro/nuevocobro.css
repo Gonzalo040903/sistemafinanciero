@@ -66,3 +66,11 @@ li {
     border-radius: 4px;
     /* Bordes redondeados */
 }
+
+li{
+    color: black;
+}
+
+.azul{
+    color: rgb(73, 192, 207);
+}
