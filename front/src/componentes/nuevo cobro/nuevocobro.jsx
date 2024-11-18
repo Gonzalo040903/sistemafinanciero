@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import toast, { Toaster } from 'react-hot-toast';
 import { useNavigate } from 'react-router-dom';
@@ -357,7 +357,7 @@ export function Nuevocobro() {
                             <h3 className="px-4 textogris mt-5 mx-1"><b>Nuevo Cobro</b></h3>
 
                             {/* TABLA */}
-                            <div style={{ maxHeight: '450px', overflowY: 'auto', scrollbarWidth: 'thin', scrollbarColor: '#cccccc #f5f5f5' }} className="mx-4 mt-4">
+                            <div className="mx-4 mt-4 scrollable-content2">
                                 <MDBTable id="tabla" className="shadow-3 mx-2 rounded-5 text-center">
                                     <MDBTableHead>
                                         <tr>
@@ -412,14 +412,15 @@ export function Nuevocobro() {
                                     <h2 className=""><b>Nuevo Cobro</b></h2>
                                     <MDBBtn className='btn-close' color='none' onClick={toggleOpen}></MDBBtn>
                                 </MDBModalHeader>
-                                <div className="col-4">
+                                <div className="col-lg-5 col-md-12 text-center">
                                     <h3 className="text-center text-muted mb-3">Cliente</h3>
                                     <ul>
                                         <li className="p-1"><b className="pe-2">Nombre:</b>{clienteSeleccionado.nombre || ''} {clienteSeleccionado.apellido || ''}</li>
                                         <li className="p-1"><b className="pe-2">DNI:</b> {clienteSeleccionado.dni || ''}</li>
                                     </ul>
                                 </div>
-                                <div className="col-8 row text-center">
+
+                                <div className="col-lg-7 col-md-12 row text-center">
                                     <h3 className="text-center text-muted mb-3">Prestamo</h3>
                                     <div className="col-5">
                                         <ul>
@@ -438,9 +439,36 @@ export function Nuevocobro() {
                                         </ul>
                                     </div>
                                 </div>
-                                <div className="col-4">
+
+                                <div className="col-lg-5 col-md-12 text-center row">
+                                    <h3 className="text-center text-muted mb-3">Historial de Préstamos</h3>
+                                    <div className="scrollable-content row">
+                                        {clienteSeleccionado.historialPrestamos?.length > 0 ? (
+                                            clienteSeleccionado.historialPrestamos.map((prestamo, index) => (
+                                                <React.Fragment key={index} className="mb-4">
+                                                    <h6>Préstamo {index + 1}</h6>
+                                                    <div className="col-5">
+                                                        <ul>
+                                                            <li className="p-1"><b className="pe-2">Fecha Inicio:</b> {prestamo.fechaInicio}</li>
+                                                            <li className="p-1"><b className="pe-2">Monto Prestado:</b> {prestamo.monto}</li>
+                                                            <li className="p-1"><b className="pe-2">Monto Devuelto:</b> {prestamo.montoFinal}</li>
+                                                        </ul>
+                                                    </div>
+                                                    <div className="col-5">
+                                                        <ul>
+                                                            <li className="p-1"><b className="pe-2">Intereses:</b> {prestamo.intereses}%</li>
+                                                            <li className="p-1"><b className="pe-2">Cuotas:</b> {prestamo.cuotasTotales}</li>
+                                                            <li className="p-1"><b className="pe-2">Vendedor:</b> {prestamo.vendedor}</li>
+                                                        </ul>
+                                                    </div>
+                                                </React.Fragment>
+                                            ))
+                                        ) : (
+                                            <p>No hay historial de préstamos disponible.</p>
+                                        )}
+                                    </div>
                                 </div>
-                                <div className="col-8 text-center pt-3 row mb-4">
+                                <div className="col-lg-7 col-md-12 text-center pt-3 row mb-4">
                                     <h5 className="text-muted text-center">
                                         Cuotas
                                     </h5>
@@ -492,15 +520,12 @@ export function Nuevocobro() {
                                 <div className="col-12">
                                     <h3 className="text-center text-muted mb-3">Prestamo</h3>
                                     <MDBRow>
-                                    <MDBRow>
-                                        <MDBCol col='6'>
+                                        <div>
                                             <CustomInput label='Vendedor' id='formVendedor' type='text' />
-                                        </MDBCol>
-                                        </MDBRow>
+                                        </div>
                                         <MDBCol col='3'>
                                             <CustomInput label='Monto' id='formMonto' type='number' />
                                         </MDBCol>
-
                                         <MDBCol col='3'>
                                             <CustomInput label='%Intereses' id='formIntereses' type='number' />
                                         </MDBCol>
@@ -546,13 +571,13 @@ export function Nuevocobro() {
                                     </MDBRow>
                                 </div>
 
-                                <div className="col-8 mt-3">
+                                <div className="col-12 mt-3">
                                     <MDBBtn className='w-100 mb-4 mt-4' color="success" onClick={() => {
                                         const monto = parseInt(document.getElementById("formMonto").value);
                                         const semanas = parseInt(document.getElementById("formSemanas").value);
                                         const intereses = parseInt(document.getElementById("formIntereses").value);
                                         const vendedor = document.getElementById("formVendedor").value;
-
+                                        const fecha = document.getElementById("formFecha").value;
                                         // Calcular montoFinal, montoAdeudado y cuotasTotales
                                         const montoFinal = monto + (monto * (intereses / 100));
                                         const montoAdeudado = 0 * (montoFinal / semanas); // Suponiendo que cuotasPagadas inicia en 0
@@ -562,10 +587,10 @@ export function Nuevocobro() {
                                             monto: monto,
                                             semanas: semanas,
                                             intereses: intereses,
-                                            fechaInicio: new Date(),
+                                            fechaInicio: fecha,
                                             cuotasPagadas: 0, // Inicialmente en 0
                                             montoFinal: montoFinal,
-                                            vendedor: vendedor, 
+                                            vendedor: vendedor,
                                             montoAdeudado: montoAdeudado,
                                             cuotasTotales: cuotasTotales
                                         };

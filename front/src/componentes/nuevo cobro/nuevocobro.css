@@ -1,5 +1,68 @@
-li{
+li {
     text-decoration: none;
     font-style: none;
     list-style: none;
+}
+
+/* Contenedor con desplazamiento */
+.scrollable-content {
+    max-height: 200px;
+    /* Ajusta según tus necesidades */
+    overflow-y: auto;
+}
+
+/* Barra de desplazamiento personalizada */
+.scrollable-content::-webkit-scrollbar {
+    width: 8px;
+    /* Ancho de la barra */
+}
+
+.scrollable-content::-webkit-scrollbar-thumb {
+    background-color: #d3d3d3;
+    /* Color del pulgar */
+    border-radius: 4px;
+    /* Bordes redondeados */
+}
+
+.scrollable-content::-webkit-scrollbar-thumb:hover {
+    background-color: #a8a8a8;
+    /* Color al pasar el mouse */
+}
+
+.scrollable-content::-webkit-scrollbar-track {
+    background-color: #f0f0f0;
+    /* Fondo de la barra */
+    border-radius: 4px;
+    /* Bordes redondeados */
+}
+
+/* separado */
+.scrollable-content2 {
+    max-height: 450px;
+    /* Ajusta según tus necesidades */
+    overflow-y: auto;
+}
+
+.scrollable-content2::-webkit-scrollbar {
+    width: 8px;
+    /* Ancho de la barra */
+}
+
+.scrollable-content2::-webkit-scrollbar-thumb {
+    background-color: #d3d3d3;
+    /* Color del pulgar */
+    border-radius: 4px;
+    /* Bordes redondeados */
+}
+
+.scrollable-content2::-webkit-scrollbar-thumb:hover {
+    background-color: #a8a8a8;
+    /* Color al pasar el mouse */
+}
+
+.scrollable-content2::-webkit-scrollbar-track {
+    background-color: #f0f0f0;
+    /* Fondo de la barra */
+    border-radius: 4px;
+    /* Bordes redondeados */
 }

@@ -191,7 +191,7 @@ export function Eliminarcliente() {
                             <h3 className="px-4 textogris mt-5 mx-1"><b>Eliminar Clientes</b></h3>
 
                             {/* TABLA */}
-                            <div style={{ maxHeight: '450px', overflowY: 'auto', scrollbarWidth: 'thin', scrollbarColor: '#cccccc #f5f5f5' }} className="mx-4 mt-4">
+                            <div className="mx-4 mt-4 scrollable-content2">
                                 <MDBTable id="tabla" className="shadow-3 mx-2 rounded-5 text-center">
                                     <MDBTableHead>
                                         <tr>

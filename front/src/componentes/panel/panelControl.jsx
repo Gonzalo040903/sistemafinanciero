@@ -167,7 +167,7 @@ export function PanelControl() {
                         <div className="col-lg-10 col-md-12 p-0" id="panel">
                             <header className="p-2 mx-4 mt-3 px-4 header rounded-5 shadow-3">{palabra}</header>
                             <h3 className="px-4 textogris mt-5 mx-1"><b>Tabla Clientes</b></h3>
-                            <div style={{ maxHeight: '450px', overflowY: 'auto', scrollbarWidth: 'thin', scrollbarColor: '#cccccc #f5f5f5' }} className="mx-4 mt-4">
+                            <div className="mx-4 mt-4 scrollable-content2">
                                 <MDBTable id="tabla" className="shadow-3 mx-2 rounded-5 text-center">
                                     <MDBTableHead>
                                         <tr>
