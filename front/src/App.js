@@ -9,6 +9,7 @@ import { ModificarclientePage } from './paginas/modificarclientePage';
 import { NuevocobroPage } from './paginas/nuevocobroPage';
 import { VendedoresPage } from './paginas/vendedoresPage';
 import { RutaPrivada } from './componentes/autenticacion/rutaPrivada'; // Asegúrate de que esta ruta sea correcta
+import { PaginaError } from './paginas/paginaerror';
 
 function App() {
     return (
@@ -20,6 +21,7 @@ function App() {
             <Route path="/modificar-cliente" element={<RutaPrivada><ModificarclientePage /></RutaPrivada>} />
             <Route path="/nuevo-cobro" element={<RutaPrivada><NuevocobroPage /></RutaPrivada>} />
             <Route path="/vendedores" element={<RutaPrivada><VendedoresPage /></RutaPrivada>} />
+            <Route path="/*" element={<PaginaError />} />
         </Routes>
     );
 }
