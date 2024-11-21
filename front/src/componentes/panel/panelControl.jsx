@@ -4,7 +4,6 @@ import {
     MDBCard,
     MDBNavbarLink,
     MDBNavbarNav,
-    MDBNavbarItem,
     MDBIcon,
     MDBBadge,
     MDBTable,

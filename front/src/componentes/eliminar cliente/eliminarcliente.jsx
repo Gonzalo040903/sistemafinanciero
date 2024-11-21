@@ -4,7 +4,6 @@ import {
     MDBCard,
     MDBNavbarLink,
     MDBNavbarNav,
-    MDBNavbarItem,
     MDBIcon,
     MDBTable,
     MDBTableHead,
@@ -16,8 +15,7 @@ import {
     MDBModalHeader,
     MDBModalTitle,
     MDBModalBody,
-    MDBModalFooter,
-    MDBBadge
+    MDBModalFooter
 } from 'mdb-react-ui-kit';
 import { useState, useEffect } from 'react';
 import toast, { Toaster } from 'react-hot-toast';

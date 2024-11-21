@@ -4,7 +4,6 @@ import {
     MDBCard,
     MDBNavbarLink,
     MDBNavbarNav,
-    MDBNavbarItem,
     MDBIcon,
     MDBTable,
     MDBTableHead,
@@ -12,7 +11,6 @@ import {
     MDBBtn,
     MDBInput,
     MDBRow,
-    MDBCol,
     MDBModal,
     MDBModalHeader,
     MDBModalDialog,
@@ -24,7 +22,6 @@ import {
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
-import toast, { Toaster } from 'react-hot-toast';
 
 
 export function Vendedores() {

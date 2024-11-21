@@ -7,7 +7,6 @@ import {
     MDBCard,
     MDBNavbarLink,
     MDBNavbarNav,
-    MDBNavbarItem,
     MDBIcon,
     MDBTable,
     MDBTableHead,
@@ -62,11 +61,6 @@ export function Nuevocobro() {
         }
         return 0;
     };
-    const funcionSuccess = (e) => {
-        e.preventDefault();
-        toast.success('Prestamo Creado')
-        toggleOpen2()
-    }
     let palabra = "Panel de control > Nuevo Cobro"
     const [clientes, setClientes] = useState([]);
     const [isGestionClientesOpen, setIsGestionClientesOpen] = useState(false);
