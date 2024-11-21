@@ -180,36 +180,7 @@ export function Nuevocobro() {
 
         return () => window.removeEventListener('resize', handleResize);
     }, []);
-    const calcular2 = (e) => {
-        e.preventDefault();
-
-        // Obtener los valores de los inputs
-        let monto = parseInt(document.getElementById("formMonto").value);
-        let intereses = parseInt(document.getElementById("formIntereses").value);
-        let semanas = parseInt(document.getElementById("formSemanas").value);
-
-        // Calcular monto final, monto adeudado y cuotas totales
-        let montoFinal = (monto * intereses / 100) + monto;
-        let montoAdeudado = (parseInt(document.getElementById("formSemanaPaga").value) * (montoFinal / semanas));
-        let cuotasTotales = semanas;
-
-        // Mostrar los resultados en los inputs correspondientes
-        document.getElementById("formDevuelve").value = montoFinal;
-        document.getElementById("formSemanaPaga").value = montoFinal / semanas;
-
-        // Almacenar estos valores en el estado o enviarlos a la base de datos al crear el préstamo
-        const nuevoPrestamo = {
-            montoFinal: montoFinal,
-            montoAdeudado: montoAdeudado,
-            cuotasTotales: cuotasTotales,
-            monto: monto,
-            intereses: intereses,
-            semanas: semanas,
-        };
-
-        // Crear préstamo
-        crearPrestamo(nuevoPrestamo);
-    };
+    
     const crearPrestamo = async (nuevoPrestamo) => {
         if (clienteSeleccionado && clienteSeleccionado.dni) {
             try {
