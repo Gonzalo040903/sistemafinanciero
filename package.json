@@ -5,6 +5,7 @@
     "nodemon": "^3.1.7"
   },
   "scripts": {
+  "install": "cd front && npm install",
   "build": "cd front && npm install && npm run build"
 }
 }
