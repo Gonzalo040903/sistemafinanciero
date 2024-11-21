@@ -61,6 +61,7 @@ export function Nuevocobro() {
         }
         return 0;
     };
+
     let palabra = "Panel de control > Nuevo Cobro"
     const [clientes, setClientes] = useState([]);
     const [isGestionClientesOpen, setIsGestionClientesOpen] = useState(false);

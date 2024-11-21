@@ -37,11 +37,6 @@ export function Modificarcliente() {
         setIsGestionClientesOpen(!isGestionClientesOpen);
     };
 
-    const funcionSuccess = (e) => {
-        e.preventDefault();
-        toast.success('Cliente Modificado');
-        toggleOpen();
-    };
 
     const validationSchema = Yup.object({
         formNombre: Yup.string().min(2, 'Mínimo 2 caracteres').max(20, 'Máximo 20 caracteres').required('Campo obligatorio'),
