@@ -23,7 +23,7 @@ mongoose.connect(uri)
     .catch(err => console.error('Failed to connect to MongoDB Atlas:', err.message));
 
 // Rutas
-app.use('/.netlify/functions/api/clientes', clientesRouter); // Netlify requiere el prefijo '/.netlify/functions'
+app.use('/clientes', clientesRouter); // Netlify requiere el prefijo '/.netlify/functions'
 app.use('/.netlify/functions/api/prestamos', prestamosRouter);
 app.use('/.netlify/functions/api/vendedores', vendedorRouter);
 app.use('/.netlify/functions/api', authRouter);
