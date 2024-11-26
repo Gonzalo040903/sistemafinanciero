@@ -10,23 +10,21 @@ import authRouter from '../routes/routesAuth.js';
 
 const app = express();
 
+// Middlewares
 app.use(cors());
 app.use(express.json());
 
 // Conexión a MongoDB
-const uri = 'mongodb+srv://solheredia555:SistemaFinancieroFH@clustersistemafinancier.fxp2b.mongodb.net/Sistema-Financiero?retryWrites=true&w=majority&appName=ClusterSistemaFinanciero';
-
+const uri = process.env.MONGO_URI || 'mongodb+srv://solheredia555:SistemaFinancieroFH@clustersistemafinancier.fxp2b.mongodb.net/Sistema-Financiero?retryWrites=true&w=majority&appName=ClusterSistemaFinanciero'; // Usa variables de entorno para mayor seguridad
 mongoose.connect(uri)
-    .then(() => {
-        console.log('Connected to MongoDB Atlas');
-    })
+    .then(() => console.log('Connected to MongoDB Atlas'))
     .catch(err => console.error('Failed to connect to MongoDB Atlas:', err.message));
 
-// Rutas
-app.use('/clientes', clientesRouter); // Netlify requiere el prefijo '/.netlify/functions'
+// Rutas (todas con prefijo para Netlify Functions)
+app.use('/.netlify/functions/api/clientes', clientesRouter);
 app.use('/.netlify/functions/api/prestamos', prestamosRouter);
 app.use('/.netlify/functions/api/vendedores', vendedorRouter);
-app.use('/.netlify/functions/api', authRouter);
+app.use('/.netlify/functions/api/auth', authRouter);
 
-// Exportar como handler
+// Exportar como handler para Netlify Functions
 export const handler = serverless(app);
