@@ -15,7 +15,7 @@ function App() {
     return (
         <Routes>
             <Route path="/" element={<LoginPage />} />
-            <Route path="/panel" element={<RutaPrivada><PanelPage /></RutaPrivada>} />
+            <Route path="/panel" element={<PanelPage />} />
             <Route path="/agregar-cliente" element={<RutaPrivada><AgregarclientePage /></RutaPrivada>} />
             <Route path="/eliminar-cliente" element={<RutaPrivada><EliminarclientePage /></RutaPrivada>} />
             <Route path="/modificar-cliente" element={<RutaPrivada><ModificarclientePage /></RutaPrivada>} />
