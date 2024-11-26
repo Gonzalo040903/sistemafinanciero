@@ -36,15 +36,11 @@ app.use('/api/prestamos', prestamosRouter);
 app.use('/api/vendedores', vendedorRouter);
 app.use('/api', authRouter);
 
-// Sirve los archivos estáticos de React
-const __dirname = path.resolve(); // Para obtener el directorio actual
-app.use(express.static(path.join(__dirname, '..', 'front', 'build')));
-
-
-// Manejo de rutas para React
+const buildPath = path.resolve('front', 'build');
+app.use(express.static(buildPath));
 app.get('*', (req, res) => {
-    res.sendFile(path.join(__dirname, '..', 'front', 'build', 'index.html'));
-  });
+    res.sendFile(path.join(buildPath, 'index.html'));
+});
 
 // Iniciar el servidor
 app.listen(PORT, () => {
