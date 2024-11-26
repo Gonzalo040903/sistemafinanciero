@@ -1,5 +1,5 @@
 import { Schema, model } from "mongoose";
-import bcrypt from 'bcrypt';
+import bcrypt from 'bcryptjs';
 
 const vendedorSchema = new Schema({
     nombre: {type:String, required: true},
