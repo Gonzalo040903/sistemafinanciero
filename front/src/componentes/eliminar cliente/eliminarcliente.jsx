@@ -43,7 +43,7 @@ export function Eliminarcliente() {
 
     const fetchClientes = async () => {
         try {
-            const response = await axios.get('http://localhost:3001/api/clientes');
+            const response = await axios.get('https://sistemafinanciero-production.up.railway.app/api/clientes');
             setClientes(response.data);
         } catch (error) {
             console.error("Error al obtener los clientes:", error);
@@ -56,7 +56,7 @@ export function Eliminarcliente() {
 
     const eliminarCliente = async (dni) => {
         try {
-            await axios.delete(`http://localhost:3001/api/clientes/${dni}`);
+            await axios.delete(`https://sistemafinanciero-production.up.railway.app/api/clientes/${dni}`);
             funcionSuccess();  // Llamar a la función de éxito después de la eliminación
         } catch (error) {
             console.error("Error al eliminar el cliente:", error);
