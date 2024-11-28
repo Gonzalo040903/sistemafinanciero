@@ -19,7 +19,7 @@ const PORT = process.env.PORT || 3001;
 app.use(cors({
     origin: 'https://sistemafinanciero-production.up.railway.app', // URL de tu frontend desplegado
     methods: ['GET', 'POST', 'PUT', 'DELETE'],
-    credentials: true // Si usas cookies o autenticación con sesiones
+    
 }));
 
 app.use(express.json());
