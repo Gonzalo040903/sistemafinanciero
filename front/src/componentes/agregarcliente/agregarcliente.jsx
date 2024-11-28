@@ -58,7 +58,7 @@ export function Agregarcliente() {
 
     const submitCliente = async (values, { resetForm }) => {
         try {
-            const response = await fetch("https://sistemafinanciero-production.up.railway.app/api/clientes", {
+            const response = await fetch("https://sistemafinanciero.up.railway.app/api/clientes", {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json"
