@@ -35,13 +35,16 @@ export function PanelControl() {
         // Llamada a la API para obtener clientes
         const fetchClientes = async () => {
             try {
-                const response = await axios.get(`${apiUrl}/api/clientes`);
-                setClientes(response.data);
+                const response = await fetch('https://sistemafinanciero-production.up.railway.app/api/clientes');
+                if (!response.ok) {
+                    throw new Error(`Error HTTP: ${response.status}`);
+                }
+                const data = await response.json();
+                setClientes(data);
             } catch (error) {
                 console.error("Error al obtener los clientes:", error);
             }
         };
-
         fetchClientes();
     }, []);
 
