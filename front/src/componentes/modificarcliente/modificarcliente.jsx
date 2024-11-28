@@ -71,7 +71,7 @@ export function Modificarcliente() {
 
     const fetchClientes = async () => {
         try {
-            const response = await axios.get('https://sistemafinanciero-production.up.railway.app/api/clientes');
+            const response = await axios.get('https://sistemafinanciero.up.railway.app/api/clientes');
             setClientes(response.data);
         } catch (error) {
             console.error("Error al obtener los clientes:", error);
@@ -80,7 +80,7 @@ export function Modificarcliente() {
 
     const submitCliente = async (values, { resetForm }) => {
         try {
-            const response = await fetch(`https://sistemafinanciero-production.up.railway.app/api/clientes/${clienteSeleccionado.dni}`, {
+            const response = await fetch(`https://sistemafinanciero.up.railway.app/api/clientes/${clienteSeleccionado.dni}`, {
                 method: "PATCH",
                 headers: {
                     "Content-Type": "application/json"
