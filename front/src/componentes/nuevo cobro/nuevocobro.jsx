@@ -26,6 +26,10 @@ import "./nuevocobro.css";
 export function Nuevocobro() {
     const[formData, setFormData] = React.useState({
         soloInteres: false,
+        monto: '',
+        intereses: '',
+        semanas: '',
+        vendedor: '',
     })
     const CustomInput = ({ label, type, id, value, onChange }) => (
         <MDBInput wrapperClass='mb-4' label={label} id={id} type={type} value={value} onChange={onChange} />
@@ -34,8 +38,8 @@ export function Nuevocobro() {
         e.preventDefault();
         let monto = parseInt(document.getElementById("formMonto").value);
         let intereses = parseInt(document.getElementById("formIntereses").value);
-        let montoFinal = formData.soloInteres ? monto * (intereses / 100) : monto + monto * (intereses / 100);
         let semana = parseInt(document.getElementById("formSemanas").value);
+        let montoFinal = formData.soloInteres ? monto * (intereses / 100) : monto + monto * (intereses / 100);
         let montoxsemana = montoFinal / semana;
         let semanapaga = document.getElementById("formSemanaPaga")
         let devuelve = document.getElementById("formDevuelve")
@@ -520,23 +524,23 @@ export function Nuevocobro() {
                                     <h3 className="text-center text-muted mb-3">Prestamo</h3>
                                     <MDBRow>
                                         <div>
-                                            <CustomInput label='Vendedor' id='formVendedor' type='text' />
+                                            <CustomInput label='Vendedor' id='formVendedor' type='text' value={formData.vendedor} onChange={(e) => setFormData({...formData, vendedor: e.target.value})}/>
                                         </div>
                                         <MDBCol col='3'>
-                                            <CustomInput label='Monto' id='formMonto' type='number' />
+                                            <CustomInput label='Monto' id='formMonto' type='number' value={formData.monto} onChange={(e) => setFormData({ ...formData, monto: e.target.value })}/>
                                         </MDBCol>
                                         <MDBCol col='3'>
-                                            <CustomInput label='%Intereses' id='formIntereses' type='number' />
+                                            <CustomInput label='%Intereses' id='formIntereses' type='number' value={formData.intereses} onChange={(e) => setFormData({ ...formData, intereses: e.target.value })} />
                                         </MDBCol>
                                     </MDBRow>
                                     <MDBRow>
                                         <MDBCol col='3'>
-                                            <CustomInput label='Fecha Inicio' id='formFecha' type='date' />
+                                            <CustomInput label='Fecha Inicio' id='formFecha' type='date' value={formData.fechaInicio} onChange={(e) => ({...formData, fechaInicio: e.target.value})} />
                                         </MDBCol>
 
                                         {/* Select de Semanas */}
                                         <MDBCol col='3'>
-                                            <select id="formSemanas" className="form-select mb-4">
+                                            <select id="formSemanas" className="form-select mb-4" value={formData.semanas} onChange={(e) => setFormData({ ...formData, semanas: e.target.value })}  >
                                                 <option value={1}>1 Semana</option>
                                                 <option value={2}>2 Semanas</option>
                                                 <option value={3}>3 Semanas</option>
