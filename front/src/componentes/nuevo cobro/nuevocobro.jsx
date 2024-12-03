@@ -535,7 +535,7 @@ export function Nuevocobro() {
                                     </MDBRow>
                                     <MDBRow>
                                         <MDBCol col='3'>
-                                            <CustomInput label='Fecha Inicio' id='formFecha' type='date' value={formData.fechaInicio} onChange={(e) => ({...formData, fechaInicio: e.target.value})} />
+                                            <CustomInput label='Fecha Inicio' id='formFecha' type='date' />
                                         </MDBCol>
 
                                         {/* Select de Semanas */}
