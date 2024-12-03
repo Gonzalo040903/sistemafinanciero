@@ -30,14 +30,21 @@ export function Agregarcliente() {
         e.preventDefault();
         let monto = parseInt(document.getElementById("formMonto").value);
         let intereses = parseInt(document.getElementById("formIntereses").value);
-        let montoFinal = (monto * intereses / 100) + monto;
+        let soloInteres = document.querySelector("input[name='soloInteres']").checked;
+        let montoFinal;
+        if(soloInteres){
+            montoFinal = monto * intereses / 100;
+        } else {
+            montoFinal = (monto * intereses / 100) + monto;
+        }
+    
         let semana = parseInt(document.getElementById("formSemanas").value);
         let montoxsemana = montoFinal / semana;
         let semanapaga = document.getElementById("formSemanaPaga");
         let devuelve = document.getElementById("formDevuelve");
         if (monto && intereses) {
-            semanapaga.value = montoxsemana;
-            devuelve.value = montoFinal;
+            semanapaga.value = montoxsemana.toFixed(2);
+            devuelve.value = montoFinal.toFixed(2);
         }
     };
 
@@ -306,11 +313,11 @@ export function Agregarcliente() {
                                                 <label>
                                                     <input
                                                         type="checkbox"
-                                                        name="soloIntereses"
-                                                        checked={formik.values.soloIntereses}
+                                                        name="soloInteres"
+                                                        checked={formik.values.soloInteres}
                                                         onChange={formik.handleChange}
                                                     />
-                                                    Solo intereses
+                                                    Solo interes
                                                 </label>
                                                 <MDBCol col='3'>
                                                     <select id="formSemanas" className="form-select mb-4">
