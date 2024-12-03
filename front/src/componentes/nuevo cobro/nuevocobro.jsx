@@ -30,6 +30,7 @@ export function Nuevocobro() {
         intereses: '',
         semanas: '',
         vendedor: '',
+        fechaInicio: '',
     })
     const CustomInput = ({ label, type, id, value, onChange }) => (
         <MDBInput wrapperClass='mb-4' label={label} id={id} type={type} value={value} onChange={onChange} />
@@ -535,7 +536,7 @@ export function Nuevocobro() {
                                     </MDBRow>
                                     <MDBRow>
                                         <MDBCol col='3'>
-                                            <CustomInput label='Fecha Inicio' id='formFecha' type='date' />
+                                            <CustomInput label='Fecha Inicio' id='formFecha' type='date' value={formData.fechaInicio} onChange={(e) => setFormData({ ...formData, fechaInicio: e.target.value })} />
                                         </MDBCol>
 
                                         {/* Select de Semanas */}
