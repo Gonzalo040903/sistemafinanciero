@@ -54,6 +54,7 @@ export function Agregarcliente() {
         formMonto: Yup.number().required('Campo obligatorio'),
         formIntereses: Yup.number().max(99, 'Máximo 2 caracteres').required('Campo obligatorio'),
         formFecha: Yup.date().required('Campo obligatorio'),
+        soloInteres: Yup.boolean(),
     });
 
     const submitCliente = async (values, { resetForm }) => {
@@ -76,6 +77,7 @@ export function Agregarcliente() {
                         monto: values.formMonto,
                         semanas: parseInt(document.getElementById("formSemanas").value),
                         intereses: values.formIntereses,
+                        soloInteres: values.soloInteres,
                         fechaInicio: values.formFecha,
                         vendedor: values.formVendedor
                     }
@@ -241,7 +243,8 @@ export function Agregarcliente() {
                                     formVendedor: '',
                                     formMonto: '',
                                     formIntereses: '',
-                                    formFecha: ''
+                                    formFecha: '',
+                                    soloInteres: false,
                                 }}
                                 validationSchema={validationSchema}
                                 onSubmit={submitCliente}
@@ -300,6 +303,15 @@ export function Agregarcliente() {
                                                 <MDBCol col='3'>
                                                     <CustomInput label='Fecha Inicio' id='formFecha' formik={formik} type="date" />
                                                 </MDBCol>
+                                                <label>
+                                                    <input
+                                                        type="checkbox"
+                                                        name="soloIntereses"
+                                                        checked={formik.values.soloIntereses}
+                                                        onChange={formik.handleChange}
+                                                    />
+                                                    Solo intereses
+                                                </label>
                                                 <MDBCol col='3'>
                                                     <select id="formSemanas" className="form-select mb-4">
                                                         <option value={1}>1 Semana</option>
