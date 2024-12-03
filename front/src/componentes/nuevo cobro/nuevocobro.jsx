@@ -431,7 +431,7 @@ export function Nuevocobro() {
                                     <div className="col-5">
                                         <ul>
                                             <li className="p-1"><b className="pe-2 azul">Intereses:</b> {clienteSeleccionado.prestamoActual?.intereses || ''}%</li>
-                                            <li className="p-1"><b className="pe-2 azul">Monto Devule:</b> {clienteSeleccionado.prestamoActual?.montoFinal || ''}</li>
+                                            <li className="p-1"><b className="pe-2 azul">Monto Devuelve:</b> {clienteSeleccionado.prestamoActual?.montoFinal || ''}</li>
                                             <li className="p-1"><b className="pe-2 azul">Monto Faltante:</b> {calcularMontoFaltante()}</li>
                                             <li className="p-1"><b className="pe-2 azul">Vendedor:</b> {clienteSeleccionado.prestamoActual?.vendedor}</li>
 
@@ -559,8 +559,8 @@ export function Nuevocobro() {
                                             <input
                                                 type="checkbox"
                                                 name="soloIntereses"
-                                                checked={formData.soloIntereses}
-                                                onChange={(e) => setFormData({ ...formData, soloIntereses: e.target.checked })}
+                                                checked={formData.soloInteres}
+                                                onChange={(e) => setFormData({ ...formData, soloInteres: e.target.checked })}
                                             />
                                             <span className="ms-2">Solo intereses</span>
                                         </label>
