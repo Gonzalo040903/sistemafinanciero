@@ -24,6 +24,9 @@ import {
 import "./nuevocobro.css";
 
 export function Nuevocobro() {
+    const[formData, setFormData] = React.useState({
+        soloInteres: false,
+    })
     const CustomInput = ({ label, type, id, value, onChange }) => (
         <MDBInput wrapperClass='mb-4' label={label} id={id} type={type} value={value} onChange={onChange} />
     );
@@ -31,7 +34,7 @@ export function Nuevocobro() {
         e.preventDefault();
         let monto = parseInt(document.getElementById("formMonto").value);
         let intereses = parseInt(document.getElementById("formIntereses").value);
-        let montoFinal = (monto * intereses / 100) + monto
+        let montoFinal = formData.soloInteres ? monto * (intereses / 100) : monto + monto * (intereses / 100);
         let semana = parseInt(document.getElementById("formSemanas").value);
         let montoxsemana = montoFinal / semana;
         let semanapaga = document.getElementById("formSemanaPaga")
@@ -194,7 +197,7 @@ export function Nuevocobro() {
         let semanas = parseInt(document.getElementById("formSemanas").value);
 
         // Calcular monto final, monto adeudado y cuotas totales
-        let montoFinal = (monto * intereses / 100) + monto;
+        let montoFinal = formData.soloInteres ? monto * (intereses / 100) : monto + monto * (intereses / 100);
         let montoAdeudado = (parseInt(document.getElementById("formSemanaPaga").value) * (montoFinal / semanas));
         let cuotasTotales = semanas;
 
@@ -204,7 +207,7 @@ export function Nuevocobro() {
 
         // Almacenar estos valores en el estado o enviarlos a la base de datos al crear el préstamo
         const nuevoPrestamo = {
-            montoFinal: montoFinal,
+            montoFinal: formData.soloInteres ? 0 : montoFinal,
             montoAdeudado: montoAdeudado,
             cuotasTotales: cuotasTotales,
             monto: monto,
@@ -246,10 +249,6 @@ export function Nuevocobro() {
             toast.error("Por favor, selecciona un cliente válido.");
         }
     };
-
-    // Ejemplo de uso en el botón "Crear Préstamo"
-
-
     return (
         <>{/* NAVBAR MOVIL (Visible en pantallas pequeñas) */}
             {isMobile && (
@@ -555,6 +554,17 @@ export function Nuevocobro() {
                                             </select>
                                         </MDBCol>
                                     </MDBRow>
+                                    <div className="mb-4">
+                                        <label>
+                                            <input
+                                                type="checkbox"
+                                                name="soloIntereses"
+                                                checked={formData.soloIntereses}
+                                                onChange={(e) => setFormData({ ...formData, soloIntereses: e.target.checked })}
+                                            />
+                                            <span className="ms-2">Solo intereses</span>
+                                        </label>
+                                    </div>
 
                                     <MDBRow className="">
                                         <MDBCol col='3'>
@@ -579,8 +589,8 @@ export function Nuevocobro() {
                                         const vendedor = document.getElementById("formVendedor").value;
                                         const fecha = document.getElementById("formFecha").value;
                                         // Calcular montoFinal, montoAdeudado y cuotasTotales
-                                        const montoFinal = monto + (monto * (intereses / 100));
-                                        const montoAdeudado = 0 * (montoFinal / semanas); // Suponiendo que cuotasPagadas inicia en 0
+                                        const montoFinal = formData.soloInteres ? monto * (intereses / 100) : monto + monto * (intereses / 100);
+                                        //const montoAdeudado = 0 * (montoFinal / semanas); // Suponiendo que cuotasPagadas inicia en 0
                                         const cuotasTotales = semanas;
 
                                         const nuevoPrestamo = {
@@ -591,7 +601,7 @@ export function Nuevocobro() {
                                             cuotasPagadas: 0, // Inicialmente en 0
                                             montoFinal: montoFinal,
                                             vendedor: vendedor,
-                                            montoAdeudado: montoAdeudado,
+                                            montoAdeudado: formData.soloInteres ? 0 : montoFinal,
                                             cuotasTotales: cuotasTotales
                                         };
 
