@@ -6,21 +6,22 @@ const router = Router();
 
 //Crear prestamo
 router.post('/', async (req, res) => {
-    const {dni, monto, semanas, intereses, fechaInicio, vendedor} = req.body;
+    const {dni, monto, semanas, intereses,soloInteres, fechaInicio, vendedor} = req.body;
     try {
         const cliente = await Cliente.findOne({dni});
 
         if(!cliente) {
             return res.status(404).json({message:"'Cliente no encontrado"});
         }
-        if(!cliente || !monto || !semanas || !intereses || !fechaInicio || !vendedor){
-            return res.status(400).json({message: 'Todos los campos son obligatoorios'});
+        if(!cliente || !monto || !semanas || !intereses || !soloInteres || !fechaInicio || !vendedor){
+            return res.status(400).json({message: 'Todos los campos son obligatorios'});
         }
         const nuevoPrestamo = new Prestamo({
             cliente,
             monto,
             semanas,
             intereses,
+            soloInteres,
             fechaInicio: fechaInicio || Date.now(),
             vendedor
         }); 

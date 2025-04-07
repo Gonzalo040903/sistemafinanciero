@@ -27,14 +27,21 @@ export function Agregarcliente() {
         e.preventDefault();
         let monto = parseInt(document.getElementById("formMonto").value);
         let intereses = parseInt(document.getElementById("formIntereses").value);
-        let montoFinal = (monto * intereses / 100) + monto;
+        let soloInteres = document.querySelector("input[name='soloInteres']").checked;
+        let montoFinal;
+        if(soloInteres){
+            montoFinal = monto * intereses / 100;
+        } else {
+            montoFinal = (monto * intereses / 100) + monto;
+        }
+    
         let semana = parseInt(document.getElementById("formSemanas").value);
         let montoxsemana = montoFinal / semana;
         let semanapaga = document.getElementById("formSemanaPaga");
         let devuelve = document.getElementById("formDevuelve");
         if (monto && intereses) {
-            semanapaga.value = montoxsemana;
-            devuelve.value = montoFinal;
+            semanapaga.value = montoxsemana.toFixed(2);
+            devuelve.value = montoFinal.toFixed(2);
         }
     };
 
@@ -51,11 +58,12 @@ export function Agregarcliente() {
         formMonto: Yup.number().required('Campo obligatorio'),
         formIntereses: Yup.number().max(99, 'Máximo 2 caracteres').required('Campo obligatorio'),
         formFecha: Yup.date().required('Campo obligatorio'),
+        soloInteres: Yup.boolean(),
     });
 
     const submitCliente = async (values, { resetForm }) => {
         try {
-            const response = await fetch("http://localhost:3001/api/clientes", {
+            const response = await fetch("https://sistemafinanciero.up.railway.app/api/clientes", {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json"
@@ -73,6 +81,7 @@ export function Agregarcliente() {
                         monto: values.formMonto,
                         semanas: parseInt(document.getElementById("formSemanas").value),
                         intereses: values.formIntereses,
+                        soloInteres: values.soloInteres,
                         fechaInicio: values.formFecha,
                         vendedor: values.formVendedor
                     }
@@ -238,7 +247,8 @@ export function Agregarcliente() {
                                     formVendedor: '',
                                     formMonto: '',
                                     formIntereses: '',
-                                    formFecha: ''
+                                    formFecha: '',
+                                    soloInteres: false,
                                 }}
                                 validationSchema={validationSchema}
                                 onSubmit={submitCliente}
@@ -297,6 +307,15 @@ export function Agregarcliente() {
                                                 <MDBCol col='3'>
                                                     <CustomInput label='Fecha Inicio' id='formFecha' formik={formik} type="date" />
                                                 </MDBCol>
+                                                <label>
+                                                    <input
+                                                        type="checkbox"
+                                                        name="soloInteres"
+                                                        checked={formik.values.soloInteres}
+                                                        onChange={formik.handleChange}
+                                                    />
+                                                    Solo interes
+                                                </label>
                                                 <MDBCol col='3'>
                                                     <select id="formSemanas" className="form-select mb-4">
                                                         <option value={1}>1 Semana</option>

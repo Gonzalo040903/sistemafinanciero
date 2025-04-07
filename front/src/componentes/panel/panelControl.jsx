@@ -29,12 +29,12 @@ export function PanelControl() {
         localStorage.removeItem('token');
         navigate('/'); // Redirige al usuario al login
     };
-
+    const apiUrl = process.env.REACT_APP_API_URL;
     useEffect(() => {
         // Llamada a la API para obtener clientes
         const fetchClientes = async () => {
             try {
-                const response = await axios.get('http://localhost:3001/api/clientes');
+                const response = await axios.get(`${apiUrl}/api/clientes`);
                 setClientes(response.data);
             } catch (error) {
                 console.error("Error al obtener los clientes:", error);

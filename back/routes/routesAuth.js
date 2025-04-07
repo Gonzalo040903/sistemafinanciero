@@ -1,6 +1,6 @@
 import { Router } from 'express';
 import Vendedor from '../model/modelVendedor.js';
-import bcrypt from 'bcrypt';
+import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
 
 const router = Router();

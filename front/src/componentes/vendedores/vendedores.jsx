@@ -46,7 +46,7 @@ export function Vendedores() {
         try {
             const token = localStorage.getItem('token');
             console.log('Token:', token);
-            const response = await axios.get('http://localhost:3001/api/vendedores', {
+            const response = await axios.get('https://sistemafinanciero.up.railway.app/api/vendedores', {
                 headers: {
                     'Authorization': `Bearer ${token}`,
                 }
@@ -70,7 +70,7 @@ export function Vendedores() {
 
         try {
             const token = localStorage.getItem('token');
-            const response = await axios.post('http://localhost:3001/api/vendedores', {
+            const response = await axios.post('https://sistemafinanciero.up.railway.app/api/vendedores', {
                 nombre,
                 contraseña,
                 rol
@@ -94,7 +94,7 @@ export function Vendedores() {
         if (!vendedorAEliminar) return;
         try {
             const token = localStorage.getItem('token');
-            const response = await axios.delete(`http://localhost:3001/api/vendedores/${vendedorAEliminar._id}`, {
+            const response = await axios.delete(`https://sistemafinanciero.up.railway.app/api/vendedores/${vendedorAEliminar._id}`, {
                 headers: {
                     Authorization: `Bearer ${token}`
                 }

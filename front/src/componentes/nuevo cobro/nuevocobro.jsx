@@ -23,6 +23,14 @@ import {
 import "./nuevocobro.css";
 
 export function Nuevocobro() {
+    const[formData, setFormData] = React.useState({
+        soloInteres: false,
+        monto: '',
+        intereses: '',
+        semanas: '',
+        vendedor: '',
+        fechaInicio: '',
+    })
     const CustomInput = ({ label, type, id, value, onChange }) => (
         <MDBInput wrapperClass='mb-4' label={label} id={id} type={type} value={value} onChange={onChange} />
     );
@@ -30,8 +38,8 @@ export function Nuevocobro() {
         e.preventDefault();
         let monto = parseInt(document.getElementById("formMonto").value);
         let intereses = parseInt(document.getElementById("formIntereses").value);
-        let montoFinal = (monto * intereses / 100) + monto
         let semana = parseInt(document.getElementById("formSemanas").value);
+        let montoFinal = formData.soloInteres ? monto * (intereses / 100) : monto + monto * (intereses / 100);
         let montoxsemana = montoFinal / semana;
         let semanapaga = document.getElementById("formSemanaPaga")
         let devuelve = document.getElementById("formDevuelve")
@@ -94,7 +102,7 @@ export function Nuevocobro() {
     const toggleGestionClientes = () => setIsGestionClientesOpen(!isGestionClientesOpen);
     const fetchClientes = async () => {
         try {
-            const response = await axios.get('http://localhost:3001/api/clientes');
+            const response = await axios.get('https://sistemafinanciero.up.railway.app/api/clientes');
             setClientes(response.data);
         } catch (error) {
             console.error("Error al obtener los clientes:", error);
@@ -113,7 +121,7 @@ export function Nuevocobro() {
     const actualizarCuotasPagadas = async () => {
         if (clienteSeleccionado && cuotasPagadas >= 0) {
             try {
-                const response = await fetch(`http://localhost:3001/api/clientes/${clienteSeleccionado.dni}/prestamo/cuotas`, {
+                const response = await fetch(`https://sistemafinanciero.up.railway.app/api/clientes/${clienteSeleccionado.dni}/prestamo/cuotas`, {
                     method: "PATCH",
                     headers: {
                         "Content-Type": "application/json"
@@ -180,11 +188,40 @@ export function Nuevocobro() {
 
         return () => window.removeEventListener('resize', handleResize);
     }, []);
-    
+    const calcular2 = (e) => {
+        e.preventDefault();
+
+        // Obtener los valores de los inputs
+        let monto = parseInt(document.getElementById("formMonto").value);
+        let intereses = parseInt(document.getElementById("formIntereses").value);
+        let semanas = parseInt(document.getElementById("formSemanas").value);
+
+        // Calcular monto final, monto adeudado y cuotas totales
+        let montoFinal = formData.soloInteres ? monto * (intereses / 100) : monto + monto * (intereses / 100);
+        let montoAdeudado = (parseInt(document.getElementById("formSemanaPaga").value) * (montoFinal / semanas));
+        let cuotasTotales = semanas;
+
+        // Mostrar los resultados en los inputs correspondientes
+        document.getElementById("formDevuelve").value = montoFinal;
+        document.getElementById("formSemanaPaga").value = montoFinal / semanas;
+
+        // Almacenar estos valores en el estado o enviarlos a la base de datos al crear el préstamo
+        const nuevoPrestamo = {
+            montoFinal: formData.soloInteres ? 0 : montoFinal,
+            montoAdeudado: montoAdeudado,
+            cuotasTotales: cuotasTotales,
+            monto: monto,
+            intereses: intereses,
+            semanas: semanas,
+        };
+
+        // Crear préstamo
+        crearPrestamo(nuevoPrestamo);
+    };
     const crearPrestamo = async (nuevoPrestamo) => {
         if (clienteSeleccionado && clienteSeleccionado.dni) {
             try {
-                const response = await fetch(`http://localhost:3001/api/clientes/${clienteSeleccionado.dni}/prestamo/nuevo`, {
+                const response = await fetch(`https://sistemafinanciero.up.railway.app/api/clientes/${clienteSeleccionado.dni}/prestamo/nuevo`, {
                     method: "PATCH",
                     headers: {
                         "Content-Type": "application/json"
@@ -212,10 +249,6 @@ export function Nuevocobro() {
             toast.error("Por favor, selecciona un cliente válido.");
         }
     };
-
-    // Ejemplo de uso en el botón "Crear Préstamo"
-
-
     return (
         <>{/* NAVBAR MOVIL (Visible en pantallas pequeñas) */}
             {isMobile && (
@@ -398,7 +431,7 @@ export function Nuevocobro() {
                                     <div className="col-5">
                                         <ul>
                                             <li className="p-1"><b className="pe-2 azul">Intereses:</b> {clienteSeleccionado.prestamoActual?.intereses || ''}%</li>
-                                            <li className="p-1"><b className="pe-2 azul">Monto Devule:</b> {clienteSeleccionado.prestamoActual?.montoFinal || ''}</li>
+                                            <li className="p-1"><b className="pe-2 azul">Monto Devuelve:</b> {clienteSeleccionado.prestamoActual?.montoFinal || ''}</li>
                                             <li className="p-1"><b className="pe-2 azul">Monto Faltante:</b> {calcularMontoFaltante()}</li>
                                             <li className="p-1"><b className="pe-2 azul">Vendedor:</b> {clienteSeleccionado.prestamoActual?.vendedor}</li>
 
@@ -487,23 +520,23 @@ export function Nuevocobro() {
                                     <h3 className="text-center text-muted mb-3">Prestamo</h3>
                                     <MDBRow>
                                         <div>
-                                            <CustomInput label='Vendedor' id='formVendedor' type='text' />
+                                            <CustomInput label='Vendedor' id='formVendedor' type='text' value={formData.vendedor} onChange={(e) => setFormData({...formData, vendedor: e.target.value})}/>
                                         </div>
                                         <MDBCol col='3'>
-                                            <CustomInput label='Monto' id='formMonto' type='number' />
+                                            <CustomInput label='Monto' id='formMonto' type='number' value={formData.monto} onChange={(e) => setFormData({ ...formData, monto: e.target.value })}/>
                                         </MDBCol>
                                         <MDBCol col='3'>
-                                            <CustomInput label='%Intereses' id='formIntereses' type='number' />
+                                            <CustomInput label='%Intereses' id='formIntereses' type='number' value={formData.intereses} onChange={(e) => setFormData({ ...formData, intereses: e.target.value })} />
                                         </MDBCol>
                                     </MDBRow>
                                     <MDBRow>
                                         <MDBCol col='3'>
-                                            <CustomInput label='Fecha Inicio' id='formFecha' type='date' />
+                                            <CustomInput label='Fecha Inicio' id='formFecha' type='date' value={formData.fechaInicio} onChange={(e) => setFormData({ ...formData, fechaInicio: e.target.value })} />
                                         </MDBCol>
 
                                         {/* Select de Semanas */}
                                         <MDBCol col='3'>
-                                            <select id="formSemanas" className="form-select mb-4">
+                                            <select id="formSemanas" className="form-select mb-4" value={formData.semanas} onChange={(e) => setFormData({ ...formData, semanas: e.target.value })}  >
                                                 <option value={1}>1 Semana</option>
                                                 <option value={2}>2 Semanas</option>
                                                 <option value={3}>3 Semanas</option>
@@ -521,6 +554,17 @@ export function Nuevocobro() {
                                             </select>
                                         </MDBCol>
                                     </MDBRow>
+                                    <div className="mb-4">
+                                        <label>
+                                            <input
+                                                type="checkbox"
+                                                name="soloIntereses"
+                                                checked={formData.soloInteres}
+                                                onChange={(e) => setFormData({ ...formData, soloInteres: e.target.checked })}
+                                            />
+                                            <span className="ms-2">Solo intereses</span>
+                                        </label>
+                                    </div>
 
                                     <MDBRow className="">
                                         <MDBCol col='3'>
@@ -545,8 +589,8 @@ export function Nuevocobro() {
                                         const vendedor = document.getElementById("formVendedor").value;
                                         const fecha = document.getElementById("formFecha").value;
                                         // Calcular montoFinal, montoAdeudado y cuotasTotales
-                                        const montoFinal = monto + (monto * (intereses / 100));
-                                        const montoAdeudado = 0 * (montoFinal / semanas); // Suponiendo que cuotasPagadas inicia en 0
+                                        const montoFinal = formData.soloInteres ? monto * (intereses / 100) : monto + monto * (intereses / 100);
+                                        //const montoAdeudado = 0 * (montoFinal / semanas); // Suponiendo que cuotasPagadas inicia en 0
                                         const cuotasTotales = semanas;
 
                                         const nuevoPrestamo = {
@@ -557,7 +601,7 @@ export function Nuevocobro() {
                                             cuotasPagadas: 0, // Inicialmente en 0
                                             montoFinal: montoFinal,
                                             vendedor: vendedor,
-                                            montoAdeudado: montoAdeudado,
+                                            montoAdeudado: formData.soloInteres ? 0 : montoFinal,
                                             cuotasTotales: cuotasTotales
                                         };
 

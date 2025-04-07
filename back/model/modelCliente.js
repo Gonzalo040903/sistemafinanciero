@@ -4,6 +4,7 @@ const prestamoSchema = new Schema({
     monto: { type: Number, required: true },
     semanas: { type: Number, required: true },
     intereses: { type: Number, required: true },
+    soloInteres: {type: Boolean, default: false},
     fechaInicio: { type: String, required: true },
     montoFinal: { type: Number },
     cuotasTotales: { type: Number },
@@ -14,9 +15,15 @@ const prestamoSchema = new Schema({
 
 prestamoSchema.pre('save', function (next) {
     if (this.isNew) {
-        this.montoFinal = this.monto + (this.monto * (this.intereses / 100));
+        if(this.soloInteres){
+            this.montoFinal = this.monto * (this.intereses / 100);
+        }
+        else{
+            this.montoFinal = this.monto + (this.monto * (this.intereses / 100));
+        }
+        this.montoAdeudado = this.cuotasPagadas * (this.montoFinal / this.semanas);
         this.cuotasTotales = this.semanas;
-        this.montoAdeudado = this.cuotasPagadas * (this.montoFinal / this.cuotasTotales);
+
     }
     next();
 });
