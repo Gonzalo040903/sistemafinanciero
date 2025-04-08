@@ -51,3 +51,7 @@ app.get('*', (req, res) => {
 app.listen(PORT, () => {
     console.log(`Server running on port ${ PORT }`);
 });
+
+import { iniciarCron } from './cron/whatsappCron.js';
+
+iniciarCron();
