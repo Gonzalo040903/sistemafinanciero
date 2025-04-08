@@ -34,7 +34,7 @@ export function PanelControl() {
         // Llamada a la API para obtener clientes
         const fetchClientes = async () => {
             try {
-                const response = await axios.get(`${apiUrl}/api/clientes`);
+                const response = await axios.get(`http://localhost:3001/api/clientes`);
                 setClientes(response.data);
             } catch (error) {
                 console.error("Error al obtener los clientes:", error);

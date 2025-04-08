@@ -254,7 +254,7 @@ export function Agregarcliente() {
                                 onSubmit={submitCliente}
                             >
                                 {formik => (
-                                    <Form className="p-5 mx-4 mt-0 px-4 rounded-5 shadow-3 mb-4 row" id="formulario">
+                                    <Form className="p-2 mx-4 mt-0 px-4 rounded-5 shadow-3 mb-4 row" id="formulario">
                                         <div className="col-md-12 col-lg-5">
                                             <h3 className="text-center text-muted mb-3">Cliente</h3>
                                             <MDBRow>
