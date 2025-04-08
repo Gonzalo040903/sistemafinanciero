@@ -181,29 +181,35 @@ export function PanelControl() {
                                         </tr>
                                     </MDBTableHead>
                                     <MDBTableBody>
-                                        {clientes.map((cliente) => (
-                                            <tr key={cliente.dni}>
-                                                <td>{cliente.nombre} {cliente.apellido}</td>
-                                                <td>{cliente.dni}</td>
-                                                <td>{cliente.direccion}</td>
-                                                <td>{cliente.telefonoPersonal}</td>
-                                                <td>{cliente.telefonoReferencia}</td>
-                                                <td>{cliente.telefonoTres}</td>
-                                                <td>
-                                                    <MDBBadge
-                                                        color={(cliente.prestamoActual.montoFinal - cliente.prestamoActual.montoAdeudado) > 0 ? 'danger' : 'success'}
-                                                        pill
-                                                    >
-                                                        {'$ ' + (cliente.prestamoActual.montoFinal - cliente.prestamoActual.montoAdeudado).toLocaleString('es-AR')}
-                                                    </MDBBadge>
-                                                </td>
-                                                <td>
-                                                    <MDBBtn color="success" href={cliente.googleMaps} target="_blank">
-                                                        <MDBIcon fas icon="map-marker-alt" size="md" color="light" />
-                                                    </MDBBtn>
-                                                </td>
-                                            </tr>
-                                        ))}
+                                        {[...clientes]
+                                            .sort((a, b) => {
+                                                const deudaA = a.prestamoActual.montoFinal - a.prestamoActual.montoAdeudado;
+                                                const deudaB = b.prestamoActual.montoFinal - b.prestamoActual.montoAdeudado;
+                                                return deudaB - deudaA; // De mayor a menor
+                                            })
+                                            .map((cliente) => (
+                                                <tr key={cliente.dni}>
+                                                    <td>{cliente.nombre} {cliente.apellido}</td>
+                                                    <td>{cliente.dni}</td>
+                                                    <td>{cliente.direccion}</td>
+                                                    <td>{cliente.telefonoPersonal}</td>
+                                                    <td>{cliente.telefonoReferencia}</td>
+                                                    <td>{cliente.telefonoTres}</td>
+                                                    <td>
+                                                        <MDBBadge
+                                                            color={(cliente.prestamoActual.montoFinal - cliente.prestamoActual.montoAdeudado) > 0 ? 'danger' : 'success'}
+                                                            pill
+                                                        >
+                                                            {'$ ' + (cliente.prestamoActual.montoFinal - cliente.prestamoActual.montoAdeudado).toLocaleString('es-AR')}
+                                                        </MDBBadge>
+                                                    </td>
+                                                    <td>
+                                                        <MDBBtn color="success" href={cliente.googleMaps} target="_blank">
+                                                            <MDBIcon fas icon="map-marker-alt" size="md" color="light" />
+                                                        </MDBBtn>
+                                                    </td>
+                                                </tr>
+                                            ))}
                                     </MDBTableBody>
                                 </MDBTable>
                             </div>
