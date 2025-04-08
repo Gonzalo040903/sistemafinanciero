@@ -190,8 +190,11 @@ export function PanelControl() {
                                                 <td>{cliente.telefonoReferencia}</td>
                                                 <td>{cliente.telefonoTres}</td>
                                                 <td>
-                                                    <MDBBadge color={(cliente.prestamoActual.montoFinal - cliente.prestamoActual.montoAdeudado) > 0 ? 'danger' : 'success'} pill>
-                                                        {cliente.prestamoActual.montoFinal - cliente.prestamoActual.montoAdeudado}
+                                                    <MDBBadge
+                                                        color={(cliente.prestamoActual.montoFinal - cliente.prestamoActual.montoAdeudado) > 0 ? 'danger' : 'success'}
+                                                        pill
+                                                    >
+                                                        {'$ ' + (cliente.prestamoActual.montoFinal - cliente.prestamoActual.montoAdeudado).toLocaleString('es-AR')}
                                                     </MDBBadge>
                                                 </td>
                                                 <td>
