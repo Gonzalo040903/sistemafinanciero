@@ -52,6 +52,12 @@ app.listen(PORT, () => {
     console.log(`Server running on port ${ PORT }`);
 });
 
+import { conectarWhatsApp } from './services/whatsappService.js';
 import { iniciarCron } from './cron/whatsappCron.js';
 
-iniciarCron();
+async function iniciarApp() {
+    await conectarWhatsApp();
+    iniciarCron();
+}
+
+iniciarApp();
