@@ -9,7 +9,10 @@ import {
     MDBTable,
     MDBTableHead,
     MDBTableBody,
-    MDBBtn
+    MDBBtn, MDBModal,
+    MDBModalContent,
+    MDBModalDialog,
+    MDBModalHeader
 } from 'mdb-react-ui-kit';
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
@@ -20,7 +23,8 @@ export function PanelControl() {
     const [isGestionClientesOpen, setIsGestionClientesOpen] = useState(false);
     const [clientes, setClientes] = useState([]);
     const navigate = useNavigate();
-
+    const [basicModal, setBasicModal] = useState(false);
+    const toggleOpen = () => setBasicModal(!basicModal);
     const toggleGestionClientes = () => {
         setIsGestionClientesOpen(!isGestionClientesOpen);
     };
@@ -165,7 +169,7 @@ export function PanelControl() {
 
                         <div className="col-lg-10 col-md-12 p-0" id="panel">
                             <header className="p-2 mx-4 mt-3 px-4 header rounded-5 shadow-3">{palabra}</header>
-                            <h3 className="px-4 textogris mt-5 mx-1"><b>Tabla Clientes</b></h3>
+                            <h3 className="px-4 textogris mt-5 mx-1"><b>Tabla Clientes <MDBBtn size="sm" color="info" onClick={toggleOpen}> <MDBIcon icon="balance-scale" className="" size="md" color="white" /></MDBBtn></b></h3>
                             <div className="mx-4 mt-4 scrollable-content2">
                                 <MDBTable id="tabla" className="shadow-3 mx-2 rounded-5 text-center">
                                     <MDBTableHead>
@@ -214,6 +218,24 @@ export function PanelControl() {
                                 </MDBTable>
                             </div>
                         </div>
+
+                        {/* MODAL  */}
+                        <MDBModal open={basicModal} onClose={() => setBasicModal(false)} tabIndex='-1'>
+                            <MDBModalDialog size="xl">
+                                <MDBModalContent>
+                                    <div className="rounded-5 shadow-3 p-4 row" id="formulario">
+                                        <MDBModalHeader className="mb-4">
+                                            <h2 className=""><b>Balance</b></h2>
+                                            <MDBBtn className='btn-close' color='none' onClick={toggleOpen}></MDBBtn>
+                                        </MDBModalHeader>
+                                        <div className="col-10 my-3">
+                                            {/* AQUI EL CONTENTIDO DEL BALANCE  */}
+                                        </div>
+                                    </div>
+
+                                </MDBModalContent>
+                            </MDBModalDialog>
+                        </MDBModal>
                     </div>
                 </MDBCard>
             </MDBContainer>
