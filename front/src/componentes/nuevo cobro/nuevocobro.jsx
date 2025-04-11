@@ -102,7 +102,8 @@ export function Nuevocobro() {
     const toggleGestionClientes = () => setIsGestionClientesOpen(!isGestionClientesOpen);
     const fetchClientes = async () => {
         try {
-            const response = await axios.get('https://sistemafinanciero.up.railway.app/api/clientes');
+            //https://sistemafinanciero.up.railway.app/api/clientes
+            const response = await axios.get('http://localhost:3001/api/clientes');
             setClientes(response.data);
         } catch (error) {
             console.error("Error al obtener los clientes:", error);
@@ -121,31 +122,48 @@ export function Nuevocobro() {
     const actualizarCuotasPagadas = async () => {
         if (clienteSeleccionado && cuotasPagadas >= 0) {
             try {
-                const response = await fetch(`https://sistemafinanciero.up.railway.app/api/clientes/${clienteSeleccionado.dni}/prestamo/cuotas`, {
+                const cuotasAnteriores = clienteSeleccionado.prestamoActual?.cuotasPagadas || 0;
+                const nuevasCuotas = cuotasPagadas - cuotasAnteriores;
+    
+                if (nuevasCuotas <= 0) {
+                    toast.error('Debes seleccionar un número mayor de cuotas pagadas.');
+                    return;
+                }
+    
+                // Calcular el monto de cada cuota
+                const montoPorCuota = clienteSeleccionado.prestamoActual?.montoFinal / clienteSeleccionado.prestamoActual?.cuotasTotales;
+    
+                // Crear los nuevos pagos
+                const nuevosPagos = Array.from({ length: nuevasCuotas }, () => ({
+                    fecha: new Date(),
+                    monto: montoPorCuota
+                }));
+    //https://sistemafinanciero.up.railway.app/api/clientes/${clienteSeleccionado.dni}/prestamo/cuotas
+                const response = await fetch(`http://localhost:3001/api/clientes/${clienteSeleccionado.dni}/prestamo/cuotas`, {
                     method: "PATCH",
                     headers: {
                         "Content-Type": "application/json"
                     },
                     body: JSON.stringify({
-                        cuotasPagadas: cuotasPagadas
+                        cuotasPagadas: cuotasPagadas,
+                        nuevosPagos: nuevosPagos 
                     })
                 });
-
+    
                 if (response.status === 200) {
-                    const updatedCliente = await response.json(); // Obtener la respuesta con el cliente actualizado
-
-                    // Mostrar un mensaje de éxito
-                    toast.success('Cuotas actualizadas correctamente');
-
-                    // Actualizar clienteSeleccionado con los valores actualizados
+                    const updatedCliente = await response.json();
+    
+                    toast.success('Cuotas y pagos actualizados correctamente');
+    
+                    // Actualizo el cliente seleccionado
                     setClienteSeleccionado(prev => ({
                         ...prev,
                         prestamoActual: {
-                            ...updatedCliente.prestamoActual, // Usamos los datos del cliente actualizado
+                            ...updatedCliente.prestamoActual,
                         }
                     }));
-
-                    // Actualizar el estado de la lista de clientes
+    
+                    // Actualizo la lista de clientes
                     setClientes(prevClientes =>
                         prevClientes.map(cliente =>
                             cliente.dni === updatedCliente.dni
@@ -164,6 +182,7 @@ export function Nuevocobro() {
             toast.error('Por favor, selecciona un valor de cuotas válido');
         }
     };
+    
 
     const navigate = useNavigate();
     const handleLogout = () => {
@@ -221,7 +240,8 @@ export function Nuevocobro() {
     const crearPrestamo = async (nuevoPrestamo) => {
         if (clienteSeleccionado && clienteSeleccionado.dni) {
             try {
-                const response = await fetch(`https://sistemafinanciero.up.railway.app/api/clientes/${clienteSeleccionado.dni}/prestamo/nuevo`, {
+                //https://sistemafinanciero.up.railway.app/api/clientes/${clienteSeleccionado.dni}/prestamo/nuevo
+                const response = await fetch(`http://localhost:3001/api/clientes/${clienteSeleccionado.dni}/prestamo/nuevo`, {
                     method: "PATCH",
                     headers: {
                         "Content-Type": "application/json"

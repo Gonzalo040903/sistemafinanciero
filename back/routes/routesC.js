@@ -115,7 +115,6 @@ router.delete('/:dni', async (req, res) => {
 });
 
 // Endpoint PATCH para actualizar cuotas y recalcular montoAdeudado
-// Endpoint PATCH para actualizar cuotas y recalcular montoAdeudado
 router.patch('/:dni/prestamo/cuotas', async (req, res) => {
     const { dni } = req.params;
     const { cuotasPagadas } = req.body;
@@ -129,11 +128,27 @@ router.patch('/:dni/prestamo/cuotas', async (req, res) => {
             return res.status(400).json({ message: 'No hay préstamo asociado a este cliente' });
         }
 
-        // Actualizar el número de cuotas pagadas
-        cliente.prestamoActual.cuotasPagadas = cuotasPagadas;
-
         // Calcular el valor de cada cuota
         const cuotaValor = cliente.prestamoActual.montoFinal / cliente.prestamoActual.cuotasTotales;
+
+        // Verificar si las cuotas aumentaron (para registrar el pago)
+        const cuotasAnteriores = cliente.prestamoActual.cuotasPagadas || 0;
+
+        if (cuotasPagadas > cuotasAnteriores) {
+            const cuotasNuevas = cuotasPagadas - cuotasAnteriores;
+            const fechaActual = new Date();
+
+            // Agregar un pago por cada cuota nueva que se haya pagado
+            for (let i = 0; i < cuotasNuevas; i++) {
+                cliente.prestamoActual.pagos.push({
+                    fecha: fechaActual,
+                    monto: cuotaValor
+                });
+            }
+        }
+
+        // Actualizar el número de cuotas pagadas
+        cliente.prestamoActual.cuotasPagadas = cuotasPagadas;
 
         // Calcular el monto adeudado como el total pagado hasta el momento
         cliente.prestamoActual.montoAdeudado = cuotaValor * cuotasPagadas;
