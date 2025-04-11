@@ -39,7 +39,7 @@ const clienteSchema = new Schema({
     telefonoTres: { type: Number, required: true },
     prestamoActual: { type: prestamoSchema, required: true },
     historialPrestamos: { type: [prestamoSchema], default: [] }
-}, { collection: 'Cliente', versionKey: false });
+}, { collection: 'Cliente', versionKey: false, timestamps: true });
 
 const Cliente = model('Cliente', clienteSchema);
 export default Cliente;

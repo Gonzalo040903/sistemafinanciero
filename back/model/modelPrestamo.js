@@ -12,7 +12,7 @@ const prestamoSchema = new Schema({
     montoAdeudado: { type: Number },
     cuotasPagadas: { type: Number, default: 0 },
     vendedor: { type: String, required: true }
-}, { collection: 'Prestamo', versionKey: false });
+}, { collection: 'Prestamo', versionKey: false, timestamps: true});
 
 prestamoSchema.pre('save', function (next) {
     if (this.isNew) {
