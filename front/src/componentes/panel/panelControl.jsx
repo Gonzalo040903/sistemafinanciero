@@ -24,6 +24,9 @@ export function PanelControl() {
     const [clientes, setClientes] = useState([]);
     const navigate = useNavigate();
     const [basicModal, setBasicModal] = useState(false);
+    const [isMobile, setIsMobile] = useState(false);
+
+
     const toggleOpen = () => setBasicModal(!basicModal);
     const toggleGestionClientes = () => {
         setIsGestionClientesOpen(!isGestionClientesOpen);
@@ -34,6 +37,20 @@ export function PanelControl() {
         navigate('/'); // Redirige al usuario al login
     };
     const apiUrl = process.env.REACT_APP_API_URL;
+    const [reporte, setReporte] = useState(null);
+
+    const fetchBalance = async () => {
+    try {
+        const res = await fetch('http://localhost:3001/api/reporte');
+        const data = await res.json();
+        setReporte(data);
+        toggleOpen(); // Abrir modal
+    } catch (error) {
+        console.error("Error al obtener balance:", error);
+    }
+    };
+
+
     useEffect(() => {
         // Llamada a la API para obtener clientes
         const fetchClientes = async () => {
@@ -49,7 +66,7 @@ export function PanelControl() {
     }, []);
 
     let palabra = "Panel de control > Tabla Clientes";
-    const [isMobile, setIsMobile] = useState(false);
+    //const [isMobile, setIsMobile] = useState(false); NO SABEMOS SI VA 
 
     useEffect(() => {
         const handleResize = () => {
@@ -225,11 +242,27 @@ export function PanelControl() {
                                 <MDBModalContent>
                                     <div className="rounded-5 shadow-3 p-4 row" id="formulario">
                                         <MDBModalHeader className="mb-4">
-                                            <h2 className=""><b>Balance</b></h2>
+                                            <h2 className=""><b>Reporte Semanal</b></h2>
                                             <MDBBtn className='btn-close' color='none' onClick={toggleOpen}></MDBBtn>
                                         </MDBModalHeader>
                                         <div className="col-10 my-3">
                                             {/* AQUI EL CONTENTIDO DEL BALANCE  */}
+                                            {reporte ? (
+                                                <>
+                                                    <h4>Semana: {reporte.semana}</h4>
+                                                    <p>Total de Ventas: ${reporte.totalVentas}</p>
+                                                    <h5>Productos:</h5>
+                                                    <ul>
+                                                        {reporte.productos.map((prod, index) => (
+                                                        <li key={index}>
+                                                            {prod.nombre} - {prod.cantidad} unidades
+                                                        </li>
+                                                        ))}
+                                                    </ul>
+                                                    </>
+                                                ) : (
+                                                    <p>cargando reporte...</p>
+                                                )}
                                         </div>
                                     </div>
 

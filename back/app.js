@@ -9,6 +9,7 @@ import clientesRouter from './routes/routesC.js';
 import prestamosRouter from './routes/routesP.js';
 import vendedorRouter from './routes/routesV.js';
 import authRouter from './routes/routesAuth.js';
+import reporteSemanal from './routes/reporte.js';
 
 dotenv.config(); // Cargar variables de entorno desde un archivo .env
 
@@ -40,6 +41,7 @@ app.use('/api/clientes', clientesRouter);
 app.use('/api/prestamos', prestamosRouter);
 app.use('/api/vendedores', vendedorRouter);
 app.use('/api', authRouter);
+app.use('/api/reporte', reporteSemanal);
 
 const buildPath = path.resolve('front', 'build');
 app.use(express.static(buildPath));
