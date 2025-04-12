@@ -30,23 +30,32 @@ router.get('/balance-semanal', async (req, res) => {
     const { lunes, domingo } = getSemanaActual();
 
     try {
-        // 🔹 Contar clientes nuevos en la semana
+        // 🔹 Clientes nuevos creados esta semana
         const nuevosClientes = await Cliente.countDocuments({
             createdAt: { $gte: lunes, $lte: domingo }
         });
 
-        // 🔹 Contar préstamos nuevos en la semana
-        /**const clientesConPrestamos = await Cliente.find({
-            "historialPrestamos.fechaInicio": { $gte: lunes, $lte: domingo }
-        });**/
-        
+        // 🔹 Obtener los préstamos actuales de los clientes
+        const clientes = await Cliente.find({});
 
-        const todosLosClientes = await Cliente.find({});
         let totalPrestamos = 0;
         let totalPrestado = 0;
         let prestamosDeLaSemana = [];
 
-        todosLosClientes.forEach(cliente => {
+        // 🔹 Buscar préstamos actuales de cada cliente
+        clientes.forEach(cliente => {
+            // Verificar el prestamo actual
+            if (cliente.prestamoActual && cliente.prestamoActual.fechaInicio >= lunes && cliente.prestamoActual.fechaInicio <= domingo) {
+                prestamosDeLaSemana.push({
+                    cliente: `${cliente.nombre} ${cliente.apellido}`,
+                    monto: cliente.prestamoActual.monto,
+                    fechaFormateada: formatearFecha(cliente.prestamoActual.fechaInicio)
+                });
+                totalPrestamos++;
+                totalPrestado += cliente.prestamoActual.monto;
+            }
+
+            // 🔹 Verificar el historial de préstamos
             cliente.historialPrestamos.forEach(prestamo => {
                 const fecha = new Date(prestamo.fechaInicio);
                 if (fecha >= lunes && fecha <= domingo) {
@@ -60,10 +69,12 @@ router.get('/balance-semanal', async (req, res) => {
                 }
             });
         });
-        
-         const prestamosConPagos = await Prestamo.find({
+
+        // 🔹 Total cobrado (pagos registrados esta semana)
+        const prestamosConPagos = await Prestamo.find({
             "pagos.fecha": { $gte: lunes, $lte: domingo }
         });
+
         let totalCobrado = 0;
         prestamosConPagos.forEach(prestamo => {
             prestamo.pagos.forEach(pago => {
@@ -72,9 +83,6 @@ router.get('/balance-semanal', async (req, res) => {
                 }
             });
         });
-
-     
-
 
         res.json({
             nuevosClientes,
@@ -90,5 +98,6 @@ router.get('/balance-semanal', async (req, res) => {
         res.status(500).json({ message: 'Error al calcular balance semanal' });
     }
 });
+
 
 export default router;
