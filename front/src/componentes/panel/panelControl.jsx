@@ -40,16 +40,16 @@ export function PanelControl() {
     const [reporte, setReporte] = useState(null);
 
     const fetchBalance = async () => {
-    try {
-        const res = await fetch('http://localhost:3001/api/reporte');
-        const data = await res.json();
-        setReporte(data);
-        toggleOpen(); // Abrir modal
-    } catch (error) {
-        console.error("Error al obtener balance:", error);
-    }
+        try {
+            const response = await axios.get('http://localhost:3001/api/reporte/balance-semanal');
+            setReporte(response.data);
+            if (response.data) {
+                toggleOpen();
+            }
+        } catch (error) {
+            console.error("Error al obtener balance:", error);
+        }
     };
-
 
     useEffect(() => {
         // Llamada a la API para obtener clientes
@@ -248,18 +248,11 @@ export function PanelControl() {
                                         <div className="col-10 my-3">
                                             {/* AQUI EL CONTENTIDO DEL BALANCE  */}
                                             {reporte ? (
-                                                <>
-                                                    <h4>Semana: {reporte.semana}</h4>
-                                                    <p>Total de Ventas: ${reporte.totalVentas}</p>
-                                                    <h5>Productos:</h5>
-                                                    <ul>
-                                                        {reporte.productos.map((prod, index) => (
-                                                        <li key={index}>
-                                                            {prod.nombre} - {prod.cantidad} unidades
-                                                        </li>
-                                                        ))}
-                                                    </ul>
-                                                    </>
+                                                 <>
+                                                    <h4>Nuevos Clientes: {reporte.nuevosClientes}</h4>
+                                                    <p>Total Prestado: ${reporte.totalPrestado}</p>
+                                                    <p>Total Cobrado: ${reporte.totalCobrado}</p>
+                                                </>
                                                 ) : (
                                                     <p>cargando reporte...</p>
                                                 )}

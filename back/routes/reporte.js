@@ -3,6 +3,14 @@ import Cliente from '../model/modelCliente.js';
 import Prestamo from '../model/modelPrestamo.js';
 
 const router = Router();
+function formatearFecha(fecha) {
+    const d = new Date(fecha);
+    const dia = String(d.getDate()).padStart(2, '0');
+    const mes = String(d.getMonth() + 1).padStart(2, '0');
+    const año = d.getFullYear();
+    return `${dia}-${mes}-${año}`;
+}
+
 
 function getSemanaActual() {
     const hoy = new Date();
@@ -22,32 +30,59 @@ router.get('/balance-semanal', async (req, res) => {
     const { lunes, domingo } = getSemanaActual();
 
     try {
-        // Clientes nuevos en la semana
-        const clientesNuevos = await Cliente.find({
+        // 🔹 Contar clientes nuevos en la semana
+        const nuevosClientes = await Cliente.countDocuments({
             createdAt: { $gte: lunes, $lte: domingo }
         });
 
-        // Prestamos otorgados en la semana
-        const prestamos = await Prestamo.find({
-            fechaInicio: { $gte: lunes, $lte: domingo }
+        // 🔹 Contar préstamos nuevos en la semana
+        /**const clientesConPrestamos = await Cliente.find({
+            "historialPrestamos.fechaInicio": { $gte: lunes, $lte: domingo }
+        });**/
+        
+
+        const todosLosClientes = await Cliente.find({});
+        let totalPrestamos = 0;
+        let totalPrestado = 0;
+        let prestamosDeLaSemana = [];
+
+        todosLosClientes.forEach(cliente => {
+            cliente.historialPrestamos.forEach(prestamo => {
+                const fecha = new Date(prestamo.fechaInicio);
+                if (fecha >= lunes && fecha <= domingo) {
+                    prestamosDeLaSemana.push({
+                        cliente: `${cliente.nombre} ${cliente.apellido}`,
+                        monto: prestamo.monto,
+                        fechaFormateada: formatearFecha(prestamo.fechaInicio)
+                    });
+                    totalPrestamos++;
+                    totalPrestado += prestamo.monto;
+                }
+            });
+        });
+        
+         const prestamosConPagos = await Prestamo.find({
+            "pagos.fecha": { $gte: lunes, $lte: domingo }
+        });
+        let totalCobrado = 0;
+        prestamosConPagos.forEach(prestamo => {
+            prestamo.pagos.forEach(pago => {
+                if (pago.fecha >= lunes && pago.fecha <= domingo) {
+                    totalCobrado += pago.monto;
+                }
+            });
         });
 
-        const totalPrestado = prestamos.reduce((suma, p) => suma + p.monto, 0);
+     
 
-        // Cuotas pagadas esta semana
-        const cuotasPagadas = prestamos.filter(p => {
-            return p.updatedAt >= lunes && p.updatedAt <= domingo && p.cuotasPagadas > 0;
-        });
-
-        const totalCobrado = cuotasPagadas.reduce((suma, p) => {
-            const cuota = p.montoFinal / p.semanas;
-            return suma + cuota * p.cuotasPagadas;
-        }, 0);
 
         res.json({
-            nuevosClientes: clientesNuevos.length,
+            nuevosClientes,
+            totalPrestamos,
             totalPrestado,
-            totalCobrado
+            totalCobrado,
+            prestamosDeLaSemana,
+            fechaHoy: formatearFecha(new Date())
         });
 
     } catch (error) {

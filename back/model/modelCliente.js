@@ -5,7 +5,7 @@ const prestamoSchema = new Schema({
     semanas: { type: Number, required: true },
     intereses: { type: Number, required: true },
     soloInteres: {type: Boolean, default: false},
-    fechaInicio: { type: String, required: true },
+    fechaInicio: { type: Date, required: true },
     montoFinal: { type: Number },
     cuotasTotales: { type: Number },
     montoAdeudado: { type: Number },
