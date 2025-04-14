@@ -1,8 +1,10 @@
 import { Router } from 'express';
 import Cliente from '../model/modelCliente.js';
 import Prestamo from '../model/modelPrestamo.js';
+import moment from 'moment-timezone';
 
 const router = Router();
+
 function formatearFecha(fecha) {
     const d = new Date(fecha);
     const dia = String(d.getDate()).padStart(2, '0');
@@ -11,17 +13,15 @@ function formatearFecha(fecha) {
     return `${dia}-${mes}-${año}`;
 }
 
-
 function getSemanaActual() {
-    const hoy = new Date();
-    const diaSemana = hoy.getDay(); // 0 = domingo, 1 = lunes, ..., 6 = sábado
-    const diffLunes = hoy.getDate() - diaSemana + (diaSemana === 0 ? -6 : 1);
-    const lunes = new Date(hoy.setDate(diffLunes));
-    lunes.setHours(0, 0, 0, 0);
+    const hoy = moment().tz('America/Argentina/Buenos_Aires');
 
-    const domingo = new Date(lunes);
-    domingo.setDate(lunes.getDate() + 6);
-    domingo.setHours(23, 59, 59, 999);
+    // ✅ Lunes a las 00:00 y domingo a las 23:59:59
+    const lunes = hoy.clone().startOf('isoWeek').startOf('day');
+    const domingo = hoy.clone().endOf('isoWeek').endOf('day');
+
+    console.log('Lunes:', lunes.format());
+    console.log('Domingo:', domingo.format());
 
     return { lunes, domingo };
 }
@@ -30,57 +30,55 @@ router.get('/balance-semanal', async (req, res) => {
     const { lunes, domingo } = getSemanaActual();
 
     try {
-        // 🔹 Clientes nuevos creados esta semana
         const nuevosClientes = await Cliente.countDocuments({
-            createdAt: { $gte: lunes, $lte: domingo }
+            createdAt: { $gte: lunes.toDate(), $lte: domingo.toDate() }
         });
 
-        // 🔹 Obtener los préstamos actuales de los clientes
         const clientes = await Cliente.find({});
-
         let totalPrestamos = 0;
         let totalPrestado = 0;
         let prestamosDeLaSemana = [];
+        let totalCobrado = 0;
 
-        // 🔹 Buscar préstamos actuales de cada cliente
         clientes.forEach(cliente => {
-            // Verificar el prestamo actual
-            if (cliente.prestamoActual && cliente.prestamoActual.fechaInicio >= lunes && cliente.prestamoActual.fechaInicio <= domingo) {
-                prestamosDeLaSemana.push({
-                    cliente: `${cliente.nombre} ${cliente.apellido}`,
-                    monto: cliente.prestamoActual.monto,
-                    fechaFormateada: formatearFecha(cliente.prestamoActual.fechaInicio)
-                });
-                totalPrestamos++;
-                totalPrestado += cliente.prestamoActual.monto;
+            // Verificar prestamoActual
+            if (cliente.prestamoActual) {
+                const fechaInicio = moment(cliente.prestamoActual.fechaInicio).tz('America/Argentina/Buenos_Aires');
+
+                if (fechaInicio.isSameOrAfter(lunes) && fechaInicio.isSameOrBefore(domingo)) {
+                    prestamosDeLaSemana.push({
+                        cliente: `${cliente.nombre} ${cliente.apellido}`,
+                        monto: cliente.prestamoActual.monto,
+                        fechaFormateada: formatearFecha(fechaInicio)
+                    });
+                    totalPrestamos++;
+                    totalPrestado += cliente.prestamoActual.monto;
+                }
+
+                // Pagos realizados
+                if (Array.isArray(cliente.prestamoActual.pagos)) {
+                    cliente.prestamoActual.pagos.forEach(pago => {
+                        const fechaPago = moment(pago.fecha).tz('America/Argentina/Buenos_Aires');
+                        if (fechaPago.isSameOrAfter(lunes) && fechaPago.isSameOrBefore(domingo)) {
+                            totalCobrado += pago.monto;
+                        }
+                    });
+                }
             }
 
-            // 🔹 Verificar el historial de préstamos
+            // Verificar historial
             cliente.historialPrestamos.forEach(prestamo => {
-                const fecha = new Date(prestamo.fechaInicio);
-                if (fecha >= lunes && fecha <= domingo) {
+                const fecha = moment(prestamo.fechaInicio).tz('America/Argentina/Buenos_Aires');
+                if (fecha.isSameOrAfter(lunes) && fecha.isSameOrBefore(domingo)) {
                     prestamosDeLaSemana.push({
                         cliente: `${cliente.nombre} ${cliente.apellido}`,
                         monto: prestamo.monto,
-                        fechaFormateada: formatearFecha(prestamo.fechaInicio)
+                        fechaFormateada: formatearFecha(fecha)
                     });
                     totalPrestamos++;
                     totalPrestado += prestamo.monto;
                 }
             });
-        });
-
-        // 🔹 Total cobrado (pagos registrados esta semana)
-        let totalCobrado = 0;
-        clientes.forEach(cliente => {
-            if (cliente.prestamoActual && Array.isArray(cliente.prestamoActual.pagos)) {
-                cliente.prestamoActual.pagos.forEach(pago => {
-                    const fechaPago = new Date(pago.fecha);
-                    if (fechaPago >= lunes && fechaPago <= domingo) {
-                        totalCobrado += pago.monto;
-                    }
-                });
-            }
         });
 
         res.json({
@@ -97,6 +95,5 @@ router.get('/balance-semanal', async (req, res) => {
         res.status(500).json({ message: 'Error al calcular balance semanal' });
     }
 });
-
 
 export default router;
