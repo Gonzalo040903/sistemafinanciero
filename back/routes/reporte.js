@@ -71,17 +71,16 @@ router.get('/balance-semanal', async (req, res) => {
         });
 
         // 🔹 Total cobrado (pagos registrados esta semana)
-        const prestamosConPagos = await Prestamo.find({
-            "pagos.fecha": { $gte: lunes, $lte: domingo }
-        });
-
         let totalCobrado = 0;
-        prestamosConPagos.forEach(prestamo => {
-            prestamo.pagos.forEach(pago => {
-                if (pago.fecha >= lunes && pago.fecha <= domingo) {
-                    totalCobrado += pago.monto;
-                }
-            });
+        clientes.forEach(cliente => {
+            if (cliente.prestamoActual && Array.isArray(cliente.prestamoActual.pagos)) {
+                cliente.prestamoActual.pagos.forEach(pago => {
+                    const fechaPago = new Date(pago.fecha);
+                    if (fechaPago >= lunes && fechaPago <= domingo) {
+                        totalCobrado += pago.monto;
+                    }
+                });
+            }
         });
 
         res.json({
