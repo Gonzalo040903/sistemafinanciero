@@ -253,6 +253,8 @@
                                                             <h4>Nuevos Clientes: {reporte.nuevosClientes}</h4>
                                                             <p>Total Prestado: ${reporte.totalPrestado.toLocaleString('es-AR')}</p>
                                                             <p>Total Cobrado: ${reporte.totalCobrado.toLocaleString('es-AR')}</p>
+                                                            <p>Total préstamos: {reporte.totalPrestamos}</p>
+
 
                                                             <h5 className="mt-4">Préstamos Realizados en la Semana</h5>
                                                             <MDBTable small striped bordered>

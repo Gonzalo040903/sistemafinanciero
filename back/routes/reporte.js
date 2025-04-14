@@ -14,9 +14,9 @@ function formatearFecha(fecha) {
 
 function getSemanaActual() {
     const hoy = moment().tz('America/Argentina/Buenos_Aires');
-    const lunes = hoy.clone().startOf('isoWeek').startOf('day');
-    const domingo = hoy.clone().endOf('isoWeek').endOf('day');
-    return { lunes, domingo };
+    const domingo = hoy.clone().startOf('week').startOf('day'); // DOMINGO
+    const sabado = hoy.clone().endOf('week').endOf('day'); // SÁBADO
+    return { lunes: domingo, domingo: sabado }; // usamos los mismos nombres
 }
 
 router.get('/balance-semanal', async (req, res) => {
@@ -32,16 +32,19 @@ router.get('/balance-semanal', async (req, res) => {
         let totalPrestado = 0;
         let prestamosDeLaSemana = [];
         let totalCobrado = 0;
-
+        const yaAgregados = new Set();
+        
         clientes.forEach(cliente => {
-            const yaAgregados = new Set();
-
+        
             // Verificar prestamoActual
-            if (cliente.prestamoActual) {
+            if (cliente.prestamoActual && cliente.prestamoActual.fechaInicio && cliente.prestamoActual.monto) {
                 const fechaInicio = moment(cliente.prestamoActual.fechaInicio).tz('America/Argentina/Buenos_Aires');
-
+        
+                // Verificar si está dentro del rango
                 if (fechaInicio.isSameOrAfter(lunes) && fechaInicio.isSameOrBefore(domingo)) {
-                    if (!yaAgregados.has(cliente.prestamoActual._id.toString())) {
+            
+                    // Si aún no fue agregado
+                    if (!yaAgregados.has(cliente.prestamoActual._id?.toString())) {
                         prestamosDeLaSemana.push({
                             cliente: `${cliente.nombre} ${cliente.apellido}`,
                             monto: cliente.prestamoActual.monto,
@@ -49,20 +52,22 @@ router.get('/balance-semanal', async (req, res) => {
                         });
                         totalPrestamos++;
                         totalPrestado += cliente.prestamoActual.monto;
-                        yaAgregados.add(cliente.prestamoActual._id.toString());
+                        console.log(`💰 Sumando préstamo: ${cliente.prestamoActual.monto}`);
+                        yaAgregados.add(cliente.prestamoActual._id?.toString());
                     }
                 }
-
+            }
+            
                 // Pagos realizados
                 if (Array.isArray(cliente.prestamoActual.pagos)) {
                     cliente.prestamoActual.pagos.forEach(pago => {
                         const fechaPago = moment(pago.fecha).tz('America/Argentina/Buenos_Aires');
-                        if (fechaPago.isSameOrAfter(lunes) && fechaPago.isSameOrBefore(domingo)) {
+                        if (fechaPago.isBetween(lunes, domingo, undefined, '[]')) {
                             totalCobrado += pago.monto;
                         }
                     });
                 }
-            }
+            
 
             // Verificar historialPrestamos
             cliente.historialPrestamos.forEach(prestamo => {
