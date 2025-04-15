@@ -66,7 +66,7 @@ ${resumenSemanal.clientesPendientes.size > 0 ? Array.from(resumenSemanal.cliente
 }
 
 export function iniciarCron() {
-    cron.schedule('0 21 * * 0', async () => { // Cada jueves a las 15:30
+    cron.schedule('0 21 * * 0', async () => {
         console.log('📋 Enviando resumen semanal...');
         await enviarResumenSemanal();
     });
