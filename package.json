@@ -2,6 +2,7 @@
   "dependencies": {
     "@whiskeysockets/baileys": "^6.7.16",
     "express": "^4.21.1",
+    "moment-timezone": "^0.5.48",
     "mongoose": "^8.7.3",
     "nodemon": "^3.1.7",
     "qrcode-terminal": "^0.12.0"
