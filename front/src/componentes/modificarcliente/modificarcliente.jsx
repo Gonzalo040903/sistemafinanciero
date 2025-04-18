@@ -165,10 +165,13 @@ export function Modificarcliente() {
                                 <MDBIcon icon="dollar-sign" className="me-2 mx-0 mt-2" />
                                 Nuevo Cobro
                             </MDBNavbarLink>
-                            <MDBNavbarLink href="/vendedores" className="nav-item-link py-1">
-                                <MDBIcon fas icon="key" className="me-2 mx-0 mt-2" />
-                                Vendedores
-                            </MDBNavbarLink>
+                            {localStorage.getItem('role') !== 'vendedor' && (
+                                <MDBNavbarLink href="/vendedores" className="nav-item-link py-1">
+                                    <MDBIcon fas icon="key" className="me-2 mx-0 mt-2" />
+                                    Vendedores
+                                </MDBNavbarLink>
+                            )}
+
                             <MDBNavbarLink className="mt-4">
                                 <MDBBtn color="danger" onClick={handleLogout}>
                                     <MDBIcon fas icon="sign-out-alt" className="me-2" style={{ fontSize: '16px' }} />
@@ -220,10 +223,13 @@ export function Modificarcliente() {
                                         <MDBIcon icon="dollar-sign" className="me-2 mx-0 mt-2" />
                                         Nuevo Cobro
                                     </MDBNavbarLink>
-                                    <MDBNavbarLink href="/vendedores" className="nav-item-link">
-                                        <MDBIcon fas icon="key" className="me-2 mx-0 mt-2" />
-                                        Vendedores
-                                    </MDBNavbarLink>
+                                    {localStorage.getItem('role') !== 'vendedor' && (
+                                        <MDBNavbarLink href="/vendedores" className="nav-item-link">
+                                            <MDBIcon fas icon="key" className="me-2 mx-0 mt-2" />
+                                            Vendedores
+                                        </MDBNavbarLink>
+                                    )}
+
                                     <MDBNavbarLink className="mt-4">
                                         <MDBBtn color="danger" onClick={handleLogout}>
                                             <MDBIcon fas icon="sign-out-alt" className="me-2" style={{ fontSize: '16px' }} />

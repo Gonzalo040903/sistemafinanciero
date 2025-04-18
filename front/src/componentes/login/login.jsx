@@ -49,11 +49,12 @@ export function Login() {
     const [contraseña, setContraseña] = useState('');
     const navigate = useNavigate();
 
-    const handleLogin = (token) => {
+    const handleLogin = (token, role) => {
         localStorage.setItem('token', token);
+        localStorage.setItem('role', role);
         navigate('/panel');
     };
-
+    
     const handleSubmit = async (e) => {
         e.preventDefault();
 
@@ -61,7 +62,7 @@ export function Login() {
             const res = await axios.post('http://localhost:3001/api/login', { nombre, contraseña });
             const { token, role, vendedor } = res.data;
 
-            handleLogin(token);
+            handleLogin(token,role);
 
             if (role === 'admin') {
                 toast.success('Inicio de sesión como administrador');
