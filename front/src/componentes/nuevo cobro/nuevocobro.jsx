@@ -103,7 +103,7 @@ export function Nuevocobro() {
     const fetchClientes = async () => {
         try {
             //https://sistemafinanciero.up.railway.app/api/clientes
-            const response = await axios.get('http://localhost:3001/api/clientes');
+            const response = await axios.get('https://sistemafinanciero.up.railway.app/api/clientes');
             setClientes(response.data);
         } catch (error) {
             console.error("Error al obtener los clientes:", error);
@@ -139,7 +139,7 @@ export function Nuevocobro() {
                     monto: montoPorCuota
                 }));
     //https://sistemafinanciero.up.railway.app/api/clientes/${clienteSeleccionado.dni}/prestamo/cuotas
-                const response = await fetch(`http://localhost:3001/api/clientes/${clienteSeleccionado.dni}/prestamo/cuotas`, {
+                const response = await fetch(`https://sistemafinanciero.up.railway.app/api/clientes/${clienteSeleccionado.dni}/prestamo/cuotas`, {
                     method: "PATCH",
                     headers: {
                         "Content-Type": "application/json"
@@ -241,7 +241,7 @@ export function Nuevocobro() {
         if (clienteSeleccionado && clienteSeleccionado.dni) {
             try {
                 //https://sistemafinanciero.up.railway.app/api/clientes/${clienteSeleccionado.dni}/prestamo/nuevo
-                const response = await fetch(`http://localhost:3001/api/clientes/${clienteSeleccionado.dni}/prestamo/nuevo`, {
+                const response = await fetch(`https://sistemafinanciero.up.railway.app/api/clientes/${clienteSeleccionado.dni}/prestamo/nuevo`, {
                     method: "PATCH",
                     headers: {
                         "Content-Type": "application/json"

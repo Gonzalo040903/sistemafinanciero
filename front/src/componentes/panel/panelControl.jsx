@@ -41,7 +41,7 @@
 
             const fetchBalance = async () => {
                 try {
-                    const response = await axios.get('http://localhost:3001/api/reporte/balance-semanal');
+                    const response = await axios.get(`${apiUrl}/api/reporte/balance-semanal`);
                     console.log("DATA del Balance",response.data);
                     setReporte(response.data);
                     if (response.data) {
@@ -56,7 +56,7 @@
                 // Llamada a la API para obtener clientes
                 const fetchClientes = async () => {
                     try {
-                        const response = await axios.get(`http://localhost:3001/api/clientes`);
+                        const response = await axios.get(`${apiUrl}/api/clientes`);
                         setClientes(response.data);
                     } catch (error) {
                         console.error("Error al obtener los clientes:", error);

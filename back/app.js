@@ -18,7 +18,7 @@ const PORT = process.env.PORT || 3001;
 
 // Middleware
 app.use(cors({
-    origin: 'http://localhost:3000', // URL de tu frontend desplegado
+    origin: 'https://sistemafinanciero.up.railway.app', // URL de tu frontend desplegado
     methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH'],
     
 }));

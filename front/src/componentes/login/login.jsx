@@ -59,7 +59,7 @@ export function Login() {
         e.preventDefault();
 
         try {
-            const res = await axios.post('http://localhost:3001/api/login', { nombre, contraseña });
+            const res = await axios.post('https://sistemafinanciero.up.railway.app/api/login', { nombre, contraseña });
             const { token, role, vendedor } = res.data;
 
             handleLogin(token,role);
