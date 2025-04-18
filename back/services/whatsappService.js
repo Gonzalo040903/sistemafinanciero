@@ -9,7 +9,7 @@ export async function conectarWhatsApp() {
     sock = baileys.makeWASocket({
         auth: state,
         logger: P({ level: 'info' }),
-        printQRInTerminal: false,
+        printQRInTerminal: true,
     });
 
     console.log('Socket creado, esperando QR...');
