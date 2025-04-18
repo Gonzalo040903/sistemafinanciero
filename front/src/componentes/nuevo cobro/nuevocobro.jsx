@@ -23,7 +23,7 @@ import {
 import "./nuevocobro.css";
 
 export function Nuevocobro() {
-    const[formData, setFormData] = React.useState({
+    const [formData, setFormData] = React.useState({
         soloInteres: false,
         monto: '',
         intereses: '',
@@ -124,21 +124,21 @@ export function Nuevocobro() {
             try {
                 const cuotasAnteriores = clienteSeleccionado.prestamoActual?.cuotasPagadas || 0;
                 const nuevasCuotas = cuotasPagadas - cuotasAnteriores;
-    
+
                 if (nuevasCuotas <= 0) {
                     toast.error('Debes seleccionar un número mayor de cuotas pagadas.');
                     return;
                 }
-    
+
                 // Calcular el monto de cada cuota
                 const montoPorCuota = clienteSeleccionado.prestamoActual?.montoFinal / clienteSeleccionado.prestamoActual?.cuotasTotales;
-    
+
                 // Crear los nuevos pagos
                 const nuevosPagos = Array.from({ length: nuevasCuotas }, () => ({
                     fecha: new Date(),
                     monto: montoPorCuota
                 }));
-    //https://sistemafinanciero.up.railway.app/api/clientes/${clienteSeleccionado.dni}/prestamo/cuotas
+                //https://sistemafinanciero.up.railway.app/api/clientes/${clienteSeleccionado.dni}/prestamo/cuotas
                 const response = await fetch(`https://sistemafinanciero.up.railway.app/api/clientes/${clienteSeleccionado.dni}/prestamo/cuotas`, {
                     method: "PATCH",
                     headers: {
@@ -146,15 +146,15 @@ export function Nuevocobro() {
                     },
                     body: JSON.stringify({
                         cuotasPagadas: cuotasPagadas,
-                        nuevosPagos: nuevosPagos 
+                        nuevosPagos: nuevosPagos
                     })
                 });
-    
+
                 if (response.status === 200) {
                     const updatedCliente = await response.json();
-    
+
                     toast.success('Cuotas y pagos actualizados correctamente');
-    
+
                     // Actualizo el cliente seleccionado
                     setClienteSeleccionado(prev => ({
                         ...prev,
@@ -162,7 +162,7 @@ export function Nuevocobro() {
                             ...updatedCliente.prestamoActual,
                         }
                     }));
-    
+
                     // Actualizo la lista de clientes
                     setClientes(prevClientes =>
                         prevClientes.map(cliente =>
@@ -182,7 +182,7 @@ export function Nuevocobro() {
             toast.error('Por favor, selecciona un valor de cuotas válido');
         }
     };
-    
+
 
     const navigate = useNavigate();
     const handleLogout = () => {
@@ -400,7 +400,7 @@ export function Nuevocobro() {
                                             <tr key={cliente.dni}>
                                                 <td>{cliente.nombre} <br />{cliente.apellido}</td>
                                                 <td>{cliente.dni}</td>
-                                                <td>{cliente.prestamoActual.fechaInicio}</td>
+                                                <td>{new Date(cliente.prestamoActual.fechaInicio).toLocaleDateString('es-ES', { year: '2-digit', month: '2-digit', day: '2-digit' })}</td>
                                                 <td>{cliente.prestamoActual.cuotasTotales}</td>
                                                 <td>{cliente.prestamoActual.cuotasPagadas}</td>
                                                 <td>
@@ -449,7 +449,12 @@ export function Nuevocobro() {
                                     <h3 className="text-center text-muted mb-3">Prestamo</h3>
                                     <div className="col-5">
                                         <ul>
-                                            <li className="p-1"><b className="pe-2 azul">Fecha Inicio:</b> {clienteSeleccionado.prestamoActual?.fechaInicio || ''}</li>
+                                            <li className="p-1">
+                                                <b className="pe-2 azul">Fecha Inicio:</b>
+                                                {clienteSeleccionado.prestamoActual?.fechaInicio
+                                                    ? new Date(clienteSeleccionado.prestamoActual.fechaInicio).toLocaleDateString('es-ES', { year: '2-digit', month: '2-digit', day: '2-digit' })
+                                                    : ''}
+                                            </li>
                                             <li className="p-1"><b className="pe-2 azul">Monto Prestado:</b> {clienteSeleccionado.prestamoActual?.monto || ''}</li>
                                             <li className="p-1"><b className="pe-2 azul">Monto Pagado:</b> {montoAdeudadofunicion()}</li>
                                         </ul>
@@ -474,7 +479,7 @@ export function Nuevocobro() {
                                                     <h6>Préstamo {index + 1}</h6>
                                                     <div className="col-6">
                                                         <ul>
-                                                            <li className="p-1"><b className="pe-2 azul">Fecha Inicio:</b> {prestamo.fechaInicio}</li>
+                                                            <li className="p-1"><b className="pe-2 azul">Fecha Inicio:</b> {new Date(prestamo.fechaInicio).toLocaleDateString('es-ES', { year: '2-digit', month: '2-digit', day: '2-digit' })}</li>
                                                             <li className="p-1"><b className="pe-2 azul">Monto Prestado:</b> {prestamo.monto}</li>
                                                             <li className="p-1"><b className="pe-2 azul">Monto Devuelto:</b> {prestamo.montoFinal}</li>
                                                         </ul>
@@ -546,10 +551,10 @@ export function Nuevocobro() {
                                     <h3 className="text-center text-muted mb-3">Prestamo</h3>
                                     <MDBRow>
                                         <div>
-                                            <CustomInput label='Vendedor' id='formVendedor' type='text' value={formData.vendedor} onChange={(e) => setFormData({...formData, vendedor: e.target.value})}/>
+                                            <CustomInput label='Vendedor' id='formVendedor' type='text' value={formData.vendedor} onChange={(e) => setFormData({ ...formData, vendedor: e.target.value })} />
                                         </div>
                                         <MDBCol col='3'>
-                                            <CustomInput label='Monto' id='formMonto' type='number' value={formData.monto} onChange={(e) => setFormData({ ...formData, monto: e.target.value })}/>
+                                            <CustomInput label='Monto' id='formMonto' type='number' value={formData.monto} onChange={(e) => setFormData({ ...formData, monto: e.target.value })} />
                                         </MDBCol>
                                         <MDBCol col='3'>
                                             <CustomInput label='%Intereses' id='formIntereses' type='number' value={formData.intereses} onChange={(e) => setFormData({ ...formData, intereses: e.target.value })} />
