@@ -1,15 +1,20 @@
 import * as baileys from '@whiskeysockets/baileys';
 import P from 'pino';
-
+import { reconstruirSesionDesdeJson } from '../helpers/sessionLoader.js';
 let sock;
 
 export async function conectarWhatsApp() {
+     // 👇 Si está seteada la variable de entorno, recrea la sesión
+     if (process.env.WA_SESSION_JSON) {
+        reconstruirSesionDesdeJson(process.env.WA_SESSION_JSON);
+    }
+
     const { state, saveCreds } = await baileys.useMultiFileAuthState('auth_info_baileys');
 
     sock = baileys.makeWASocket({
         auth: state,
         logger: P({ level: 'info' }),
-        printQRInTerminal: true,
+        printQRInTerminal: false,
     });
 
     console.log('Socket creado, esperando QR...');
