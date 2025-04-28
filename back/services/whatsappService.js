@@ -1,15 +1,43 @@
 import * as baileys from '@whiskeysockets/baileys';
 import P from 'pino';
 import { reconstruirSesionDesdeJson } from '../helpers/sessionLoader.js';
+import makeInMemoryStore from '@whiskeysockets/baileys/lib/store/in-memory.js'; // Importa inMemory Store
+import { proto } from '@whiskeysockets/baileys';
+
 let sock;
 
 export async function conectarWhatsApp() {
-     // 👇 Si está seteada la variable de entorno, recrea la sesión
-     if (process.env.WA_SESSION_JSON) {
-        reconstruirSesionDesdeJson(process.env.WA_SESSION_JSON);
-    }
+    let state, saveCreds;
 
-    const { state, saveCreds } = await baileys.useMultiFileAuthState('auth_info_baileys');
+    if (process.env.WA_SESSION_JSON) {
+        const credentials = JSON.parse(process.env.WA_SESSION_JSON);
+
+        state = {
+            creds: JSON.parse(Buffer.from(credentials["creds.json"], 'base64').toString()),
+            keys: {
+                get: async (type, ids) => {
+                    let keyData = {};
+                    for (const id of ids) {
+                        const fileKey = `app-state-sync-key-${id}.json`;
+                        if (credentials[fileKey]) {
+                            keyData[id] = proto.Message.decode(Buffer.from(credentials[fileKey], 'base64'));
+                        }
+                    }
+                    return keyData;
+                },
+                set: async (type, data) => {
+                    // No hacemos nada porque no queremos escribir en disco
+                }
+            }
+        };
+
+        saveCreds = async () => {
+            // No hacemos nada aquí
+        };
+    } else {
+        console.error('No WA_SESSION_JSON found!');
+        return;
+    }
 
     sock = baileys.makeWASocket({
         auth: state,
@@ -19,8 +47,6 @@ export async function conectarWhatsApp() {
 
     console.log('Socket creado, esperando QR...');
     sock.ev.on('creds.update', saveCreds);
-
-    let yaSeEnvioResumen = false; // 🔥 Variable para evitar múltiples envíos
 
     sock.ev.on('connection.update', async (update) => {
         const { connection, lastDisconnect } = update;
@@ -32,15 +58,9 @@ export async function conectarWhatsApp() {
             }
         } else if (connection === 'open') {
             console.log('Bot de WhatsApp conectado ✅');
-
-            if (!yaSeEnvioResumen) {
-                yaSeEnvioResumen = true; // Marcamos que ya lo mandamos
-
-                // 🔥 Ejecutar resumen apenas conecta
-                const { enviarResumenSemanal } = await import('../cron/whatsappCron.js');
-                const grupoId = '120363399349813689@g.us'; // 👈 Tu grupo real
-                await enviarResumenSemanal(grupoId);
-            }
+            const { enviarResumenSemanal } = await import('../cron/whatsappCron.js');
+            const grupoId = '120363399349813689@g.us';
+            await enviarResumenSemanal(grupoId);
         }
     });
 }
