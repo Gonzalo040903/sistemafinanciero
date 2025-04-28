@@ -1,19 +1,15 @@
+// helpers/sessionLoader.js
 import fs from 'fs';
 import path from 'path';
 
-export function reconstruirSesionDesdeJson(base64) {
-    const sessionStr = Buffer.from(base64, 'base64').toString('utf-8');
-    const sessionData = JSON.parse(sessionStr); // Es un objeto tipo { "creds.json": "...", "app-state-sync-key-AAAA.json": "..." }
+export function reconstruirSesionDesdeJson(jsonString, baseDir = 'auth_info_baileys') {
+    const data = JSON.parse(jsonString);
 
-    const authPath = path.resolve('auth_info_baileys');
-    if (!fs.existsSync(authPath)) {
-        fs.mkdirSync(authPath, { recursive: true });
+    for (const [relPath, base64Content] of Object.entries(data)) {
+        const fullPath = path.join(baseDir, relPath);
+        fs.mkdirSync(path.dirname(fullPath), { recursive: true });
+        fs.writeFileSync(fullPath, Buffer.from(base64Content, 'base64'));
     }
 
-    for (const [fileName, fileContentBase64] of Object.entries(sessionData)) {
-        const fileContent = Buffer.from(fileContentBase64, 'base64');
-        fs.writeFileSync(path.join(authPath, fileName), fileContent);
-    }
-
-    console.log('Sesión de WhatsApp reconstruida exitosamente.');
+    console.log('🔐 Sesión reconstruida desde JSON');
 }
