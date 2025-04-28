@@ -1,8 +1,6 @@
 import * as baileys from '@whiskeysockets/baileys';
 import P from 'pino';
 import { reconstruirSesionDesdeJson } from '../helpers/sessionLoader.js';
-import { makeInMemoryStore } from '@whiskeysockets/baileys';
-import { proto } from '@whiskeysockets/baileys';
 
 let sock;
 
