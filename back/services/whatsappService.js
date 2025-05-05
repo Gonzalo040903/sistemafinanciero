@@ -1,7 +1,7 @@
 import * as baileys from '@whiskeysockets/baileys';
 import P from 'pino';
-import { reconstruirSesionDesdeJson } from '../helpers/sessionLoader.js';
-
+import fs from 'fs/promises'; // 👉 Importar para leer archivos
+import path from 'path';
 let sock;
 
 export async function conectarWhatsApp() {
@@ -18,7 +18,8 @@ export async function conectarWhatsApp() {
                     for (const id of ids) {
                         const fileKey = `app-state-sync-key-${id}.json`;
                         if (credentials[fileKey]) {
-                            keyData[id] = proto.Message.decode(Buffer.from(credentials[fileKey], 'base64'));
+                            // 👇 Corregido: devolvemos el Buffer directamente
+                            keyData[id] = Buffer.from(credentials[fileKey], 'base64');
                         }
                     }
                     return keyData;
@@ -30,7 +31,7 @@ export async function conectarWhatsApp() {
         };
 
         saveCreds = async () => {
-            // No hacemos nada aquí
+            // No hacemos nada aquí tampoco
         };
     } else {
         console.error('No WA_SESSION_JSON found!');
@@ -50,6 +51,7 @@ export async function conectarWhatsApp() {
         const { connection, lastDisconnect } = update;
         if (connection === 'close') {
             if ((lastDisconnect?.error)?.output?.statusCode !== baileys.DisconnectReason.loggedOut) {
+                console.log('Reconectando WhatsApp...');
                 conectarWhatsApp();
             } else {
                 console.log('Se cerró la sesión de WhatsApp.');
