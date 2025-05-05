@@ -14,18 +14,11 @@ function formatearFecha(fecha) {
 
 function getSemanaActual() {
     const hoy = moment().tz('America/Argentina/Buenos_Aires');
-
-    // Si hoy es lunes y todavía es muy temprano (por ejemplo, entre 00:00 y 06:00),
-    // asumimos que estamos cerrando la semana anterior
-    if (hoy.isoWeekday() === 1 && hoy.hour() < 6) {
-        hoy.subtract(1, 'day'); // Retrocede al domingo
-    }
-
-    const lunes = hoy.clone().startOf('isoWeek').startOf('day');
-    const domingo = hoy.clone().endOf('isoWeek').endOf('day');
-
-    return { lunes, domingo };
+    const lunes = hoy.clone().startOf('isoWeek').startOf('day');   // lunes
+    const domingo = hoy.clone().endOf('isoWeek').endOf('day');     // domingo
+    return { lunes, domingo };
 }
+
 router.get('/balance-semanal', async (req, res) => {
     const { lunes, domingo } = getSemanaActual();
 
