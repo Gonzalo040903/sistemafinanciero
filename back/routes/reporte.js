@@ -21,10 +21,13 @@ function getSemanaActual() {
 
 router.get('/balance-semanal', async (req, res) => {
     const { lunes, domingo } = getSemanaActual();
+    const lunesUTC = lunes.clone().utc();
+    const domingoUTC = domingo.clone().utc();
+
 
     try {
         const nuevosClientes = await Cliente.countDocuments({
-            createdAt: { $gte: lunes.toDate(), $lte: domingo.toDate() }
+            createdAt: { $gte: lunesUTC.toDate(), $lte: domingoUTC.toDate() }
         });
 
         const clientes = await Cliente.find({});
@@ -33,16 +36,16 @@ router.get('/balance-semanal', async (req, res) => {
         let prestamosDeLaSemana = [];
         let totalCobrado = 0;
         const yaAgregados = new Set();
-        
+
         clientes.forEach(cliente => {
-        
+
             // Verificar prestamoActual
             if (cliente.prestamoActual && cliente.prestamoActual.fechaInicio && cliente.prestamoActual.monto) {
                 const fechaInicio = moment(cliente.prestamoActual.fechaInicio).tz('America/Argentina/Buenos_Aires');
-        
+
                 // Verificar si está dentro del rango
                 if (fechaInicio.isSameOrAfter(lunes) && fechaInicio.isSameOrBefore(domingo)) {
-            
+
                     // Si aún no fue agregado
                     if (!yaAgregados.has(cliente.prestamoActual._id?.toString())) {
                         prestamosDeLaSemana.push({
@@ -57,17 +60,17 @@ router.get('/balance-semanal', async (req, res) => {
                     }
                 }
             }
-            
-                // Pagos realizados
-                if (Array.isArray(cliente.prestamoActual.pagos)) {
-                    cliente.prestamoActual.pagos.forEach(pago => {
-                        const fechaPago = moment(pago.fecha).tz('America/Argentina/Buenos_Aires');
-                        if (fechaPago.isBetween(lunes, domingo, undefined, '[]')) {
-                            totalCobrado += pago.monto;
-                        }
-                    });
-                }
-            
+
+            // Pagos realizados
+            if (Array.isArray(cliente.prestamoActual.pagos)) {
+                cliente.prestamoActual.pagos.forEach(pago => {
+                    const fechaPago = moment(pago.fecha).tz('America/Argentina/Buenos_Aires');
+                    if (fechaPago.isBetween(lunes, domingo, undefined, '[]')) {
+                        totalCobrado += pago.monto;
+                    }
+                });
+            }
+
 
             // Verificar historialPrestamos
             cliente.historialPrestamos.forEach(prestamo => {
