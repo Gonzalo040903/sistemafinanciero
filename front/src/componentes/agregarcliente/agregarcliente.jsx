@@ -63,6 +63,9 @@ export function Agregarcliente() {
 
     const submitCliente = async (values, { resetForm }) => {
         try {
+            // Formateamos la fecha para obtener una precisión más detallada
+            const formattedDate = new Date(values.formFecha).toISOString();
+    
             const response = await fetch("https://sistemafinanciero.up.railway.app/api/clientes", {
                 method: "POST",
                 headers: {
@@ -82,16 +85,16 @@ export function Agregarcliente() {
                         semanas: parseInt(document.getElementById("formSemanas").value),
                         intereses: values.formIntereses,
                         soloInteres: values.soloInteres,
-                        fechaInicio: values.formFecha,
+                        fechaInicio: formattedDate,  // Aquí usamos la fecha formateada
                         vendedor: values.formVendedor
                     }
                 })
             });
-
+    
             if (response.ok) {
                 toast.success("Nuevo Cliente Creado");
                 resetForm();
-                document.getElementById("formSemanas").value = 1
+                document.getElementById("formSemanas").value = 1;
             } else {
                 toast.error("Error al crear el cliente");
             }

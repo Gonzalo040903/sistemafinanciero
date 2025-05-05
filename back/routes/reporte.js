@@ -1,9 +1,29 @@
+import { Router } from 'express';
+import Cliente from '../model/modelCliente.js';
+import moment from 'moment-timezone';
+
+const router = Router();
+
+function formatearFecha(fecha) {
+    const d = new Date(fecha);
+    const dia = String(d.getDate()).padStart(2, '0');
+    const mes = String(d.getMonth() + 1).padStart(2, '0');
+    const año = d.getFullYear();
+    return `${dia}-${mes}-${año}`;
+}
+
+function getSemanaActual() {
+    const hoy = moment().tz('America/Argentina/Buenos_Aires');
+    const lunes = hoy.clone().startOf('isoWeek').startOf('day');   // lunes
+    const domingo = hoy.clone().endOf('isoWeek').endOf('day');     // domingo
+    return { lunes, domingo };
+}
+
 router.get('/balance-semanal', async (req, res) => {
     const { lunes, domingo } = getSemanaActual();
-    
-    // Asegurarse de que el lunes y domingo sean en UTC
-    const lunesUTC = lunes.clone().startOf('day').utc(); // Lunes a las 00:00 UTC
-    const domingoUTC = domingo.clone().endOf('day').utc(); // Domingo a las 23:59:59 UTC
+    const lunesUTC = lunes.clone().utc();
+    const domingoUTC = domingo.clone().utc();
+
 
     try {
         const nuevosClientes = await Cliente.countDocuments({
@@ -95,3 +115,5 @@ router.get('/balance-semanal', async (req, res) => {
         res.status(500).json({ message: 'Error al calcular balance semanal' });
     }
 });
+
+export default router;
