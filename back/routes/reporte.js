@@ -14,15 +14,16 @@ function formatearFecha(fecha) {
 
 function getSemanaActual() {
     const hoy = moment().tz('America/Argentina/Buenos_Aires');
-    const lunes = hoy.clone().startOf('isoWeek').startOf('day');   // lunes
-    const domingo = hoy.clone().endOf('isoWeek').endOf('day');     // domingo
-    return { lunes, domingo };
+    const domingoPasado = hoy.clone().startOf('isoWeek').subtract(1, 'hours'); // domingo anterior 23:00
+    const domingoActual = hoy.clone().endOf('isoWeek').subtract(1, 'hours');   // domingo actual 23:00
+    return { inicio: domingoPasado, fin: domingoActual };
 }
 
+
 router.get('/balance-semanal', async (req, res) => {
-    const { lunes, domingo } = getSemanaActual();
-    const lunesUTC = lunes.clone().utc();
-    const domingoUTC = domingo.clone().utc();
+    const { inicio, fin } = getSemanaActual();
+    const inicioUTC = inicio.clone().utc();
+    const finUTC = fin.clone().utc();
 
 
     try {
