@@ -14,9 +14,9 @@ function formatearFecha(fecha) {
 
 function getSemanaActual() {
     const hoy = moment().tz('America/Argentina/Buenos_Aires');
-    const domingo = hoy.clone().startOf('week').startOf('day'); // DOMINGO
-    const sabado = hoy.clone().endOf('week').endOf('day'); // SÁBADO
-    return { lunes: domingo, domingo: sabado }; // usamos los mismos nombres
+    const lunes = hoy.clone().startOf('isoWeek').startOf('day');   // lunes
+    const domingo = hoy.clone().endOf('isoWeek').endOf('day');     // domingo
+    return { lunes, domingo };
 }
 
 router.get('/balance-semanal', async (req, res) => {
