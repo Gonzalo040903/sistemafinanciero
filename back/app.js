@@ -26,7 +26,11 @@ app.use(cors({
 app.use(express.json());
 
 // Conexión a MongoDB
-const uri = process.env.MONGODB_URI || 'mongodb+srv://Solheredia555:SFFacundoHeria%26@clustersistemafinancier.fxp2b.mongodb.net/Sistema-Financiero?retryWrites=true&w=majority';
+const uri = process.env.MONGODB_URI;
+if (!uri) {
+    console.error('❌ No se encontró la URI de MongoDB. Revisá tus variables de entorno.');
+    process.exit(1); // Detiene la app si no hay URI
+}
 
 mongoose.connect(uri)
     .then(() => {
