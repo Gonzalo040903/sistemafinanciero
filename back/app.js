@@ -26,7 +26,7 @@ app.use(cors({
 app.use(express.json());
 
 // Conexión a MongoDB
-const uri = process.env.MONGODB_URI || 'mongodb+srv://solheredia555:SistemaFinancieroFH@clustersistemafinancier.fxp2b.mongodb.net/Sistema-Financiero?retryWrites=true&w=majority&appName=ClusterSistemaFinanciero';
+const uri = process.env.MONGODB_URI || 'mongodb+srv://Solheredia555:Financiera20225FacundoHerediaa@clustersistemafinancier.fxp2b.mongodb.net/?retryWrites=true&w=majority&appName=ClusterSistemaFinanciero';
 
 mongoose.connect(uri)
     .then(() => {
