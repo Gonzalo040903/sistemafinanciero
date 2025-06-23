@@ -43,6 +43,12 @@ app.use('/api/vendedores', vendedorRouter);
 app.use('/api', authRouter);
 app.use('/api/reporte', reporteSemanal);
 
+app.get('/ip', (req, res) => {
+    const ip = req.headers['x-forwarded-for'] || req.socket.remoteAddress;
+    res.send(`IP pública detectada: ${ip}`);
+});
+
+
 const buildPath = path.resolve('front', 'build');
 app.use(express.static(buildPath));
 app.get('*', (req, res) => {
