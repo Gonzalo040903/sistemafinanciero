@@ -12,7 +12,7 @@ import authRouter from './routes/routesAuth.js';
 import reporteSemanal from './routes/reporte.js';
 
 dotenv.config(); // Cargar variables de entorno desde un archivo .env
-
+console.log(process.env.MONGODB_URI);
 const app = express();
 const PORT = process.env.PORT || 3001;
 
