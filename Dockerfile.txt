@@ -1,0 +1,24 @@
+# Stage 1: Build del front
+FROM node:18-alpine AS build-frontend
+WORKDIR /app/front
+COPY front/package*.json ./
+RUN npm ci
+COPY front/ ./
+RUN npm run build
+
+# Stage 2: Imagen final con back + estáticos
+FROM node:18-alpine
+WORKDIR /app
+# Instala solo deps del back
+COPY back/package*.json back/
+RUN cd back && npm ci
+# Copia todo el código del back
+COPY back/ back/
+# Copia el build del front desde el stage anterior
+COPY --from=build-frontend /app/front/build front/build
+# Si tu app.js está en la raíz, cópialo también 
+COPY app.js ./
+# Expón el puerto que usas
+EXPOSE 3001
+# Comando para arrancar tu servidor
+CMD ["node", "app.js"]
