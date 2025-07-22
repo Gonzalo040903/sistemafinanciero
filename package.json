@@ -1,4 +1,6 @@
 {
+  "name": "sistema-financiero-fullstak",
+  "version": "1.0.0",
   "dependencies": {
     "@whiskeysockets/baileys": "^6.7.16",
     "express": "^4.21.1",
@@ -8,7 +10,7 @@
     "qrcode-terminal": "^0.12.0"
   },
   "scripts": {
-    "start": "node back/app.js",
-    "dev": "nodemon back/app.js"
+    "build": "cd front && npm ci && npm run build",
+    "start": "node back/app.js"
   }
 }
