@@ -8,7 +8,13 @@ import { dirname } from 'path';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname  = dirname(__filename);
-
+console.log('🔍 buildPath:', buildPath);
+console.log('  exists?', fs.existsSync(buildPath));
+console.log('  index.html exists?', fs.existsSync(join(buildPath, 'index.html')));
+app.use(express.static(buildPath));
+app.get('*', (req, res) => {
+  res.sendFile(join(buildPath, 'index.html'));
+});
 // Carga variables solo en desarrollo
 if (process.env.NODE_ENV !== 'production') {
   dotenv.config(); // leerá tu .env con MONGODB_URI y PORT=3001
