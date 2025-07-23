@@ -11,10 +11,6 @@ const __dirname  = dirname(__filename);
 console.log('🔍 buildPath:', buildPath);
 console.log('  exists?', fs.existsSync(buildPath));
 console.log('  index.html exists?', fs.existsSync(join(buildPath, 'index.html')));
-app.use(express.static(buildPath));
-app.get('*', (req, res) => {
-  res.sendFile(join(buildPath, 'index.html'));
-});
 // Carga variables solo en desarrollo
 if (process.env.NODE_ENV !== 'production') {
   dotenv.config(); // leerá tu .env con MONGODB_URI y PORT=3001
@@ -39,10 +35,10 @@ if (!uri) {
   process.exit(1);
 }
 mongoose.connect(uri)
-  .then(() => console.log('Connected to MongoDB Atlas'))
+.then(() => console.log('Connected to MongoDB Atlas'))
   .catch(err => console.error('Failed to connect to MongoDB Atlas:', err.message));
-
-// Rutas de la API
+  
+  // Rutas de la API
 import clientesRouter from './routes/routesC.js';
 import prestamosRouter from './routes/routesP.js';
 import vendedorRouter from './routes/routesV.js';
@@ -54,6 +50,7 @@ app.use('/api/prestamos', prestamosRouter);
 app.use('/api/vendedores', vendedorRouter);
 app.use('/api', authRouter);
 app.use('/api/reporte', reporteSemanal);
+
 
 // Ruta de test de IP
 app.get('/ip', (req, res) => {
