@@ -74,12 +74,4 @@ app.listen(PORT, '0.0.0.0', () => {
   console.log(`Server running on port ${PORT}`);
 });
 
-// Levantar WhatsApp y cron
-import { conectarWhatsApp } from './services/whatsappService.js';
-import { iniciarCron } from './cron/whatsappCron.js';
 
-async function iniciarApp() {
-  await conectarWhatsApp();
-  iniciarCron();
-}
-iniciarApp();
