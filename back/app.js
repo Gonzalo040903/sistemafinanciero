@@ -51,15 +51,14 @@ app.get('/ip', (req, res) => {
 });
 
 // Servir el build de tu frontend
-const buildPath = path.resolve('front', 'build');
+const buildPath = path.resolve(__dirname, '..', 'front', 'build');
 app.use(express.static(buildPath));
 app.get('*', (req, res) => {
   res.sendFile(path.join(buildPath, 'index.html'));
 });
 
 // Iniciar el servidor en 0.0.0.0 para recibir conexiones externas
-console.log('→ process.env.PORT =', process.env.PORT);
-console.log('→ NODE_ENV =', process.env.NODE_ENV);
+
 app.listen(PORT, '0.0.0.0', () => {
   console.log(`Server running on port ${PORT}`);
 });
