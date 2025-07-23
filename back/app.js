@@ -3,6 +3,11 @@ import mongoose from 'mongoose';
 import cors from 'cors';
 import path from 'path';
 import dotenv from 'dotenv'; // Para cargar las variables de entorno
+import { fileURLToPath } from 'url';
+import { dirname } from 'path';
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname  = dirname(__filename);
 
 // Carga variables solo en desarrollo
 if (process.env.NODE_ENV !== 'production') {
