@@ -59,6 +59,7 @@ export function Login() {
         e.preventDefault();
 
         try {
+            console.log('-> voy post a: /api/login', {nombre, contraseña});
             const res = await axios.post('api/login', { nombre, contraseña });
             const { token, role, vendedor } = res.data;
 
