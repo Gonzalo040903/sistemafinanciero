@@ -29,10 +29,7 @@ if (process.env.NODE_ENV !== 'production') {
 const app = express();
 const PORT = process.env.PORT || 3001;
 
-// Logs de depuración para verificar que Express encuentre tu build
-console.log('🔍 buildPath:', buildPath);
-console.log('   exists?', fs.existsSync(buildPath));
-console.log('   index.html exists?', fs.existsSync(join(buildPath, 'index.html')));
+
 // Middleware
 app.use(cors({
   origin: 'https://sistemafinanciero.up.railway.app', // tu frontend en Railway
