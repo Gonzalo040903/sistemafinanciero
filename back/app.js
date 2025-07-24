@@ -35,6 +35,7 @@ app.use(cors({
   origin: 'https://sistemafinanciero.up.railway.app', // tu frontend en Railway
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH'],
 }));
+app.options('*', cors())
 app.use(express.json());
 
 // Conexión a MongoDB
