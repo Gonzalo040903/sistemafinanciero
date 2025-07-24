@@ -8,9 +8,6 @@ import fs from 'fs';
 import dotenv from 'dotenv';
 import { fileURLToPath } from 'url';
 import { dirname } from 'path';
-console.log('🔍 buildPath:', buildPath);
-console.log('   exists?', fs.existsSync(buildPath));
-console.log('   index.html exists?', fs.existsSync(join(buildPath, 'index.html')));
 
 // Recrear __dirname en ES Modules
 const __filename = fileURLToPath(import.meta.url);
@@ -29,6 +26,9 @@ if (process.env.NODE_ENV !== 'production') {
 const app = express();
 const PORT = process.env.PORT || 3001;
 
+console.log('🔍 buildPath:', buildPath);
+console.log('   exists?', fs.existsSync(buildPath));
+console.log('   index.html exists?', fs.existsSync(join(buildPath, 'index.html')));
 
 // Middleware
 app.use(cors({
