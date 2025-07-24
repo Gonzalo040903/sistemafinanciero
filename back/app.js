@@ -8,8 +8,10 @@ import fs from 'fs';
 import dotenv from 'dotenv';
 import { fileURLToPath } from 'url';
 import { dirname } from 'path';
+console.log('🔍 buildPath:', buildPath);
+console.log('   exists?', fs.existsSync(buildPath));
+console.log('   index.html exists?', fs.existsSync(join(buildPath, 'index.html')));
 
-// —————————————————————————————————————
 // Recrear __dirname en ES Modules
 const __filename = fileURLToPath(import.meta.url);
 const __dirname  = dirname(__filename);
@@ -21,7 +23,7 @@ const buildPath = resolve(__dirname, '..', 'front', 'build');
 console.log('🔍 buildPath:', buildPath);
 console.log('   exists?', fs.existsSync(buildPath));
 console.log('   index.html exists?', fs.existsSync(join(buildPath, 'index.html')));
-// —————————————————————————————————————
+
 
 // Carga variables de entorno solo en desarrollo
 if (process.env.NODE_ENV !== 'production') {
@@ -58,8 +60,8 @@ import reporteSemanal   from './routes/reporte.js';
 app.use('/api/clientes',  clientesRouter);
 app.use('/api/prestamos', prestamosRouter);
 app.use('/api/vendedores', vendedorRouter);
-app.use('/api',            authRouter);
-app.use('/api/reporte',    reporteSemanal);
+app.use('/api', authRouter);
+app.use('/api/reporte', reporteSemanal);
 
 // Ruta de sanity check
 app.get('/ping', (_req, res) => res.send('pong'));
