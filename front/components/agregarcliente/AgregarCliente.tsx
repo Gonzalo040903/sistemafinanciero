@@ -121,8 +121,9 @@ export default function AgregarCliente() {
   };
 
   return (
-    <div className="p-6" style={{ color: 'var(--text-primary)' }}>
-      <h3 style={{ fontSize: '1.4rem', fontWeight: 700, marginBottom: '1.5rem' }}>Agregar Cliente</h3>
+    <div style={{ padding: '2rem', color: 'var(--text-primary)', maxWidth: '1100px' }}>
+      <h3 style={{ fontSize: '1.5rem', fontWeight: 800, marginBottom: '0.25rem', letterSpacing: '-0.02em' }}>Agregar Cliente</h3>
+      <p style={{ fontSize: '0.8rem', color: 'var(--text-muted)', marginBottom: '1.75rem' }}>Registrá un nuevo cliente con su préstamo inicial</p>
       <Formik
         initialValues={initialValues}
         validationSchema={schema}

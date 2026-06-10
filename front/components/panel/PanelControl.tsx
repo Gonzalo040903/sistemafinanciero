@@ -6,6 +6,7 @@ import type { Cliente, BalanceSemanal } from '@/types';
 import {
   BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer,
 } from 'recharts';
+import { FaUsers, FaHandHoldingUsd, FaMoneyBillWave, FaCoins } from 'react-icons/fa';
 
 type SemanaData = { semana: string; total: number; monto: number };
 
@@ -20,14 +21,21 @@ function calcularAlerta(c: Cliente): { urgencia: 'vencida' | 'hoy' | 'semana' } 
   return null;
 }
 
-const card: React.CSSProperties = {
-  background: 'var(--bg-card)',
-  border: '1px solid var(--border)',
-  borderRadius: '0.875rem',
-  boxShadow: 'var(--glow-purple)',
-};
-
-const muted = { color: 'var(--text-muted)', fontSize: '0.75rem' };
+function SectionHeader({ title, subtitle }: { title: string; subtitle?: string }) {
+  return (
+    <div style={{ marginBottom: '1rem' }}>
+      <div style={{
+        fontSize: '0.7rem', fontWeight: 700, color: 'var(--purple-400)',
+        textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: '0.15rem',
+      }}>
+        {title}
+      </div>
+      {subtitle && (
+        <div style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>{subtitle}</div>
+      )}
+    </div>
+  );
+}
 
 export default function PanelControl() {
   const api = useApi();
@@ -63,105 +71,172 @@ export default function PanelControl() {
     });
 
   const statsCards = balance ? [
-    { label: 'Nuevos clientes',      value: balance.nuevosClientes,       color: '#a78bfa' },
-    { label: 'Préstamos esta semana', value: balance.totalPrestamos,        color: '#22d3ee' },
-    { label: 'Total prestado',        value: `$${Number(balance.totalPrestado).toLocaleString('es-AR')}`, color: '#4ade80' },
-    { label: 'Total cobrado',         value: `$${Number(balance.totalCobrado).toLocaleString('es-AR')}`,  color: '#facc15' },
+    {
+      label: 'Nuevos clientes',       value: balance.nuevosClientes,
+      color: '#a78bfa', bg: 'rgba(167,139,250,0.1)', icon: <FaUsers />,
+    },
+    {
+      label: 'Préstamos esta semana', value: balance.totalPrestamos,
+      color: '#22d3ee', bg: 'rgba(34,211,238,0.1)',  icon: <FaHandHoldingUsd />,
+    },
+    {
+      label: 'Total prestado',        value: `$${Number(balance.totalPrestado).toLocaleString('es-AR')}`,
+      color: '#4ade80', bg: 'rgba(74,222,128,0.1)',  icon: <FaMoneyBillWave />,
+    },
+    {
+      label: 'Total cobrado',         value: `$${Number(balance.totalCobrado).toLocaleString('es-AR')}`,
+      color: '#facc15', bg: 'rgba(250,204,21,0.1)',  icon: <FaCoins />,
+    },
   ] : [];
 
   return (
-    <div className="p-6" style={{ color: 'var(--text-primary)' }}>
-      <h3 style={{ fontSize: '1.4rem', fontWeight: 700, marginBottom: '1.5rem', color: 'var(--text-primary)' }}>
-        Panel de Control
-      </h3>
+    <div style={{ padding: '2rem', color: 'var(--text-primary)', maxWidth: '1400px' }}>
 
-      {/* Error de balance */}
-      {balanceError && (
-        <div style={{
-          background: 'rgba(248,113,113,0.1)', border: '1px solid rgba(248,113,113,0.3)',
-          color: '#fca5a5', borderRadius: '0.75rem', padding: '0.75rem 1rem',
-          marginBottom: '1rem', fontSize: '0.85rem',
-        }}>
-          ⚠ Balance semanal: {balanceError}
-        </div>
-      )}
+      {/* Balance semanal */}
+      <section style={{ marginBottom: '2rem' }}>
+        <SectionHeader
+          title="Balance Semanal"
+          subtitle={balance ? `Semana del ${balance.fechaHoy}` : undefined}
+        />
 
-      {/* Stats cards */}
-      {balance && (
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
+        {balanceError && (
+          <div style={{
+            background: 'rgba(248,113,113,0.08)', border: '1px solid rgba(248,113,113,0.25)',
+            color: '#fca5a5', borderRadius: '0.75rem', padding: '0.75rem 1rem',
+            marginBottom: '1rem', fontSize: '0.82rem',
+          }}>
+            ⚠ {balanceError}
+          </div>
+        )}
+
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '1rem' }}>
           {statsCards.map(s => (
-            <div key={s.label} style={{ ...card, padding: '1.25rem', textAlign: 'center' }}>
-              <div style={{ fontSize: '1.85rem', fontWeight: 800, color: s.color, letterSpacing: '-0.02em' }}>
-                {s.value}
+            <div key={s.label} style={{
+              background: 'var(--bg-card)',
+              border: `1px solid ${s.color}22`,
+              borderRadius: '1rem',
+              padding: '1.4rem 1.5rem',
+              display: 'flex', flexDirection: 'column', gap: '0.75rem',
+              boxShadow: `0 0 24px ${s.color}18`,
+              position: 'relative', overflow: 'hidden',
+            }}>
+              {/* Icono de fondo */}
+              <div style={{
+                position: 'absolute', top: '1rem', right: '1.1rem',
+                fontSize: '1.4rem', color: s.color, opacity: 0.18,
+              }}>
+                {s.icon}
               </div>
-              <div style={muted}>{s.label}</div>
+              <div style={{
+                display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
+                width: '2rem', height: '2rem', borderRadius: '0.5rem',
+                background: s.bg, color: s.color, fontSize: '0.9rem',
+              }}>
+                {s.icon}
+              </div>
+              <div>
+                <div style={{
+                  fontSize: '1.6rem', fontWeight: 800, color: s.color,
+                  lineHeight: 1.1, letterSpacing: '-0.02em',
+                }}>
+                  {s.value}
+                </div>
+                <div style={{ fontSize: '0.73rem', color: 'var(--text-muted)', marginTop: '0.25rem' }}>
+                  {s.label}
+                </div>
+              </div>
             </div>
           ))}
-        </div>
-      )}
 
-      {/* Gráfico de barras */}
-      {grafico.length > 0 && (
-        <div style={{ ...card, padding: '1.25rem', marginBottom: '1.5rem' }}>
-          <div style={{ fontSize: '0.9rem', fontWeight: 600, color: 'var(--text-secondary)', marginBottom: '1rem' }}>
-            Préstamos por semana (últimas 8 semanas)
-          </div>
-          <ResponsiveContainer width="100%" height={200}>
-            <BarChart data={grafico} margin={{ top: 4, right: 8, left: -20, bottom: 0 }}>
-              <CartesianGrid strokeDasharray="3 3" stroke="rgba(139,92,246,0.1)" />
-              <XAxis dataKey="semana" tick={{ fill: '#64748b', fontSize: 11 }} axisLine={false} tickLine={false} />
-              <YAxis tick={{ fill: '#64748b', fontSize: 11 }} axisLine={false} tickLine={false} allowDecimals={false} />
-              <Tooltip
-                contentStyle={{
-                  background: 'var(--bg-card-alt)', border: '1px solid var(--border)',
-                  borderRadius: '0.5rem', color: 'var(--text-primary)', fontSize: '0.8rem',
-                }}
-                cursor={{ fill: 'rgba(139,92,246,0.08)' }}
-                formatter={(val, name) =>
-                  name === 'monto'
-                    ? [`$${Number(val).toLocaleString('es-AR')}`, 'Monto prestado']
-                    : [val, 'Préstamos']
-                }
-              />
-              <Bar dataKey="total" fill="#8b5cf6" radius={[4, 4, 0, 0]} maxBarSize={40} />
-            </BarChart>
-          </ResponsiveContainer>
+          {/* Skeleton mientras carga */}
+          {!balance && !balanceError && [0, 1, 2, 3].map(i => (
+            <div key={i} style={{
+              background: 'var(--bg-card)', border: '1px solid var(--border)',
+              borderRadius: '1rem', padding: '1.4rem 1.5rem', height: '110px',
+              opacity: 0.5,
+            }} />
+          ))}
         </div>
+      </section>
+
+      {/* Gráfico */}
+      {grafico.length > 0 && (
+        <section style={{ marginBottom: '2rem' }}>
+          <SectionHeader title="Actividad crediticia" subtitle="Préstamos otorgados por semana" />
+          <div style={{
+            background: 'var(--bg-card)', border: '1px solid var(--border)',
+            borderRadius: '1rem', padding: '1.5rem 1.5rem 1rem',
+            boxShadow: 'var(--glow-purple)',
+          }}>
+            <ResponsiveContainer width="100%" height={190}>
+              <BarChart data={grafico} margin={{ top: 4, right: 8, left: -24, bottom: 0 }}>
+                <defs>
+                  <linearGradient id="barGrad" x1="0" y1="0" x2="0" y2="1">
+                    <stop offset="0%" stopColor="#8b5cf6" stopOpacity={1} />
+                    <stop offset="100%" stopColor="#5b21b6" stopOpacity={0.7} />
+                  </linearGradient>
+                </defs>
+                <CartesianGrid strokeDasharray="3 3" stroke="rgba(139,92,246,0.08)" />
+                <XAxis
+                  dataKey="semana"
+                  tick={{ fill: '#475569', fontSize: 11 }}
+                  axisLine={false} tickLine={false}
+                />
+                <YAxis
+                  tick={{ fill: '#475569', fontSize: 11 }}
+                  axisLine={false} tickLine={false}
+                  allowDecimals={false}
+                />
+                <Tooltip
+                  contentStyle={{
+                    background: '#1a1a40', border: '1px solid rgba(139,92,246,0.3)',
+                    borderRadius: '0.6rem', color: '#f1f5f9', fontSize: '0.8rem',
+                    boxShadow: '0 8px 24px rgba(0,0,0,0.5)',
+                  }}
+                  cursor={{ fill: 'rgba(139,92,246,0.07)' }}
+                  formatter={(val, name) =>
+                    name === 'monto'
+                      ? [`$${Number(val).toLocaleString('es-AR')}`, 'Monto prestado']
+                      : [val, 'Préstamos']
+                  }
+                />
+                <Bar dataKey="total" fill="url(#barGrad)" radius={[6, 6, 0, 0]} maxBarSize={36} />
+              </BarChart>
+            </ResponsiveContainer>
+          </div>
+        </section>
       )}
 
       {/* Alertas */}
       {alertas.length > 0 && (
-        <div style={{ marginBottom: '1.5rem' }}>
-          <div style={{ fontSize: '0.85rem', fontWeight: 600, color: 'var(--text-muted)', marginBottom: '0.75rem', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
-            Alertas de vencimiento
-          </div>
+        <section style={{ marginBottom: '2rem' }}>
+          <SectionHeader title="Alertas de vencimiento" />
           <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
             {alertas.map(({ c, alerta }) => {
               const p = c.prestamoActual!;
               const colores = {
-                vencida: { bg: 'rgba(248,113,113,0.08)', border: 'rgba(248,113,113,0.3)', text: '#fca5a5', badge: '#ef4444' },
-                hoy:     { bg: 'rgba(251,191,36,0.08)',  border: 'rgba(251,191,36,0.3)',  text: '#fde68a', badge: '#f59e0b' },
-                semana:  { bg: 'rgba(250,204,21,0.06)',  border: 'rgba(250,204,21,0.2)',  text: '#fef08a', badge: '#ca8a04' },
+                vencida: { bg: 'rgba(248,113,113,0.07)', border: 'rgba(248,113,113,0.25)', text: '#fca5a5', badge: '#dc2626' },
+                hoy:     { bg: 'rgba(251,191,36,0.07)',  border: 'rgba(251,191,36,0.25)',  text: '#fde68a', badge: '#d97706' },
+                semana:  { bg: 'rgba(250,204,21,0.05)',  border: 'rgba(250,204,21,0.18)',  text: '#fef08a', badge: '#ca8a04' },
               };
               const etiquetas = { vencida: 'Vencida', hoy: 'Vence hoy', semana: 'Esta semana' };
               const col = colores[alerta!.urgencia];
               return (
                 <div key={c.dni} style={{
                   background: col.bg, border: `1px solid ${col.border}`,
-                  borderRadius: '0.625rem', padding: '0.6rem 1rem',
+                  borderRadius: '0.75rem', padding: '0.75rem 1.25rem',
                   display: 'flex', alignItems: 'center', justifyContent: 'space-between',
                   fontSize: '0.82rem', gap: '1rem', flexWrap: 'wrap',
                 }}>
                   <span style={{ fontWeight: 600, color: col.text }}>
-                    {c.nombre} {c.apellido} — DNI {c.dni}
+                    {c.nombre} {c.apellido} <span style={{ opacity: 0.6 }}>— DNI {c.dni}</span>
                   </span>
-                  <span style={{ display: 'flex', alignItems: 'center', gap: '1rem', color: 'var(--text-secondary)' }}>
-                    <span>Adeuda: ${Number(p.monto_adeudado).toLocaleString('es-AR')}</span>
+                  <span style={{ display: 'flex', alignItems: 'center', gap: '1.25rem', color: 'var(--text-secondary)', fontSize: '0.8rem' }}>
+                    <span>Adeuda: <strong style={{ color: col.text }}>${Number(p.monto_adeudado).toLocaleString('es-AR')}</strong></span>
                     <span>Cuotas: {p.cuotas_pagadas}/{p.cuotas_totales}</span>
                     <span style={{
-                      background: col.badge, color: '#fff',
-                      fontWeight: 700, fontSize: '0.7rem',
-                      padding: '2px 8px', borderRadius: '999px',
+                      background: col.badge, color: '#fff', fontWeight: 700,
+                      fontSize: '0.68rem', padding: '2px 10px', borderRadius: '999px',
                     }}>
                       {etiquetas[alerta!.urgencia]}
                     </span>
@@ -170,57 +245,80 @@ export default function PanelControl() {
               );
             })}
           </div>
-        </div>
+        </section>
       )}
 
-      {/* Tabla de clientes */}
-      <div style={card}>
-        <div style={{ padding: '1rem 1.25rem', borderBottom: '1px solid var(--border)', fontSize: '0.85rem', fontWeight: 600, color: 'var(--text-secondary)', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
-          Tabla de Clientes
-        </div>
-        <div style={{ overflowX: 'auto' }}>
-          <table style={{ width: '100%', fontSize: '0.83rem', textAlign: 'center', borderCollapse: 'collapse' }}>
-            <thead>
-              <tr style={{ borderBottom: '1px solid var(--border)' }}>
-                {['Nombre', 'DNI', 'Teléfono', 'Vendedor', 'Monto adeudado', 'Cuotas'].map(h => (
-                  <th key={h} style={{ padding: '0.65rem 1rem', color: 'var(--text-muted)', fontWeight: 600, fontSize: '0.72rem', textTransform: 'uppercase', letterSpacing: '0.04em' }}>{h}</th>
-                ))}
-              </tr>
-            </thead>
-            <tbody>
-              {clientes.map(c => {
-                const p = c.prestamoActual;
-                return (
-                  <tr key={c.dni} style={{ borderBottom: '1px solid rgba(139,92,246,0.06)' }}
-                    onMouseEnter={e => (e.currentTarget.style.background = 'rgba(139,92,246,0.04)')}
-                    onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}
-                  >
-                    <td style={{ padding: '0.7rem 1rem', color: 'var(--text-primary)' }}>{c.nombre} {c.apellido}</td>
-                    <td style={{ padding: '0.7rem 1rem', color: 'var(--text-secondary)' }}>{c.dni}</td>
-                    <td style={{ padding: '0.7rem 1rem', color: 'var(--text-secondary)' }}>{c.telefono_personal}</td>
-                    <td style={{ padding: '0.7rem 1rem', color: 'var(--text-secondary)' }}>{p?.vendedor ?? '—'}</td>
-                    <td style={{ padding: '0.7rem 1rem', color: p ? '#4ade80' : 'var(--text-muted)' }}>
-                      {p ? `$${Number(p.monto_adeudado).toLocaleString('es-AR')}` : '—'}
-                    </td>
-                    <td style={{ padding: '0.7rem 1rem' }}>
-                      {p ? (
-                        <span style={{
-                          fontSize: '0.72rem', fontWeight: 600, padding: '2px 8px', borderRadius: '999px',
-                          background: p.cuotas_pagadas >= p.cuotas_totales ? 'rgba(74,222,128,0.15)' : 'rgba(250,204,21,0.15)',
-                          color: p.cuotas_pagadas >= p.cuotas_totales ? '#4ade80' : '#facc15',
-                          border: `1px solid ${p.cuotas_pagadas >= p.cuotas_totales ? 'rgba(74,222,128,0.3)' : 'rgba(250,204,21,0.3)'}`,
-                        }}>
-                          {p.cuotas_pagadas}/{p.cuotas_totales}
-                        </span>
-                      ) : '—'}
+      {/* Tabla */}
+      <section>
+        <SectionHeader title="Clientes activos" subtitle={`${clientes.length} registrados`} />
+        <div style={{
+          background: 'var(--bg-card)', border: '1px solid var(--border)',
+          borderRadius: '1rem', overflow: 'hidden',
+          boxShadow: 'var(--glow-purple)',
+        }}>
+          <div style={{ overflowX: 'auto' }}>
+            <table style={{ width: '100%', fontSize: '0.83rem', textAlign: 'center', borderCollapse: 'collapse' }}>
+              <thead>
+                <tr style={{ borderBottom: '1px solid var(--border)' }}>
+                  {['Nombre', 'DNI', 'Teléfono', 'Vendedor', 'Monto adeudado', 'Cuotas'].map(h => (
+                    <th key={h} style={{
+                      padding: '0.85rem 1.25rem',
+                      color: 'var(--text-muted)', fontWeight: 600,
+                      fontSize: '0.68rem', textTransform: 'uppercase', letterSpacing: '0.06em',
+                      background: 'rgba(139,92,246,0.04)',
+                    }}>
+                      {h}
+                    </th>
+                  ))}
+                </tr>
+              </thead>
+              <tbody>
+                {clientes.map((c, i) => {
+                  const p = c.prestamoActual;
+                  return (
+                    <tr key={c.dni} style={{
+                      borderBottom: i < clientes.length - 1 ? '1px solid rgba(139,92,246,0.06)' : 'none',
+                      transition: 'background 0.12s',
+                    }}
+                      onMouseEnter={e => (e.currentTarget.style.background = 'rgba(139,92,246,0.05)')}
+                      onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}
+                    >
+                      <td style={{ padding: '0.85rem 1.25rem', color: 'var(--text-primary)', fontWeight: 500 }}>
+                        {c.nombre} {c.apellido}
+                      </td>
+                      <td style={{ padding: '0.85rem 1.25rem', color: 'var(--text-secondary)' }}>{c.dni}</td>
+                      <td style={{ padding: '0.85rem 1.25rem', color: 'var(--text-secondary)' }}>{c.telefono_personal}</td>
+                      <td style={{ padding: '0.85rem 1.25rem', color: 'var(--text-secondary)' }}>{p?.vendedor ?? '—'}</td>
+                      <td style={{ padding: '0.85rem 1.25rem', color: p ? '#4ade80' : 'var(--text-muted)', fontWeight: p ? 600 : 400 }}>
+                        {p ? `$${Number(p.monto_adeudado).toLocaleString('es-AR')}` : '—'}
+                      </td>
+                      <td style={{ padding: '0.85rem 1.25rem' }}>
+                        {p ? (
+                          <span style={{
+                            fontSize: '0.72rem', fontWeight: 700, padding: '3px 10px', borderRadius: '999px',
+                            background: p.cuotas_pagadas >= p.cuotas_totales ? 'rgba(74,222,128,0.12)' : 'rgba(250,204,21,0.12)',
+                            color: p.cuotas_pagadas >= p.cuotas_totales ? '#4ade80' : '#facc15',
+                            border: `1px solid ${p.cuotas_pagadas >= p.cuotas_totales ? 'rgba(74,222,128,0.3)' : 'rgba(250,204,21,0.3)'}`,
+                          }}>
+                            {p.cuotas_pagadas}/{p.cuotas_totales}
+                          </span>
+                        ) : '—'}
+                      </td>
+                    </tr>
+                  );
+                })}
+                {clientes.length === 0 && (
+                  <tr>
+                    <td colSpan={6} style={{ padding: '2rem', color: 'var(--text-muted)', fontSize: '0.85rem' }}>
+                      No hay clientes registrados
                     </td>
                   </tr>
-                );
-              })}
-            </tbody>
-          </table>
+                )}
+              </tbody>
+            </table>
+          </div>
         </div>
-      </div>
+      </section>
     </div>
   );
 }

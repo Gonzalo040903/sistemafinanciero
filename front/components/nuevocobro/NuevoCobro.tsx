@@ -115,8 +115,9 @@ export default function NuevoCobro() {
   );
 
   return (
-    <div className="p-6" style={{ color: 'var(--text-primary)' }}>
-      <h3 style={{ fontSize: '1.4rem', fontWeight: 700, marginBottom: '1.5rem' }}>Nuevo Cobro</h3>
+    <div style={{ padding: '2rem', color: 'var(--text-primary)', maxWidth: '1200px' }}>
+      <h3 style={{ fontSize: '1.5rem', fontWeight: 800, marginBottom: '0.25rem', letterSpacing: '-0.02em' }}>Nuevo Cobro</h3>
+      <p style={{ fontSize: '0.8rem', color: 'var(--text-muted)', marginBottom: '1.75rem' }}>Gestioná préstamos y pagos de tus clientes</p>
 
       {/* Tabla de clientes */}
       {!seleccionado && (

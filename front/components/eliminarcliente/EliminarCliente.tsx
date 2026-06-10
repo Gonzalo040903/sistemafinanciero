@@ -34,8 +34,9 @@ export default function EliminarCliente() {
   };
 
   return (
-    <div className="p-6" style={{ color: 'var(--text-primary)' }}>
-      <h3 style={{ fontSize: '1.4rem', fontWeight: 700, marginBottom: '1.5rem' }}>Eliminar Cliente</h3>
+    <div style={{ padding: '2rem', color: 'var(--text-primary)', maxWidth: '1200px' }}>
+      <h3 style={{ fontSize: '1.5rem', fontWeight: 800, marginBottom: '0.25rem', letterSpacing: '-0.02em' }}>Eliminar Cliente</h3>
+      <p style={{ fontSize: '0.8rem', color: 'var(--text-muted)', marginBottom: '1.75rem' }}>Eliminá un cliente y todo su historial de préstamos</p>
       <div style={card}>
         <table style={{ width: '100%', fontSize: '0.83rem', textAlign: 'center', borderCollapse: 'collapse' }}>
           <thead>

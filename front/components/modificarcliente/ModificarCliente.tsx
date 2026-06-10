@@ -91,8 +91,9 @@ export default function ModificarCliente() {
   };
 
   return (
-    <div className="p-6" style={{ color: 'var(--text-primary)' }}>
-      <h3 style={{ fontSize: '1.4rem', fontWeight: 700, marginBottom: '1.5rem' }}>Modificar Clientes</h3>
+    <div style={{ padding: '2rem', color: 'var(--text-primary)', maxWidth: '1300px' }}>
+      <h3 style={{ fontSize: '1.5rem', fontWeight: 800, marginBottom: '0.25rem', letterSpacing: '-0.02em' }}>Modificar Clientes</h3>
+      <p style={{ fontSize: '0.8rem', color: 'var(--text-muted)', marginBottom: '1.75rem' }}>Editá los datos personales de un cliente</p>
       <div style={card}>
         <table style={{ width: '100%', fontSize: '0.83rem', textAlign: 'center', borderCollapse: 'collapse' }}>
           <thead>
@@ -136,19 +137,40 @@ export default function ModificarCliente() {
 
       {/* Modal */}
       {open && selected && (
-        <div style={{ position: 'fixed', inset: 0, zIndex: 50, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-          <div style={{ position: 'absolute', inset: 0, background: 'rgba(0,0,0,0.7)' }} onClick={() => setOpen(false)} />
+        <div style={{
+          position: 'fixed', inset: 0, zIndex: 50,
+          display: 'flex', alignItems: 'center', justifyContent: 'center',
+          backdropFilter: 'blur(6px)', WebkitBackdropFilter: 'blur(6px)',
+        }}>
+          <div style={{ position: 'absolute', inset: 0, background: 'rgba(5,5,15,0.75)' }} onClick={() => setOpen(false)} />
           <div style={{
             position: 'relative', zIndex: 10,
-            background: 'var(--bg-card)',
-            border: '1px solid var(--border)',
-            boxShadow: '0 0 40px rgba(139,92,246,0.3)',
-            borderRadius: '0.875rem',
-            width: '100%', maxWidth: '36rem', margin: '0 1rem',
+            background: 'linear-gradient(145deg, #1a1a3e, #111127)',
+            border: '1px solid rgba(139,92,246,0.35)',
+            boxShadow: '0 0 0 1px rgba(139,92,246,0.1), 0 24px 60px rgba(0,0,0,0.7), 0 0 40px rgba(139,92,246,0.15)',
+            borderRadius: '1.25rem',
+            width: '100%', maxWidth: '38rem', margin: '0 1rem',
+            animation: 'none',
           }}>
-            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '1.25rem 1.5rem', borderBottom: '1px solid var(--border)' }}>
-              <span style={{ fontWeight: 600, color: 'var(--text-primary)' }}>Modificar Cliente</span>
-              <button onClick={() => setOpen(false)} style={{ background: 'none', border: 'none', color: 'var(--text-muted)', cursor: 'pointer', fontSize: '1.4rem', lineHeight: 1 }}>&times;</button>
+            <div style={{
+              display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+              padding: '1.35rem 1.75rem',
+              borderBottom: '1px solid rgba(139,92,246,0.12)',
+              background: 'rgba(139,92,246,0.04)',
+              borderRadius: '1.25rem 1.25rem 0 0',
+            }}>
+              <div>
+                <div style={{ fontWeight: 700, color: 'var(--text-primary)', fontSize: '1rem' }}>Modificar Cliente</div>
+                <div style={{ fontSize: '0.72rem', color: 'var(--text-muted)', marginTop: '0.1rem' }}>
+                  {selected.nombre} {selected.apellido} — DNI {selected.dni}
+                </div>
+              </div>
+              <button onClick={() => setOpen(false)} style={{
+                background: 'rgba(248,113,113,0.1)', border: '1px solid rgba(248,113,113,0.2)',
+                color: '#f87171', cursor: 'pointer',
+                width: '2rem', height: '2rem', borderRadius: '50%',
+                fontSize: '1rem', display: 'flex', alignItems: 'center', justifyContent: 'center',
+              }}>&times;</button>
             </div>
             <Formik
               enableReinitialize
@@ -166,7 +188,7 @@ export default function ModificarCliente() {
               onSubmit={submit}
             >
               <Form>
-                <div style={{ padding: '1.25rem 1.5rem', display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.75rem 1rem' }}>
+                <div style={{ padding: '1.5rem 1.75rem', display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.875rem 1.25rem' }}>
                   <CustomField label="Nombre" id="formNombre" />
                   <CustomField label="Apellido" id="formApellido" />
                   <CustomField label="DNI" id="formDni" />
@@ -176,19 +198,31 @@ export default function ModificarCliente() {
                   <div style={{ gridColumn: '1 / -1' }}><CustomField label="Dirección" id="formDirec" /></div>
                   <div style={{ gridColumn: '1 / -1' }}><CustomField label="Google Maps" id="formMaps" /></div>
                 </div>
-                <div style={{ padding: '1rem 1.5rem', borderTop: '1px solid var(--border)' }}>
+                <div style={{ padding: '1.25rem 1.75rem', borderTop: '1px solid rgba(139,92,246,0.12)', display: 'flex', gap: '0.75rem' }}>
                   <button
                     type="submit"
                     style={{
-                      width: '100%',
+                      flex: 1,
                       background: 'linear-gradient(135deg, #7c3aed, #5b21b6)',
-                      boxShadow: '0 0 16px rgba(124,58,237,0.3)',
+                      boxShadow: '0 4px 20px rgba(124,58,237,0.4)',
                       color: '#fff', fontWeight: 700,
-                      padding: '0.6rem', borderRadius: '0.5rem',
+                      padding: '0.65rem', borderRadius: '0.6rem',
                       border: 'none', cursor: 'pointer', fontSize: '0.9rem',
+                      letterSpacing: '0.02em',
                     }}
                   >
                     Guardar Cambios
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setOpen(false)}
+                    style={{
+                      padding: '0.65rem 1.25rem', borderRadius: '0.6rem',
+                      background: 'rgba(100,116,139,0.1)', border: '1px solid rgba(100,116,139,0.2)',
+                      color: 'var(--text-muted)', cursor: 'pointer', fontSize: '0.85rem',
+                    }}
+                  >
+                    Cancelar
                   </button>
                 </div>
               </Form>

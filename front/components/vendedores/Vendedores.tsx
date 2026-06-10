@@ -72,8 +72,9 @@ export default function Vendedores() {
   };
 
   return (
-    <div className="p-6" style={{ color: 'var(--text-primary)' }}>
-      <h3 style={{ fontSize: '1.4rem', fontWeight: 700, marginBottom: '1.5rem' }}>Gestión de Vendedores</h3>
+    <div style={{ padding: '2rem', color: 'var(--text-primary)', maxWidth: '900px' }}>
+      <h3 style={{ fontSize: '1.5rem', fontWeight: 800, marginBottom: '0.25rem', letterSpacing: '-0.02em' }}>Gestión de Vendedores</h3>
+      <p style={{ fontSize: '0.8rem', color: 'var(--text-muted)', marginBottom: '1.75rem' }}>Administrá usuarios del sistema</p>
 
       {/* Formulario nuevo */}
       <div style={{ ...card, padding: '1.5rem', marginBottom: '1.5rem' }}>
