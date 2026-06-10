@@ -25,31 +25,46 @@ export default function EliminarCliente() {
     }
   };
 
+  const card: React.CSSProperties = {
+    background: 'var(--bg-card)',
+    border: '1px solid var(--border)',
+    borderRadius: '0.875rem',
+    boxShadow: 'var(--glow-purple)',
+    overflowX: 'auto',
+  };
+
   return (
-    <div className="p-6">
-      <h3 className="text-2xl font-bold text-gray-700 mb-6">Eliminar Cliente</h3>
-      <div className="bg-white rounded-xl shadow-md overflow-x-auto">
-        <table className="w-full text-sm text-center">
-          <thead className="bg-gray-50 text-gray-600 uppercase text-xs">
-            <tr>
-              <th className="px-4 py-3">Nombre</th>
-              <th className="px-4 py-3">DNI</th>
-              <th className="px-4 py-3">Dirección</th>
-              <th className="px-4 py-3">Teléfono</th>
-              <th className="px-4 py-3"></th>
+    <div className="p-6" style={{ color: 'var(--text-primary)' }}>
+      <h3 style={{ fontSize: '1.4rem', fontWeight: 700, marginBottom: '1.5rem' }}>Eliminar Cliente</h3>
+      <div style={card}>
+        <table style={{ width: '100%', fontSize: '0.83rem', textAlign: 'center', borderCollapse: 'collapse' }}>
+          <thead>
+            <tr style={{ borderBottom: '1px solid var(--border)' }}>
+              {['Nombre', 'DNI', 'Dirección', 'Teléfono', ''].map(h => (
+                <th key={h} style={{ padding: '0.65rem 1rem', color: 'var(--text-muted)', fontWeight: 600, fontSize: '0.72rem', textTransform: 'uppercase', letterSpacing: '0.04em' }}>{h}</th>
+              ))}
             </tr>
           </thead>
-          <tbody className="divide-y divide-gray-100">
+          <tbody>
             {clientes.map(c => (
-              <tr key={c.dni} className="hover:bg-gray-50">
-                <td className="px-4 py-3">{c.nombre} {c.apellido}</td>
-                <td className="px-4 py-3">{c.dni}</td>
-                <td className="px-4 py-3">{c.direccion}</td>
-                <td className="px-4 py-3">{c.telefono_personal}</td>
-                <td className="px-4 py-3">
+              <tr key={c.dni} style={{ borderBottom: '1px solid rgba(139,92,246,0.06)' }}
+                onMouseEnter={e => (e.currentTarget.style.background = 'rgba(139,92,246,0.04)')}
+                onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}
+              >
+                <td style={{ padding: '0.7rem 1rem', color: 'var(--text-primary)' }}>{c.nombre} {c.apellido}</td>
+                <td style={{ padding: '0.7rem 1rem', color: 'var(--text-secondary)' }}>{c.dni}</td>
+                <td style={{ padding: '0.7rem 1rem', color: 'var(--text-secondary)' }}>{c.direccion}</td>
+                <td style={{ padding: '0.7rem 1rem', color: 'var(--text-secondary)' }}>{c.telefono_personal}</td>
+                <td style={{ padding: '0.7rem 1rem' }}>
                   <button
                     onClick={() => eliminar(c.dni)}
-                    className="bg-red-600 hover:bg-red-700 text-white text-xs px-3 py-1.5 rounded-lg transition-colors"
+                    style={{
+                      background: 'rgba(248,113,113,0.1)', border: '1px solid rgba(248,113,113,0.3)',
+                      color: '#f87171', fontSize: '0.75rem', padding: '0.3rem 0.75rem',
+                      borderRadius: '0.4rem', cursor: 'pointer', fontWeight: 600,
+                    }}
+                    onMouseEnter={e => { e.currentTarget.style.background = 'rgba(248,113,113,0.25)'; }}
+                    onMouseLeave={e => { e.currentTarget.style.background = 'rgba(248,113,113,0.1)'; }}
                   >
                     Eliminar
                   </button>

@@ -17,29 +17,58 @@ const schema = Yup.object({
   formVendedor:  Yup.string().min(2).required('Obligatorio'),
   formMonto:     Yup.number().required('Obligatorio'),
   formIntereses: Yup.number().max(99).required('Obligatorio'),
-  formFecha:     Yup.date().required('Obligatorio'),
+  formFecha:     Yup.string().required('Obligatorio'),
   soloInteres:   Yup.boolean(),
   formSemanas:   Yup.number().min(1).max(12).required('Obligatorio'),
 });
 
 type Values = Yup.InferType<typeof schema>;
+type FormValues = Values & { _devuelve: string; _semanaPaga: string };
 
-const initialValues: Values = {
+const initialValues: FormValues = {
   formNombre: '', formApellido: '', formDni: '',
   formTel: '', formTel2: '', formTel3: '',
   formDirec: '', formMaps: '', formVendedor: '',
   formMonto: 0, formIntereses: 0, formFecha: '',
   soloInteres: false, formSemanas: 1,
+  _devuelve: '', _semanaPaga: '',
 };
 
-const inputCls = 'w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-sky-500';
+const card: React.CSSProperties = {
+  background: 'var(--bg-card)',
+  border: '1px solid var(--border)',
+  borderRadius: '0.875rem',
+  boxShadow: 'var(--glow-purple)',
+  padding: '1.75rem',
+};
 
-function Field({ label, id, type = 'text', formik }: { label: string; id: keyof Values; type?: string; formik: any }) {
+const inputStyle: React.CSSProperties = {
+  width: '100%',
+  background: 'var(--bg-surface)',
+  border: '1px solid var(--border)',
+  borderRadius: '0.5rem',
+  padding: '0.5rem 0.75rem',
+  fontSize: '0.85rem',
+  color: 'var(--text-primary)',
+  outline: 'none',
+};
+
+const labelStyle: React.CSSProperties = {
+  display: 'block',
+  fontSize: '0.7rem',
+  color: 'var(--text-muted)',
+  marginBottom: '0.25rem',
+  fontWeight: 600,
+  textTransform: 'uppercase',
+  letterSpacing: '0.04em',
+};
+
+function Field({ label, id, type = 'text', formik }: { label: string; id: keyof FormValues; type?: string; formik: any }) {
   return (
     <div>
-      <label className="block text-xs text-gray-500 mb-1">{label}</label>
-      <input className={inputCls} id={String(id)} type={type} {...formik.getFieldProps(id)} />
-      <ErrorMessage name={String(id)} component="div" className="text-red-500 text-xs mt-1" />
+      <label style={labelStyle}>{label}</label>
+      <input style={inputStyle} id={String(id)} type={type} {...formik.getFieldProps(id)} />
+      <ErrorMessage name={String(id)} render={msg => <div style={{ color: '#f87171', fontSize: '0.7rem', marginTop: '0.2rem' }}>{msg}</div>} />
     </div>
   );
 }
@@ -47,7 +76,7 @@ function Field({ label, id, type = 'text', formik }: { label: string; id: keyof 
 export default function AgregarCliente() {
   const api = useApi();
 
-  const calcular = (values: Values, setFieldValue: (f: string, v: unknown) => void) => {
+  const calcular = (values: FormValues, setFieldValue: (f: string, v: unknown) => void) => {
     const monto = Number(values.formMonto);
     const intereses = Number(values.formIntereses);
     const semanas = Number(values.formSemanas);
@@ -58,7 +87,7 @@ export default function AgregarCliente() {
     setFieldValue('_semanaPaga', (montoFinal / semanas).toFixed(2));
   };
 
-  const submit = async (values: Values, { resetForm }: FormikHelpers<Values>) => {
+  const submit = async (values: FormValues, { resetForm }: FormikHelpers<FormValues>) => {
     try {
       await api.post('/api/clientes', {
         nombre: values.formNombre, apellido: values.formApellido,
@@ -68,7 +97,7 @@ export default function AgregarCliente() {
         prestamoActual: {
           monto: values.formMonto, semanas: values.formSemanas,
           intereses: values.formIntereses, soloInteres: values.soloInteres,
-          fechaInicio: new Date(values.formFecha as string).toISOString(),
+          fechaInicio: new Date(values.formFecha).toISOString(),
           vendedor: values.formVendedor,
         },
       });
@@ -79,92 +108,125 @@ export default function AgregarCliente() {
     }
   };
 
+  const sectionTitle: React.CSSProperties = {
+    textAlign: 'center',
+    color: 'var(--purple-400)',
+    fontWeight: 600,
+    fontSize: '0.8rem',
+    textTransform: 'uppercase',
+    letterSpacing: '0.06em',
+    marginBottom: '1rem',
+    paddingBottom: '0.5rem',
+    borderBottom: '1px solid var(--border)',
+  };
+
   return (
-    <div className="p-6">
-      <h3 className="text-2xl font-bold text-gray-700 mb-6">Agregar Cliente</h3>
+    <div className="p-6" style={{ color: 'var(--text-primary)' }}>
+      <h3 style={{ fontSize: '1.4rem', fontWeight: 700, marginBottom: '1.5rem' }}>Agregar Cliente</h3>
       <Formik
-        initialValues={{ ...initialValues, _devuelve: '', _semanaPaga: '' } as any}
+        initialValues={initialValues}
         validationSchema={schema}
         onSubmit={submit}
       >
         {formik => (
-          <Form className="bg-white rounded-xl shadow-md p-6">
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-              <div>
-                <h5 className="text-center text-gray-500 font-medium mb-4">Cliente</h5>
-                <div className="grid grid-cols-2 gap-3 mb-3">
-                  <Field label="Nombres" id="formNombre" formik={formik} />
-                  <Field label="Apellidos" id="formApellido" formik={formik} />
+          <Form>
+            <div style={card}>
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '2.5rem' }}>
+                {/* Datos del cliente */}
+                <div>
+                  <div style={sectionTitle}>Datos del Cliente</div>
+                  <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.75rem 1rem' }}>
+                    <Field label="Nombres" id="formNombre" formik={formik} />
+                    <Field label="Apellidos" id="formApellido" formik={formik} />
+                    <Field label="DNI" id="formDni" formik={formik} />
+                    <Field label="Teléfono" id="formTel" formik={formik} />
+                    <Field label="Teléfono 2" id="formTel2" formik={formik} />
+                    <Field label="Teléfono 3" id="formTel3" formik={formik} />
+                    <div style={{ gridColumn: '1 / -1' }}>
+                      <Field label="Dirección" id="formDirec" formik={formik} />
+                    </div>
+                    <div style={{ gridColumn: '1 / -1' }}>
+                      <Field label="Google Maps" id="formMaps" formik={formik} type="url" />
+                    </div>
+                  </div>
                 </div>
-                <div className="grid grid-cols-2 gap-3 mb-3">
-                  <Field label="DNI" id="formDni" formik={formik} />
-                  <Field label="Teléfono" id="formTel" formik={formik} />
+
+                {/* Datos del préstamo */}
+                <div>
+                  <div style={sectionTitle}>Datos del Préstamo</div>
+                  <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.75rem 1rem' }}>
+                    <div style={{ gridColumn: '1 / -1' }}>
+                      <Field label="Vendedor" id="formVendedor" formik={formik} />
+                    </div>
+                    <Field label="Monto" id="formMonto" formik={formik} />
+                    <Field label="% Intereses" id="formIntereses" formik={formik} />
+                    <Field label="Fecha Inicio" id="formFecha" formik={formik} type="date" />
+                    <div style={{ display: 'flex', alignItems: 'flex-end', paddingBottom: '0.25rem' }}>
+                      <label style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', fontSize: '0.85rem', color: 'var(--text-secondary)', cursor: 'pointer' }}>
+                        <input
+                          type="checkbox"
+                          name="soloInteres"
+                          checked={formik.values.soloInteres}
+                          onChange={formik.handleChange}
+                          style={{ width: '1rem', height: '1rem', accentColor: '#8b5cf6' }}
+                        />
+                        Solo interés
+                      </label>
+                    </div>
+                    <div style={{ gridColumn: '1 / -1' }}>
+                      <label style={labelStyle}>Semanas</label>
+                      <select id="formSemanas" {...formik.getFieldProps('formSemanas')} style={inputStyle}>
+                        {[...Array(12)].map((_, i) => (
+                          <option key={i + 1} value={i + 1}>{i + 1} Semana{i > 0 ? 's' : ''}</option>
+                        ))}
+                      </select>
+                    </div>
+
+                    {/* Calculadora */}
+                    <div>
+                      <label style={labelStyle}>Monto Final</label>
+                      <input style={{ ...inputStyle, background: 'rgba(139,92,246,0.05)', color: '#a78bfa' }} value={formik.values._devuelve ?? ''} type="text" readOnly />
+                    </div>
+                    <div>
+                      <label style={labelStyle}>Por semana</label>
+                      <input style={{ ...inputStyle, background: 'rgba(139,92,246,0.05)', color: '#a78bfa' }} value={formik.values._semanaPaga ?? ''} type="text" readOnly />
+                    </div>
+                    <div style={{ gridColumn: '1 / -1' }}>
+                      <button
+                        type="button"
+                        onClick={() => calcular(formik.values, formik.setFieldValue)}
+                        style={{
+                          width: '100%',
+                          background: 'rgba(139,92,246,0.1)',
+                          border: '1px solid var(--border)',
+                          color: '#a78bfa', fontWeight: 600,
+                          padding: '0.5rem', borderRadius: '0.5rem',
+                          cursor: 'pointer', fontSize: '0.85rem',
+                        }}
+                      >
+                        Calcular intereses
+                      </button>
+                    </div>
+                  </div>
                 </div>
-                <div className="grid grid-cols-2 gap-3 mb-3">
-                  <Field label="Teléfono 2" id="formTel2" formik={formik} />
-                  <Field label="Teléfono 3" id="formTel3" formik={formik} />
-                </div>
-                <div className="mb-3"><Field label="Dirección" id="formDirec" formik={formik} /></div>
-                <Field label="Google Maps" id="formMaps" formik={formik} type="url" />
               </div>
 
-              <div>
-                <h5 className="text-center text-gray-500 font-medium mb-4">Préstamo</h5>
-                <div className="mb-3"><Field label="Vendedor" id="formVendedor" formik={formik} /></div>
-                <div className="grid grid-cols-2 gap-3 mb-3">
-                  <Field label="Monto" id="formMonto" formik={formik} />
-                  <Field label="% Intereses" id="formIntereses" formik={formik} />
-                </div>
-                <div className="grid grid-cols-2 gap-3 mb-3">
-                  <Field label="Fecha Inicio" id="formFecha" formik={formik} type="date" />
-                  <div className="flex items-center">
-                    <label className="flex items-center gap-2 text-sm text-gray-600 cursor-pointer">
-                      <input
-                        type="checkbox"
-                        name="soloInteres"
-                        checked={formik.values.soloInteres}
-                        onChange={formik.handleChange}
-                        className="w-4 h-4"
-                      />
-                      Solo interés
-                    </label>
-                  </div>
-                </div>
-                <div className="mb-3">
-                  <label className="block text-xs text-gray-500 mb-1">Semanas</label>
-                  <select id="formSemanas" {...formik.getFieldProps('formSemanas')} className={inputCls}>
-                    {[...Array(12)].map((_, i) => (
-                      <option key={i + 1} value={i + 1}>{i + 1} Semana{i > 0 ? 's' : ''}</option>
-                    ))}
-                  </select>
-                </div>
-                <div className="grid grid-cols-2 gap-3 mb-4">
-                  <div>
-                    <label className="block text-xs text-gray-500 mb-1">Monto Final</label>
-                    <input className={inputCls + ' bg-gray-50'} value={formik.values._devuelve ?? ''} type="text" readOnly />
-                  </div>
-                  <div>
-                    <label className="block text-xs text-gray-500 mb-1">Por semana</label>
-                    <input className={inputCls + ' bg-gray-50'} value={formik.values._semanaPaga ?? ''} type="text" readOnly />
-                  </div>
-                </div>
+              <div style={{ marginTop: '1.75rem' }}>
                 <button
-                  type="button"
-                  onClick={() => calcular(formik.values, formik.setFieldValue)}
-                  className="w-full bg-gray-800 hover:bg-gray-900 text-white font-medium py-2 rounded-lg transition-colors"
+                  type="submit"
+                  style={{
+                    width: '100%', maxWidth: '320px',
+                    background: 'linear-gradient(135deg, #7c3aed, #5b21b6)',
+                    boxShadow: '0 0 20px rgba(124,58,237,0.35)',
+                    color: '#fff', fontWeight: 700,
+                    padding: '0.65rem', borderRadius: '0.6rem',
+                    border: 'none', cursor: 'pointer', fontSize: '0.9rem',
+                    letterSpacing: '0.02em',
+                  }}
                 >
-                  Calcular intereses
+                  Registrar Nuevo Cliente
                 </button>
               </div>
-            </div>
-
-            <div className="mt-6 w-full md:w-1/2">
-              <button
-                type="submit"
-                className="w-full bg-sky-500 hover:bg-sky-600 text-white font-semibold py-2.5 rounded-lg transition-colors"
-              >
-                Registrar Nuevo Cliente
-              </button>
             </div>
           </Form>
         )}

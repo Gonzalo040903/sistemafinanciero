@@ -5,7 +5,33 @@ import toast from 'react-hot-toast';
 import { useApi } from '@/lib/useApi';
 import type { Cliente, Prestamo } from '@/types';
 
-const inputCls = 'w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-sky-500';
+const card: React.CSSProperties = {
+  background: 'var(--bg-card)',
+  border: '1px solid var(--border)',
+  borderRadius: '0.875rem',
+  boxShadow: 'var(--glow-purple)',
+};
+
+const inputStyle: React.CSSProperties = {
+  width: '100%',
+  background: 'var(--bg-surface)',
+  border: '1px solid var(--border)',
+  borderRadius: '0.5rem',
+  padding: '0.5rem 0.75rem',
+  fontSize: '0.85rem',
+  color: 'var(--text-primary)',
+  outline: 'none',
+};
+
+const labelStyle: React.CSSProperties = {
+  display: 'block',
+  fontSize: '0.72rem',
+  color: 'var(--text-muted)',
+  marginBottom: '0.25rem',
+  fontWeight: 600,
+  textTransform: 'uppercase',
+  letterSpacing: '0.04em',
+};
 
 function fmt(iso: string) {
   return new Date(iso).toLocaleDateString('es-AR');
@@ -35,25 +61,20 @@ export default function NuevoCobro() {
     setSeleccionado(c);
     setNuevoModo(false);
     setHistorial([]);
-    // Usar el dato ya disponible en la tabla para no mostrar "sin préstamo" mientras carga
     const prestamoRapido = c.prestamoActual ?? null;
     setPrestamo(prestamoRapido);
     if (prestamoRapido) setCuotasPagadas(prestamoRapido.cuotas_pagadas);
-
     try {
       const [pRes, hRes] = await Promise.allSettled([
         api.get<Prestamo>(`/api/clientes/${c.dni}/prestamo`),
         api.get<Prestamo[]>(`/api/clientes/${c.dni}/prestamos`),
       ]);
-      // Actualizar con datos completos (incluye pagos[])
       const p = pRes.status === 'fulfilled' ? pRes.value.data : prestamoRapido;
       setPrestamo(p);
       if (p) setCuotasPagadas(p.cuotas_pagadas);
       const todos = hRes.status === 'fulfilled' ? hRes.value.data : [];
       setHistorial(todos.filter((h: Prestamo) => !h.activo));
-    } catch {
-      // prestamoRapido ya está en state, no resetear
-    }
+    } catch { /* prestamoRapido ya está en state */ }
   };
 
   const volver = () => { setSeleccionado(null); setPrestamo(null); setHistorial([]); setNuevoModo(false); };
@@ -64,9 +85,7 @@ export default function NuevoCobro() {
       await api.patch(`/api/clientes/${seleccionado.dni}/prestamo/cuotas`, { cuotasPagadas });
       toast.success('Pago registrado');
       gestionar(seleccionado);
-    } catch {
-      toast.error('Error al registrar el pago');
-    }
+    } catch { toast.error('Error al registrar el pago'); }
   };
 
   const registrarNuevo = async () => {
@@ -83,9 +102,7 @@ export default function NuevoCobro() {
       setNuevoModo(false);
       setNMonto(''); setNIntereses(''); setNFecha(''); setNVendedor('');
       gestionar(seleccionado);
-    } catch {
-      toast.error('Error al registrar el préstamo');
-    }
+    } catch { toast.error('Error al registrar el préstamo'); }
   };
 
   const pagado = !prestamo || prestamo.monto_adeudado <= 0 || prestamo.cuotas_pagadas >= prestamo.cuotas_totales;
@@ -98,56 +115,65 @@ export default function NuevoCobro() {
   );
 
   return (
-    <div className="p-6">
-      <h3 className="text-2xl font-bold text-gray-700 mb-6">Nuevo Cobro</h3>
+    <div className="p-6" style={{ color: 'var(--text-primary)' }}>
+      <h3 style={{ fontSize: '1.4rem', fontWeight: 700, marginBottom: '1.5rem' }}>Nuevo Cobro</h3>
 
-      {/* ── Tabla de clientes ─────────────────────────────────── */}
+      {/* Tabla de clientes */}
       {!seleccionado && (
-        <div className="bg-white rounded-xl shadow-md">
-          <div className="p-4 border-b border-gray-100">
+        <div style={card}>
+          <div style={{ padding: '1rem 1.25rem', borderBottom: '1px solid var(--border)' }}>
             <input
-              className={inputCls + ' max-w-xs'}
+              style={{ ...inputStyle, maxWidth: '280px' }}
               placeholder="Buscar por nombre o DNI..."
               value={busqueda}
               onChange={e => setBusqueda(e.target.value)}
             />
           </div>
-          <div className="overflow-x-auto">
-            <table className="w-full text-sm">
-              <thead className="bg-gray-50 text-gray-600 uppercase text-xs">
-                <tr>
-                  <th className="px-4 py-3 text-left">Nombre</th>
-                  <th className="px-4 py-3">DNI</th>
-                  <th className="px-4 py-3">Monto adeudado</th>
-                  <th className="px-4 py-3">Cuotas</th>
-                  <th className="px-4 py-3"></th>
+          <div style={{ overflowX: 'auto' }}>
+            <table style={{ width: '100%', fontSize: '0.83rem', borderCollapse: 'collapse' }}>
+              <thead>
+                <tr style={{ borderBottom: '1px solid var(--border)' }}>
+                  {['Nombre', 'DNI', 'Monto adeudado', 'Cuotas', ''].map(h => (
+                    <th key={h} style={{ padding: '0.65rem 1rem', color: 'var(--text-muted)', fontWeight: 600, fontSize: '0.72rem', textTransform: 'uppercase', textAlign: h === 'Nombre' ? 'left' : 'center' }}>{h}</th>
+                  ))}
                 </tr>
               </thead>
-              <tbody className="divide-y divide-gray-100">
+              <tbody>
                 {filtrados.map(c => {
                   const p = c.prestamoActual;
                   return (
-                    <tr key={c.dni} className="hover:bg-gray-50">
-                      <td className="px-4 py-3 font-medium">{c.apellido}, {c.nombre}</td>
-                      <td className="px-4 py-3 text-center">{c.dni}</td>
-                      <td className="px-4 py-3 text-center">
+                    <tr key={c.dni} style={{ borderBottom: '1px solid rgba(139,92,246,0.06)' }}
+                      onMouseEnter={e => (e.currentTarget.style.background = 'rgba(139,92,246,0.04)')}
+                      onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}
+                    >
+                      <td style={{ padding: '0.7rem 1rem', fontWeight: 500, color: 'var(--text-primary)', textAlign: 'left' }}>
+                        {c.apellido}, {c.nombre}
+                      </td>
+                      <td style={{ padding: '0.7rem 1rem', textAlign: 'center', color: 'var(--text-secondary)' }}>{c.dni}</td>
+                      <td style={{ padding: '0.7rem 1rem', textAlign: 'center', color: p ? '#4ade80' : 'var(--text-muted)' }}>
                         {p ? `$${Number(p.monto_adeudado).toLocaleString('es-AR')}` : '—'}
                       </td>
-                      <td className="px-4 py-3 text-center">
+                      <td style={{ padding: '0.7rem 1rem', textAlign: 'center' }}>
                         {p ? (
-                          <span className={`text-xs font-medium px-2 py-0.5 rounded-full ${
-                            p.cuotas_pagadas >= p.cuotas_totales
-                              ? 'bg-green-100 text-green-700'
-                              : 'bg-yellow-100 text-yellow-700'
-                          }`}>
+                          <span style={{
+                            fontSize: '0.7rem', fontWeight: 600, padding: '2px 8px', borderRadius: '999px',
+                            background: p.cuotas_pagadas >= p.cuotas_totales ? 'rgba(74,222,128,0.15)' : 'rgba(250,204,21,0.15)',
+                            color: p.cuotas_pagadas >= p.cuotas_totales ? '#4ade80' : '#facc15',
+                            border: `1px solid ${p.cuotas_pagadas >= p.cuotas_totales ? 'rgba(74,222,128,0.3)' : 'rgba(250,204,21,0.3)'}`,
+                          }}>
                             {p.cuotas_pagadas}/{p.cuotas_totales}
                           </span>
                         ) : '—'}
                       </td>
-                      <td className="px-4 py-3 text-center">
-                        <button
-                          onClick={() => gestionar(c)}
-                          className="bg-sky-500 hover:bg-sky-600 text-white text-xs px-3 py-1.5 rounded-lg transition-colors"
+                      <td style={{ padding: '0.7rem 1rem', textAlign: 'center' }}>
+                        <button onClick={() => gestionar(c)} style={{
+                          background: 'rgba(139,92,246,0.2)', border: '1px solid rgba(139,92,246,0.4)',
+                          color: '#a78bfa', fontSize: '0.75rem', padding: '0.3rem 0.75rem',
+                          borderRadius: '0.4rem', cursor: 'pointer', fontWeight: 600,
+                          transition: 'all 0.15s',
+                        }}
+                          onMouseEnter={e => { e.currentTarget.style.background = 'rgba(139,92,246,0.35)'; e.currentTarget.style.color = '#c4b5fd'; }}
+                          onMouseLeave={e => { e.currentTarget.style.background = 'rgba(139,92,246,0.2)'; e.currentTarget.style.color = '#a78bfa'; }}
                         >
                           Gestionar
                         </button>
@@ -161,63 +187,83 @@ export default function NuevoCobro() {
         </div>
       )}
 
-      {/* ── Panel del cliente seleccionado ────────────────────── */}
+      {/* Panel del cliente */}
       {seleccionado && (
         <>
-          <div className="flex items-center gap-3 mb-5">
-            <button onClick={volver} className="text-sm text-gray-500 hover:text-gray-700">← Volver</button>
-            <h4 className="text-lg font-semibold text-gray-800">
+          <div style={{ display: 'flex', alignItems: 'center', gap: '1rem', marginBottom: '1.25rem' }}>
+            <button onClick={volver} style={{
+              background: 'rgba(139,92,246,0.1)', border: '1px solid var(--border)',
+              color: '#a78bfa', fontSize: '0.8rem', padding: '0.35rem 0.8rem',
+              borderRadius: '0.4rem', cursor: 'pointer',
+            }}>
+              ← Volver
+            </button>
+            <h4 style={{ fontSize: '1.05rem', fontWeight: 600, color: 'var(--text-primary)' }}>
               {seleccionado.nombre} {seleccionado.apellido} — DNI {seleccionado.dni}
             </h4>
           </div>
 
           {/* Préstamo activo */}
           {prestamo && !nuevoModo && (
-            <div className="bg-white rounded-xl shadow-md p-6 mb-4">
-              <div className="flex items-center justify-between mb-4">
-                <h5 className="font-semibold text-gray-800">Préstamo activo</h5>
-                {pagado
-                  ? <span className="text-xs bg-green-100 text-green-700 font-semibold px-2 py-0.5 rounded-full">Saldado</span>
-                  : <span className="text-xs bg-yellow-100 text-yellow-700 font-semibold px-2 py-0.5 rounded-full">En curso</span>
-                }
+            <div style={{ ...card, padding: '1.5rem', marginBottom: '1rem' }}>
+              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '1.25rem' }}>
+                <span style={{ fontWeight: 600, color: 'var(--text-primary)' }}>Préstamo activo</span>
+                <span style={{
+                  fontSize: '0.72rem', fontWeight: 700, padding: '2px 10px', borderRadius: '999px',
+                  background: pagado ? 'rgba(74,222,128,0.15)' : 'rgba(250,204,21,0.15)',
+                  color: pagado ? '#4ade80' : '#facc15',
+                  border: `1px solid ${pagado ? 'rgba(74,222,128,0.3)' : 'rgba(250,204,21,0.3)'}`,
+                }}>
+                  {pagado ? 'Saldado' : 'En curso'}
+                </span>
               </div>
-              <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-5">
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '1rem', marginBottom: '1.25rem' }}>
                 {[
                   { label: 'Monto original', value: `$${Number(prestamo.monto).toLocaleString('es-AR')}` },
                   { label: 'Monto final',    value: `$${Number(prestamo.monto_final).toLocaleString('es-AR')}` },
-                  { label: 'Monto adeudado', value: `$${Number(prestamo.monto_adeudado).toLocaleString('es-AR')}` },
+                  { label: 'Monto adeudado', value: `$${Number(prestamo.monto_adeudado).toLocaleString('es-AR')}`, highlight: true },
                   { label: 'Cuota semanal',  value: `$${cuotaValor.toLocaleString('es-AR')}` },
                 ].map(s => (
-                  <div key={s.label}>
-                    <div className="text-xs text-gray-500 mb-0.5">{s.label}</div>
-                    <div className="font-semibold text-gray-800">{s.value}</div>
+                  <div key={s.label} style={{ background: 'var(--bg-surface)', borderRadius: '0.5rem', padding: '0.75rem 1rem', border: '1px solid rgba(139,92,246,0.1)' }}>
+                    <div style={{ fontSize: '0.7rem', color: 'var(--text-muted)', marginBottom: '0.25rem', textTransform: 'uppercase', letterSpacing: '0.04em' }}>{s.label}</div>
+                    <div style={{ fontWeight: 700, fontSize: '1.05rem', color: s.highlight ? '#4ade80' : 'var(--text-primary)' }}>{s.value}</div>
                   </div>
                 ))}
               </div>
-              <div className="flex flex-wrap items-end gap-4">
+              <div style={{ display: 'flex', flexWrap: 'wrap', alignItems: 'flex-end', gap: '1rem' }}>
                 <div>
-                  <label className="block text-xs text-gray-500 mb-1">Cuotas pagadas</label>
+                  <label style={labelStyle}>Cuotas pagadas</label>
                   <input
-                    className={inputCls + ' w-28'}
+                    style={{ ...inputStyle, width: '7rem' }}
                     type="number"
                     value={cuotasPagadas}
                     min={prestamo.cuotas_pagadas}
                     max={prestamo.cuotas_totales}
                     onChange={e => setCuotasPagadas(Number(e.target.value))}
                   />
-                  <div className="text-xs text-gray-400 mt-1">{prestamo.cuotas_pagadas}/{prestamo.cuotas_totales} pagadas</div>
+                  <div style={{ fontSize: '0.7rem', color: 'var(--text-muted)', marginTop: '0.2rem' }}>
+                    {prestamo.cuotas_pagadas}/{prestamo.cuotas_totales} pagadas
+                  </div>
                 </div>
-                <button onClick={registrarPago}
-                  className="bg-green-600 hover:bg-green-700 text-white font-medium px-4 py-2 rounded-lg transition-colors">
+                <button onClick={registrarPago} style={{
+                  background: 'rgba(74,222,128,0.15)', border: '1px solid rgba(74,222,128,0.3)',
+                  color: '#4ade80', fontWeight: 600, padding: '0.5rem 1.25rem',
+                  borderRadius: '0.5rem', cursor: 'pointer', fontSize: '0.85rem',
+                }}>
                   Registrar pago
                 </button>
                 <button
                   onClick={() => setNuevoModo(true)}
                   disabled={!pagado}
                   title={!pagado ? `Saldo pendiente: $${Number(prestamo.monto_adeudado).toLocaleString('es-AR')}` : ''}
-                  className={`font-medium px-4 py-2 rounded-lg transition-colors text-white ${
-                    pagado ? 'bg-sky-500 hover:bg-sky-600' : 'bg-gray-300 cursor-not-allowed opacity-60'
-                  }`}
+                  style={{
+                    background: pagado ? 'rgba(139,92,246,0.2)' : 'rgba(100,116,139,0.1)',
+                    border: `1px solid ${pagado ? 'rgba(139,92,246,0.4)' : 'rgba(100,116,139,0.2)'}`,
+                    color: pagado ? '#a78bfa' : 'var(--text-muted)',
+                    fontWeight: 600, padding: '0.5rem 1.25rem',
+                    borderRadius: '0.5rem', cursor: pagado ? 'pointer' : 'not-allowed',
+                    fontSize: '0.85rem', opacity: pagado ? 1 : 0.5,
+                  }}
                 >
                   Nuevo préstamo
                 </button>
@@ -227,10 +273,13 @@ export default function NuevoCobro() {
 
           {/* Sin préstamo activo */}
           {!prestamo && !nuevoModo && (
-            <div className="bg-white rounded-xl shadow-md p-6 mb-4">
-              <p className="text-gray-500 mb-4">Este cliente no tiene préstamo activo.</p>
-              <button onClick={() => setNuevoModo(true)}
-                className="bg-sky-500 hover:bg-sky-600 text-white font-medium px-4 py-2 rounded-lg transition-colors">
+            <div style={{ ...card, padding: '1.5rem', marginBottom: '1rem' }}>
+              <p style={{ color: 'var(--text-muted)', marginBottom: '1rem', fontSize: '0.9rem' }}>Este cliente no tiene préstamo activo.</p>
+              <button onClick={() => setNuevoModo(true)} style={{
+                background: 'rgba(139,92,246,0.2)', border: '1px solid rgba(139,92,246,0.4)',
+                color: '#a78bfa', fontWeight: 600, padding: '0.5rem 1.25rem',
+                borderRadius: '0.5rem', cursor: 'pointer', fontSize: '0.85rem',
+              }}>
                 Crear préstamo
               </button>
             </div>
@@ -238,80 +287,65 @@ export default function NuevoCobro() {
 
           {/* Formulario nuevo préstamo */}
           {nuevoModo && (
-            <div className="bg-white rounded-xl shadow-md p-6 mb-4">
-              <h5 className="font-semibold text-gray-800 mb-4">Nuevo préstamo</h5>
-              <div className="grid grid-cols-2 md:grid-cols-3 gap-4 mb-5">
+            <div style={{ ...card, padding: '1.5rem', marginBottom: '1rem' }}>
+              <h5 style={{ fontWeight: 600, color: 'var(--text-primary)', marginBottom: '1.25rem' }}>Nuevo préstamo</h5>
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '1rem', marginBottom: '1.25rem' }}>
+                <div><label style={labelStyle}>Monto</label><input style={inputStyle} type="number" value={nMonto} onChange={e => setNMonto(e.target.value)} /></div>
+                <div><label style={labelStyle}>% Intereses</label><input style={inputStyle} type="number" value={nIntereses} onChange={e => setNIntereses(e.target.value)} /></div>
                 <div>
-                  <label className="block text-xs text-gray-500 mb-1">Monto</label>
-                  <input className={inputCls} type="number" value={nMonto} onChange={e => setNMonto(e.target.value)} />
-                </div>
-                <div>
-                  <label className="block text-xs text-gray-500 mb-1">% Intereses</label>
-                  <input className={inputCls} type="number" value={nIntereses} onChange={e => setNIntereses(e.target.value)} />
-                </div>
-                <div>
-                  <label className="block text-xs text-gray-500 mb-1">Semanas</label>
-                  <select className={inputCls} value={nSemanas} onChange={e => setNSemanas(Number(e.target.value))}>
-                    {[...Array(12)].map((_, i) => (
-                      <option key={i + 1} value={i + 1}>{i + 1} semana{i > 0 ? 's' : ''}</option>
-                    ))}
+                  <label style={labelStyle}>Semanas</label>
+                  <select style={{ ...inputStyle }} value={nSemanas} onChange={e => setNSemanas(Number(e.target.value))}>
+                    {[...Array(12)].map((_, i) => <option key={i + 1} value={i + 1}>{i + 1} semana{i > 0 ? 's' : ''}</option>)}
                   </select>
                 </div>
-                <div>
-                  <label className="block text-xs text-gray-500 mb-1">Fecha inicio</label>
-                  <input className={inputCls} type="date" value={nFecha} onChange={e => setNFecha(e.target.value)} />
-                </div>
-                <div>
-                  <label className="block text-xs text-gray-500 mb-1">Vendedor</label>
-                  <input className={inputCls} value={nVendedor} onChange={e => setNVendedor(e.target.value)} />
-                </div>
-                <div className="flex items-end pb-2">
-                  <label className="flex items-center gap-2 text-sm text-gray-600 cursor-pointer">
-                    <input type="checkbox" checked={nSoloInteres} onChange={e => setNSoloInteres(e.target.checked)} className="w-4 h-4" />
+                <div><label style={labelStyle}>Fecha inicio</label><input style={inputStyle} type="date" value={nFecha} onChange={e => setNFecha(e.target.value)} /></div>
+                <div><label style={labelStyle}>Vendedor</label><input style={inputStyle} value={nVendedor} onChange={e => setNVendedor(e.target.value)} /></div>
+                <div style={{ display: 'flex', alignItems: 'flex-end', paddingBottom: '0.25rem' }}>
+                  <label style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', fontSize: '0.85rem', color: 'var(--text-secondary)', cursor: 'pointer' }}>
+                    <input type="checkbox" checked={nSoloInteres} onChange={e => setNSoloInteres(e.target.checked)} style={{ width: '1rem', height: '1rem', accentColor: '#8b5cf6' }} />
                     Solo interés
                   </label>
                 </div>
               </div>
-              <div className="flex gap-3">
-                <button onClick={registrarNuevo}
-                  className="bg-green-600 hover:bg-green-700 text-white font-medium px-4 py-2 rounded-lg transition-colors">
-                  Confirmar
-                </button>
-                <button onClick={() => setNuevoModo(false)}
-                  className="bg-gray-400 hover:bg-gray-500 text-white font-medium px-4 py-2 rounded-lg transition-colors">
-                  Cancelar
-                </button>
+              <div style={{ display: 'flex', gap: '0.75rem' }}>
+                <button onClick={registrarNuevo} style={{
+                  background: 'rgba(74,222,128,0.15)', border: '1px solid rgba(74,222,128,0.3)',
+                  color: '#4ade80', fontWeight: 600, padding: '0.5rem 1.25rem',
+                  borderRadius: '0.5rem', cursor: 'pointer', fontSize: '0.85rem',
+                }}>Confirmar</button>
+                <button onClick={() => setNuevoModo(false)} style={{
+                  background: 'rgba(100,116,139,0.1)', border: '1px solid rgba(100,116,139,0.2)',
+                  color: 'var(--text-muted)', fontWeight: 600, padding: '0.5rem 1.25rem',
+                  borderRadius: '0.5rem', cursor: 'pointer', fontSize: '0.85rem',
+                }}>Cancelar</button>
               </div>
             </div>
           )}
 
           {/* Historial */}
           {historial.length > 0 && (
-            <div className="bg-white rounded-xl shadow-md">
-              <div className="p-4 border-b border-gray-100">
-                <h5 className="font-semibold text-gray-700">Historial de préstamos</h5>
+            <div style={card}>
+              <div style={{ padding: '1rem 1.25rem', borderBottom: '1px solid var(--border)', fontSize: '0.85rem', fontWeight: 600, color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
+                Historial de préstamos
               </div>
-              <div className="overflow-x-auto">
-                <table className="w-full text-sm text-center">
-                  <thead className="bg-gray-50 text-gray-600 uppercase text-xs">
-                    <tr>
-                      <th className="px-4 py-3">Fecha</th>
-                      <th className="px-4 py-3">Monto</th>
-                      <th className="px-4 py-3">Monto final</th>
-                      <th className="px-4 py-3">Intereses</th>
-                      <th className="px-4 py-3">Cuotas</th>
-                      <th className="px-4 py-3">Vendedor</th>
+              <div style={{ overflowX: 'auto' }}>
+                <table style={{ width: '100%', fontSize: '0.82rem', textAlign: 'center', borderCollapse: 'collapse' }}>
+                  <thead>
+                    <tr style={{ borderBottom: '1px solid var(--border)' }}>
+                      {['Fecha', 'Monto', 'Monto final', 'Intereses', 'Cuotas', 'Vendedor'].map(h => (
+                        <th key={h} style={{ padding: '0.65rem 1rem', color: 'var(--text-muted)', fontWeight: 600, fontSize: '0.7rem', textTransform: 'uppercase' }}>{h}</th>
+                      ))}
                     </tr>
                   </thead>
-                  <tbody className="divide-y divide-gray-100">
+                  <tbody>
                     {historial.map(h => (
-                      <tr key={h.id} className="hover:bg-gray-50 text-gray-500">
-                        <td className="px-4 py-3">{fmt(h.fecha_inicio)}</td>
-                        <td className="px-4 py-3">${Number(h.monto).toLocaleString('es-AR')}</td>
-                        <td className="px-4 py-3">${Number(h.monto_final).toLocaleString('es-AR')}</td>
-                        <td className="px-4 py-3">{h.intereses}%{h.solo_interes ? ' (solo int.)' : ''}</td>
-                        <td className="px-4 py-3">{h.cuotas_pagadas}/{h.cuotas_totales}</td>
-                        <td className="px-4 py-3">{h.vendedor}</td>
+                      <tr key={h.id} style={{ borderBottom: '1px solid rgba(139,92,246,0.06)' }}>
+                        <td style={{ padding: '0.65rem 1rem', color: 'var(--text-secondary)' }}>{fmt(h.fecha_inicio)}</td>
+                        <td style={{ padding: '0.65rem 1rem', color: 'var(--text-secondary)' }}>${Number(h.monto).toLocaleString('es-AR')}</td>
+                        <td style={{ padding: '0.65rem 1rem', color: 'var(--text-secondary)' }}>${Number(h.monto_final).toLocaleString('es-AR')}</td>
+                        <td style={{ padding: '0.65rem 1rem', color: 'var(--text-secondary)' }}>{h.intereses}%{h.solo_interes ? ' (solo int.)' : ''}</td>
+                        <td style={{ padding: '0.65rem 1rem', color: 'var(--text-secondary)' }}>{h.cuotas_pagadas}/{h.cuotas_totales}</td>
+                        <td style={{ padding: '0.65rem 1rem', color: 'var(--text-secondary)' }}>{h.vendedor}</td>
                       </tr>
                     ))}
                   </tbody>
