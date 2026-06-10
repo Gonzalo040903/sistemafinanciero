@@ -2,36 +2,15 @@
 
 import { useEffect, useState } from 'react';
 import toast from 'react-hot-toast';
+import { Trash2, UserPlus } from 'lucide-react';
 import { useApi } from '@/lib/useApi';
 import type { Vendedor } from '@/types';
-
-const card: React.CSSProperties = {
-  background: 'var(--bg-card)',
-  border: '1px solid var(--border)',
-  borderRadius: '0.875rem',
-  boxShadow: 'var(--glow-purple)',
-};
-
-const inputStyle: React.CSSProperties = {
-  background: 'var(--bg-surface)',
-  border: '1px solid var(--border)',
-  borderRadius: '0.5rem',
-  padding: '0.5rem 0.75rem',
-  fontSize: '0.85rem',
-  color: 'var(--text-primary)',
-  outline: 'none',
-  width: '100%',
-};
-
-const labelStyle: React.CSSProperties = {
-  display: 'block',
-  fontSize: '0.7rem',
-  color: 'var(--text-muted)',
-  marginBottom: '0.25rem',
-  fontWeight: 600,
-  textTransform: 'uppercase',
-  letterSpacing: '0.04em',
-};
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { Badge } from '@/components/ui/badge';
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 
 export default function Vendedores() {
   const api = useApi();
@@ -72,95 +51,89 @@ export default function Vendedores() {
   };
 
   return (
-    <div style={{ padding: '2rem', color: 'var(--text-primary)', maxWidth: '900px' }}>
-      <h3 style={{ fontSize: '1.5rem', fontWeight: 800, marginBottom: '0.25rem', letterSpacing: '-0.02em' }}>Gestión de Vendedores</h3>
-      <p style={{ fontSize: '0.8rem', color: 'var(--text-muted)', marginBottom: '1.75rem' }}>Administrá usuarios del sistema</p>
+    <div className="p-4 md:p-6 lg:p-8 max-w-[900px] space-y-2">
+      <h1 className="text-2xl font-bold tracking-tight">Gestión de Vendedores</h1>
+      <p className="text-sm text-muted-foreground mb-6">Administrá usuarios del sistema</p>
 
       {/* Formulario nuevo */}
-      <div style={{ ...card, padding: '1.5rem', marginBottom: '1.5rem' }}>
-        <div style={{ fontSize: '0.8rem', fontWeight: 600, color: 'var(--purple-400)', textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: '1rem', paddingBottom: '0.5rem', borderBottom: '1px solid var(--border)' }}>
-          Nuevo Vendedor
-        </div>
-        <div style={{ display: 'flex', flexWrap: 'wrap', gap: '1rem', alignItems: 'flex-end' }}>
-          <div style={{ width: '180px' }}>
-            <label style={labelStyle}>Nombre de usuario</label>
-            <input style={inputStyle} value={nombre} onChange={e => setNombre(e.target.value)} />
+      <Card className="mb-6">
+        <CardHeader className="pb-3">
+          <CardTitle className="text-xs font-semibold text-primary uppercase tracking-widest">Nuevo Vendedor</CardTitle>
+        </CardHeader>
+        <CardContent className="pt-0">
+          <div className="flex flex-wrap gap-3 items-end">
+            <div className="space-y-1.5 w-44">
+              <Label className="text-xs uppercase tracking-wider text-muted-foreground">Usuario</Label>
+              <Input className="bg-secondary/50" value={nombre} onChange={e => setNombre(e.target.value)} />
+            </div>
+            <div className="space-y-1.5 w-44">
+              <Label className="text-xs uppercase tracking-wider text-muted-foreground">Contraseña</Label>
+              <Input className="bg-secondary/50" type="password" value={contraseña} onChange={e => setContraseña(e.target.value)} />
+            </div>
+            <div className="space-y-1.5 w-36">
+              <Label className="text-xs uppercase tracking-wider text-muted-foreground">Rol</Label>
+              <select
+                className="flex h-9 w-full rounded-md border border-input bg-secondary/50 px-3 py-1 text-sm shadow-sm focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring"
+                value={rol}
+                onChange={e => setRol(e.target.value as 'vendedor' | 'admin')}
+              >
+                <option value="vendedor">Vendedor</option>
+                <option value="admin">Admin</option>
+              </select>
+            </div>
+            <Button onClick={crear}>
+              <UserPlus className="size-4" />
+              Crear
+            </Button>
           </div>
-          <div style={{ width: '180px' }}>
-            <label style={labelStyle}>Contraseña</label>
-            <input style={inputStyle} type="password" value={contraseña} onChange={e => setContraseña(e.target.value)} />
-          </div>
-          <div style={{ width: '140px' }}>
-            <label style={labelStyle}>Rol</label>
-            <select style={inputStyle} value={rol} onChange={e => setRol(e.target.value as 'vendedor' | 'admin')}>
-              <option value="vendedor">Vendedor</option>
-              <option value="admin">Admin</option>
-            </select>
-          </div>
-          <button
-            onClick={crear}
-            style={{
-              background: 'linear-gradient(135deg, #7c3aed, #5b21b6)',
-              boxShadow: '0 0 14px rgba(124,58,237,0.3)',
-              color: '#fff', fontWeight: 600,
-              padding: '0.5rem 1.5rem', borderRadius: '0.5rem',
-              border: 'none', cursor: 'pointer', fontSize: '0.85rem',
-            }}
-          >
-            Crear
-          </button>
-        </div>
-      </div>
+        </CardContent>
+      </Card>
 
       {/* Tabla */}
-      <div style={{ ...card, overflowX: 'auto' }}>
-        <table style={{ width: '100%', fontSize: '0.83rem', textAlign: 'center', borderCollapse: 'collapse' }}>
-          <thead>
-            <tr style={{ borderBottom: '1px solid var(--border)' }}>
+      <Card>
+        <Table>
+          <TableHeader>
+            <TableRow>
               {['Usuario', 'Rol', 'Creado', ''].map(h => (
-                <th key={h} style={{ padding: '0.65rem 1rem', color: 'var(--text-muted)', fontWeight: 600, fontSize: '0.72rem', textTransform: 'uppercase', letterSpacing: '0.04em' }}>{h}</th>
+                <TableHead key={h}>{h}</TableHead>
               ))}
-            </tr>
-          </thead>
-          <tbody>
+            </TableRow>
+          </TableHeader>
+          <TableBody>
             {vendedores.map(v => (
-              <tr key={v.id} style={{ borderBottom: '1px solid rgba(139,92,246,0.06)' }}
-                onMouseEnter={e => (e.currentTarget.style.background = 'rgba(139,92,246,0.04)')}
-                onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}
-              >
-                <td style={{ padding: '0.7rem 1rem', color: 'var(--text-primary)', fontWeight: 500 }}>{v.nombre}</td>
-                <td style={{ padding: '0.7rem 1rem' }}>
-                  <span style={{
-                    fontSize: '0.72rem', fontWeight: 700, padding: '2px 10px', borderRadius: '999px',
-                    background: v.rol === 'admin' ? 'rgba(248,113,113,0.12)' : 'rgba(139,92,246,0.15)',
-                    color: v.rol === 'admin' ? '#f87171' : '#a78bfa',
-                    border: `1px solid ${v.rol === 'admin' ? 'rgba(248,113,113,0.3)' : 'rgba(139,92,246,0.3)'}`,
-                  }}>
+              <TableRow key={v.id}>
+                <TableCell className="font-medium text-foreground">{v.nombre}</TableCell>
+                <TableCell>
+                  <Badge variant={v.rol === 'admin' ? 'destructive' : 'default'}>
                     {v.rol}
-                  </span>
-                </td>
-                <td style={{ padding: '0.7rem 1rem', color: 'var(--text-secondary)' }}>
+                  </Badge>
+                </TableCell>
+                <TableCell className="text-muted-foreground">
                   {new Date(v.creadoEn).toLocaleDateString('es-AR')}
-                </td>
-                <td style={{ padding: '0.7rem 1rem' }}>
-                  <button
+                </TableCell>
+                <TableCell>
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    className="text-destructive hover:text-destructive hover:bg-destructive/10"
                     onClick={() => eliminar(v.id)}
-                    style={{
-                      background: 'rgba(248,113,113,0.1)', border: '1px solid rgba(248,113,113,0.3)',
-                      color: '#f87171', fontSize: '0.75rem', padding: '0.3rem 0.75rem',
-                      borderRadius: '0.4rem', cursor: 'pointer', fontWeight: 600,
-                    }}
-                    onMouseEnter={e => { e.currentTarget.style.background = 'rgba(248,113,113,0.25)'; }}
-                    onMouseLeave={e => { e.currentTarget.style.background = 'rgba(248,113,113,0.1)'; }}
                   >
+                    <Trash2 className="size-3.5 mr-1.5" />
                     Eliminar
-                  </button>
-                </td>
-              </tr>
+                  </Button>
+                </TableCell>
+              </TableRow>
             ))}
-          </tbody>
-        </table>
-      </div>
+            {vendedores.length === 0 && (
+              <TableRow>
+                <TableCell colSpan={4} className="text-center text-muted-foreground py-10">
+                  No hay vendedores registrados
+                </TableCell>
+              </TableRow>
+            )}
+          </TableBody>
+        </Table>
+      </Card>
     </div>
   );
 }

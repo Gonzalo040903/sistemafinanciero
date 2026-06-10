@@ -2,39 +2,30 @@
 
 import { useEffect, useState } from 'react';
 import toast from 'react-hot-toast';
+import { ArrowLeft, CheckCircle, Clock } from 'lucide-react';
 import { useApi } from '@/lib/useApi';
 import type { Cliente, Prestamo } from '@/types';
-
-const card: React.CSSProperties = {
-  background: 'var(--bg-card)',
-  border: '1px solid var(--border)',
-  borderRadius: '0.875rem',
-  boxShadow: 'var(--glow-purple)',
-};
-
-const inputStyle: React.CSSProperties = {
-  width: '100%',
-  background: 'var(--bg-surface)',
-  border: '1px solid var(--border)',
-  borderRadius: '0.5rem',
-  padding: '0.5rem 0.75rem',
-  fontSize: '0.85rem',
-  color: 'var(--text-primary)',
-  outline: 'none',
-};
-
-const labelStyle: React.CSSProperties = {
-  display: 'block',
-  fontSize: '0.72rem',
-  color: 'var(--text-muted)',
-  marginBottom: '0.25rem',
-  fontWeight: 600,
-  textTransform: 'uppercase',
-  letterSpacing: '0.04em',
-};
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { Badge } from '@/components/ui/badge';
+import { Checkbox } from '@/components/ui/checkbox';
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
+import { CuotasPreview } from '@/components/prestamo/CuotasPreview';
+import { cn } from '@/lib/utils';
 
 function fmt(iso: string) {
   return new Date(iso).toLocaleDateString('es-AR');
+}
+
+function StatCard({ label, value, highlight }: { label: string; value: string; highlight?: boolean }) {
+  return (
+    <div className="rounded-lg bg-secondary/50 border border-border p-3 space-y-1">
+      <p className="text-xs uppercase tracking-wider text-muted-foreground">{label}</p>
+      <p className={cn('text-lg font-bold', highlight ? 'text-green-400' : 'text-foreground')}>{value}</p>
+    </div>
+  );
 }
 
 export default function NuevoCobro() {
@@ -115,246 +106,247 @@ export default function NuevoCobro() {
   );
 
   return (
-    <div style={{ padding: '2rem', color: 'var(--text-primary)', maxWidth: '1200px' }}>
-      <h3 style={{ fontSize: '1.5rem', fontWeight: 800, marginBottom: '0.25rem', letterSpacing: '-0.02em' }}>Nuevo Cobro</h3>
-      <p style={{ fontSize: '0.8rem', color: 'var(--text-muted)', marginBottom: '1.75rem' }}>Gestioná préstamos y pagos de tus clientes</p>
+    <div className="p-4 md:p-6 lg:p-8 max-w-[1200px] space-y-2">
+      <h1 className="text-2xl font-bold tracking-tight">Cobros</h1>
+      <p className="text-sm text-muted-foreground mb-6">Gestioná préstamos y pagos de tus clientes</p>
 
       {/* Tabla de clientes */}
       {!seleccionado && (
-        <div style={card}>
-          <div style={{ padding: '1rem 1.25rem', borderBottom: '1px solid var(--border)' }}>
-            <input
-              style={{ ...inputStyle, maxWidth: '280px' }}
+        <Card>
+          <div className="p-4 border-b border-border">
+            <Input
+              className="max-w-xs bg-secondary/50"
               placeholder="Buscar por nombre o DNI..."
               value={busqueda}
               onChange={e => setBusqueda(e.target.value)}
             />
           </div>
-          <div style={{ overflowX: 'auto' }}>
-            <table style={{ width: '100%', fontSize: '0.83rem', borderCollapse: 'collapse' }}>
-              <thead>
-                <tr style={{ borderBottom: '1px solid var(--border)' }}>
-                  {['Nombre', 'DNI', 'Monto adeudado', 'Cuotas', ''].map(h => (
-                    <th key={h} style={{ padding: '0.65rem 1rem', color: 'var(--text-muted)', fontWeight: 600, fontSize: '0.72rem', textTransform: 'uppercase', textAlign: h === 'Nombre' ? 'left' : 'center' }}>{h}</th>
-                  ))}
-                </tr>
-              </thead>
-              <tbody>
-                {filtrados.map(c => {
-                  const p = c.prestamoActual;
-                  return (
-                    <tr key={c.dni} style={{ borderBottom: '1px solid rgba(139,92,246,0.06)' }}
-                      onMouseEnter={e => (e.currentTarget.style.background = 'rgba(139,92,246,0.04)')}
-                      onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}
-                    >
-                      <td style={{ padding: '0.7rem 1rem', fontWeight: 500, color: 'var(--text-primary)', textAlign: 'left' }}>
-                        {c.apellido}, {c.nombre}
-                      </td>
-                      <td style={{ padding: '0.7rem 1rem', textAlign: 'center', color: 'var(--text-secondary)' }}>{c.dni}</td>
-                      <td style={{ padding: '0.7rem 1rem', textAlign: 'center', color: p ? '#4ade80' : 'var(--text-muted)' }}>
-                        {p ? `$${Number(p.monto_adeudado).toLocaleString('es-AR')}` : '—'}
-                      </td>
-                      <td style={{ padding: '0.7rem 1rem', textAlign: 'center' }}>
-                        {p ? (
-                          <span style={{
-                            fontSize: '0.7rem', fontWeight: 600, padding: '2px 8px', borderRadius: '999px',
-                            background: p.cuotas_pagadas >= p.cuotas_totales ? 'rgba(74,222,128,0.15)' : 'rgba(250,204,21,0.15)',
-                            color: p.cuotas_pagadas >= p.cuotas_totales ? '#4ade80' : '#facc15',
-                            border: `1px solid ${p.cuotas_pagadas >= p.cuotas_totales ? 'rgba(74,222,128,0.3)' : 'rgba(250,204,21,0.3)'}`,
-                          }}>
-                            {p.cuotas_pagadas}/{p.cuotas_totales}
-                          </span>
-                        ) : '—'}
-                      </td>
-                      <td style={{ padding: '0.7rem 1rem', textAlign: 'center' }}>
-                        <button onClick={() => gestionar(c)} style={{
-                          background: 'rgba(139,92,246,0.2)', border: '1px solid rgba(139,92,246,0.4)',
-                          color: '#a78bfa', fontSize: '0.75rem', padding: '0.3rem 0.75rem',
-                          borderRadius: '0.4rem', cursor: 'pointer', fontWeight: 600,
-                          transition: 'all 0.15s',
-                        }}
-                          onMouseEnter={e => { e.currentTarget.style.background = 'rgba(139,92,246,0.35)'; e.currentTarget.style.color = '#c4b5fd'; }}
-                          onMouseLeave={e => { e.currentTarget.style.background = 'rgba(139,92,246,0.2)'; e.currentTarget.style.color = '#a78bfa'; }}
-                        >
-                          Gestionar
-                        </button>
-                      </td>
-                    </tr>
-                  );
-                })}
-              </tbody>
-            </table>
-          </div>
-        </div>
+          <Table>
+            <TableHeader>
+              <TableRow>
+                {['Nombre', 'DNI', 'Monto adeudado', 'Cuotas', ''].map(h => (
+                  <TableHead key={h}>{h}</TableHead>
+                ))}
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              {filtrados.map(c => {
+                const p = c.prestamoActual;
+                return (
+                  <TableRow key={c.dni}>
+                    <TableCell className="font-medium text-foreground">{c.apellido}, {c.nombre}</TableCell>
+                    <TableCell className="text-muted-foreground">{c.dni}</TableCell>
+                    <TableCell className={cn('font-semibold', p ? 'text-green-400' : 'text-muted-foreground')}>
+                      {p ? `$${Number(p.monto_adeudado).toLocaleString('es-AR')}` : '—'}
+                    </TableCell>
+                    <TableCell>
+                      {p ? (
+                        <Badge variant={p.cuotas_pagadas >= p.cuotas_totales ? 'success' : 'warning'}>
+                          {p.cuotas_pagadas}/{p.cuotas_totales}
+                        </Badge>
+                      ) : '—'}
+                    </TableCell>
+                    <TableCell>
+                      <Button variant="outline" size="sm" onClick={() => gestionar(c)}>
+                        Gestionar
+                      </Button>
+                    </TableCell>
+                  </TableRow>
+                );
+              })}
+              {filtrados.length === 0 && (
+                <TableRow>
+                  <TableCell colSpan={5} className="text-center text-muted-foreground py-10">
+                    No hay clientes
+                  </TableCell>
+                </TableRow>
+              )}
+            </TableBody>
+          </Table>
+        </Card>
       )}
 
-      {/* Panel del cliente */}
+      {/* Panel del cliente seleccionado */}
       {seleccionado && (
-        <>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '1rem', marginBottom: '1.25rem' }}>
-            <button onClick={volver} style={{
-              background: 'rgba(139,92,246,0.1)', border: '1px solid var(--border)',
-              color: '#a78bfa', fontSize: '0.8rem', padding: '0.35rem 0.8rem',
-              borderRadius: '0.4rem', cursor: 'pointer',
-            }}>
-              ← Volver
-            </button>
-            <h4 style={{ fontSize: '1.05rem', fontWeight: 600, color: 'var(--text-primary)' }}>
-              {seleccionado.nombre} {seleccionado.apellido} — DNI {seleccionado.dni}
-            </h4>
+        <div className="space-y-4">
+          <div className="flex items-center gap-3">
+            <Button variant="ghost" size="sm" onClick={volver}>
+              <ArrowLeft className="size-4" />
+              Volver
+            </Button>
+            <h2 className="text-base font-semibold text-foreground">
+              {seleccionado.nombre} {seleccionado.apellido}
+              <span className="text-muted-foreground text-sm font-normal ml-2">DNI {seleccionado.dni}</span>
+            </h2>
           </div>
 
           {/* Préstamo activo */}
           {prestamo && !nuevoModo && (
-            <div style={{ ...card, padding: '1.5rem', marginBottom: '1rem' }}>
-              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '1.25rem' }}>
-                <span style={{ fontWeight: 600, color: 'var(--text-primary)' }}>Préstamo activo</span>
-                <span style={{
-                  fontSize: '0.72rem', fontWeight: 700, padding: '2px 10px', borderRadius: '999px',
-                  background: pagado ? 'rgba(74,222,128,0.15)' : 'rgba(250,204,21,0.15)',
-                  color: pagado ? '#4ade80' : '#facc15',
-                  border: `1px solid ${pagado ? 'rgba(74,222,128,0.3)' : 'rgba(250,204,21,0.3)'}`,
-                }}>
-                  {pagado ? 'Saldado' : 'En curso'}
-                </span>
-              </div>
-              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '1rem', marginBottom: '1.25rem' }}>
-                {[
-                  { label: 'Monto original', value: `$${Number(prestamo.monto).toLocaleString('es-AR')}` },
-                  { label: 'Monto final',    value: `$${Number(prestamo.monto_final).toLocaleString('es-AR')}` },
-                  { label: 'Monto adeudado', value: `$${Number(prestamo.monto_adeudado).toLocaleString('es-AR')}`, highlight: true },
-                  { label: 'Cuota semanal',  value: `$${cuotaValor.toLocaleString('es-AR')}` },
-                ].map(s => (
-                  <div key={s.label} style={{ background: 'var(--bg-surface)', borderRadius: '0.5rem', padding: '0.75rem 1rem', border: '1px solid rgba(139,92,246,0.1)' }}>
-                    <div style={{ fontSize: '0.7rem', color: 'var(--text-muted)', marginBottom: '0.25rem', textTransform: 'uppercase', letterSpacing: '0.04em' }}>{s.label}</div>
-                    <div style={{ fontWeight: 700, fontSize: '1.05rem', color: s.highlight ? '#4ade80' : 'var(--text-primary)' }}>{s.value}</div>
-                  </div>
-                ))}
-              </div>
-              <div style={{ display: 'flex', flexWrap: 'wrap', alignItems: 'flex-end', gap: '1rem' }}>
-                <div>
-                  <label style={labelStyle}>Cuotas pagadas</label>
-                  <input
-                    style={{ ...inputStyle, width: '7rem' }}
-                    type="number"
-                    value={cuotasPagadas}
-                    min={prestamo.cuotas_pagadas}
-                    max={prestamo.cuotas_totales}
-                    onChange={e => setCuotasPagadas(Number(e.target.value))}
-                  />
-                  <div style={{ fontSize: '0.7rem', color: 'var(--text-muted)', marginTop: '0.2rem' }}>
-                    {prestamo.cuotas_pagadas}/{prestamo.cuotas_totales} pagadas
-                  </div>
+            <Card>
+              <CardHeader className="pb-3">
+                <div className="flex items-center justify-between">
+                  <CardTitle className="text-sm font-semibold text-muted-foreground uppercase tracking-wider">Préstamo activo</CardTitle>
+                  <Badge variant={pagado ? 'success' : 'warning'}>
+                    {pagado ? <><CheckCircle className="size-3 mr-1" />Saldado</> : <><Clock className="size-3 mr-1" />En curso</>}
+                  </Badge>
                 </div>
-                <button onClick={registrarPago} style={{
-                  background: 'rgba(74,222,128,0.15)', border: '1px solid rgba(74,222,128,0.3)',
-                  color: '#4ade80', fontWeight: 600, padding: '0.5rem 1.25rem',
-                  borderRadius: '0.5rem', cursor: 'pointer', fontSize: '0.85rem',
-                }}>
-                  Registrar pago
-                </button>
-                <button
-                  onClick={() => setNuevoModo(true)}
-                  disabled={!pagado}
-                  title={!pagado ? `Saldo pendiente: $${Number(prestamo.monto_adeudado).toLocaleString('es-AR')}` : ''}
-                  style={{
-                    background: pagado ? 'rgba(139,92,246,0.2)' : 'rgba(100,116,139,0.1)',
-                    border: `1px solid ${pagado ? 'rgba(139,92,246,0.4)' : 'rgba(100,116,139,0.2)'}`,
-                    color: pagado ? '#a78bfa' : 'var(--text-muted)',
-                    fontWeight: 600, padding: '0.5rem 1.25rem',
-                    borderRadius: '0.5rem', cursor: pagado ? 'pointer' : 'not-allowed',
-                    fontSize: '0.85rem', opacity: pagado ? 1 : 0.5,
-                  }}
-                >
-                  Nuevo préstamo
-                </button>
-              </div>
-            </div>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+                  <StatCard label="Monto original" value={`$${Number(prestamo.monto).toLocaleString('es-AR')}`} />
+                  <StatCard label="Monto final" value={`$${Number(prestamo.monto_final).toLocaleString('es-AR')}`} />
+                  <StatCard label="Monto adeudado" value={`$${Number(prestamo.monto_adeudado).toLocaleString('es-AR')}`} highlight />
+                  <StatCard label="Cuota semanal" value={`$${cuotaValor.toLocaleString('es-AR')}`} />
+                </div>
+                <div className="flex flex-wrap items-end gap-4 pt-2">
+                  <div className="space-y-1.5">
+                    <Label className="text-xs uppercase tracking-wider text-muted-foreground">Cuotas pagadas</Label>
+                    <Input
+                      type="number"
+                      className="w-28 bg-secondary/50"
+                      value={cuotasPagadas}
+                      min={prestamo.cuotas_pagadas}
+                      max={prestamo.cuotas_totales}
+                      onChange={e => setCuotasPagadas(Number(e.target.value))}
+                    />
+                    <p className="text-xs text-muted-foreground">{prestamo.cuotas_pagadas}/{prestamo.cuotas_totales} pagadas</p>
+                  </div>
+                  <Button variant="outline" className="text-green-400 border-green-500/30 hover:bg-green-500/10 hover:text-green-300" onClick={registrarPago}>
+                    Registrar pago
+                  </Button>
+                  <Button
+                    variant="outline"
+                    disabled={!pagado}
+                    title={!pagado ? `Saldo pendiente: $${Number(prestamo.monto_adeudado).toLocaleString('es-AR')}` : ''}
+                    onClick={() => setNuevoModo(true)}
+                  >
+                    Nuevo préstamo
+                  </Button>
+                </div>
+              </CardContent>
+            </Card>
+          )}
+
+          {/* Timeline de cuotas del préstamo activo */}
+          {prestamo && !nuevoModo && (
+            <CuotasPreview
+              fechaInicio={prestamo.fecha_inicio}
+              semanas={prestamo.cuotas_totales}
+              cuotasPagadas={prestamo.cuotas_pagadas}
+              montoCuota={prestamo.monto_final / prestamo.cuotas_totales}
+            />
           )}
 
           {/* Sin préstamo activo */}
           {!prestamo && !nuevoModo && (
-            <div style={{ ...card, padding: '1.5rem', marginBottom: '1rem' }}>
-              <p style={{ color: 'var(--text-muted)', marginBottom: '1rem', fontSize: '0.9rem' }}>Este cliente no tiene préstamo activo.</p>
-              <button onClick={() => setNuevoModo(true)} style={{
-                background: 'rgba(139,92,246,0.2)', border: '1px solid rgba(139,92,246,0.4)',
-                color: '#a78bfa', fontWeight: 600, padding: '0.5rem 1.25rem',
-                borderRadius: '0.5rem', cursor: 'pointer', fontSize: '0.85rem',
-              }}>
-                Crear préstamo
-              </button>
-            </div>
+            <Card>
+              <CardContent className="p-6">
+                <p className="text-muted-foreground text-sm mb-4">Este cliente no tiene préstamo activo.</p>
+                <Button onClick={() => setNuevoModo(true)}>Crear préstamo</Button>
+              </CardContent>
+            </Card>
           )}
 
           {/* Formulario nuevo préstamo */}
           {nuevoModo && (
-            <div style={{ ...card, padding: '1.5rem', marginBottom: '1rem' }}>
-              <h5 style={{ fontWeight: 600, color: 'var(--text-primary)', marginBottom: '1.25rem' }}>Nuevo préstamo</h5>
-              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '1rem', marginBottom: '1.25rem' }}>
-                <div><label style={labelStyle}>Monto</label><input style={inputStyle} type="number" value={nMonto} onChange={e => setNMonto(e.target.value)} /></div>
-                <div><label style={labelStyle}>% Intereses</label><input style={inputStyle} type="number" value={nIntereses} onChange={e => setNIntereses(e.target.value)} /></div>
-                <div>
-                  <label style={labelStyle}>Semanas</label>
-                  <select style={{ ...inputStyle }} value={nSemanas} onChange={e => setNSemanas(Number(e.target.value))}>
-                    {[...Array(12)].map((_, i) => <option key={i + 1} value={i + 1}>{i + 1} semana{i > 0 ? 's' : ''}</option>)}
-                  </select>
+            <Card>
+              <CardHeader className="pb-3">
+                <CardTitle className="text-sm font-semibold text-muted-foreground uppercase tracking-wider">Nuevo préstamo</CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
+                  <div className="space-y-1.5">
+                    <Label className="text-xs uppercase tracking-wider text-muted-foreground">Monto</Label>
+                    <Input className="bg-secondary/50" type="number" value={nMonto} onChange={e => setNMonto(e.target.value)} />
+                  </div>
+                  <div className="space-y-1.5">
+                    <Label className="text-xs uppercase tracking-wider text-muted-foreground">% Intereses</Label>
+                    <Input className="bg-secondary/50" type="number" value={nIntereses} onChange={e => setNIntereses(e.target.value)} />
+                  </div>
+                  <div className="space-y-1.5">
+                    <Label className="text-xs uppercase tracking-wider text-muted-foreground">Semanas</Label>
+                    <select
+                      className="flex h-9 w-full rounded-md border border-input bg-secondary/50 px-3 py-1 text-sm focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring"
+                      value={nSemanas}
+                      onChange={e => setNSemanas(Number(e.target.value))}
+                    >
+                      {[...Array(12)].map((_, i) => (
+                        <option key={i + 1} value={i + 1}>{i + 1} semana{i > 0 ? 's' : ''}</option>
+                      ))}
+                    </select>
+                  </div>
+                  <div className="space-y-1.5">
+                    <Label className="text-xs uppercase tracking-wider text-muted-foreground">Fecha inicio</Label>
+                    <Input className="bg-secondary/50" type="date" value={nFecha} onChange={e => setNFecha(e.target.value)} />
+                  </div>
+                  <div className="space-y-1.5">
+                    <Label className="text-xs uppercase tracking-wider text-muted-foreground">Vendedor</Label>
+                    <Input className="bg-secondary/50" value={nVendedor} onChange={e => setNVendedor(e.target.value)} />
+                  </div>
+                  <div className="flex items-end pb-1">
+                    <label className="flex items-center gap-2 text-sm text-muted-foreground cursor-pointer">
+                      <Checkbox checked={nSoloInteres} onCheckedChange={v => setNSoloInteres(!!v)} />
+                      Solo interés
+                    </label>
+                  </div>
                 </div>
-                <div><label style={labelStyle}>Fecha inicio</label><input style={inputStyle} type="date" value={nFecha} onChange={e => setNFecha(e.target.value)} /></div>
-                <div><label style={labelStyle}>Vendedor</label><input style={inputStyle} value={nVendedor} onChange={e => setNVendedor(e.target.value)} /></div>
-                <div style={{ display: 'flex', alignItems: 'flex-end', paddingBottom: '0.25rem' }}>
-                  <label style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', fontSize: '0.85rem', color: 'var(--text-secondary)', cursor: 'pointer' }}>
-                    <input type="checkbox" checked={nSoloInteres} onChange={e => setNSoloInteres(e.target.checked)} style={{ width: '1rem', height: '1rem', accentColor: '#8b5cf6' }} />
-                    Solo interés
-                  </label>
+                {/* Preview de cuotas */}
+                {nFecha && nSemanas >= 1 && (
+                  <CuotasPreview
+                    fechaInicio={nFecha}
+                    semanas={nSemanas}
+                    montoCuota={nMonto && nIntereses
+                      ? (() => {
+                          const monto = Number(nMonto);
+                          const intereses = Number(nIntereses);
+                          const mf = nSoloInteres ? monto * intereses / 100 : monto + monto * intereses / 100;
+                          return mf / nSemanas;
+                        })()
+                      : undefined
+                    }
+                  />
+                )}
+
+                <div className="flex gap-2 pt-2">
+                  <Button variant="outline" className="text-green-400 border-green-500/30 hover:bg-green-500/10" onClick={registrarNuevo}>
+                    Confirmar
+                  </Button>
+                  <Button variant="ghost" onClick={() => setNuevoModo(false)}>Cancelar</Button>
                 </div>
-              </div>
-              <div style={{ display: 'flex', gap: '0.75rem' }}>
-                <button onClick={registrarNuevo} style={{
-                  background: 'rgba(74,222,128,0.15)', border: '1px solid rgba(74,222,128,0.3)',
-                  color: '#4ade80', fontWeight: 600, padding: '0.5rem 1.25rem',
-                  borderRadius: '0.5rem', cursor: 'pointer', fontSize: '0.85rem',
-                }}>Confirmar</button>
-                <button onClick={() => setNuevoModo(false)} style={{
-                  background: 'rgba(100,116,139,0.1)', border: '1px solid rgba(100,116,139,0.2)',
-                  color: 'var(--text-muted)', fontWeight: 600, padding: '0.5rem 1.25rem',
-                  borderRadius: '0.5rem', cursor: 'pointer', fontSize: '0.85rem',
-                }}>Cancelar</button>
-              </div>
-            </div>
+              </CardContent>
+            </Card>
           )}
 
           {/* Historial */}
           {historial.length > 0 && (
-            <div style={card}>
-              <div style={{ padding: '1rem 1.25rem', borderBottom: '1px solid var(--border)', fontSize: '0.85rem', fontWeight: 600, color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
-                Historial de préstamos
-              </div>
-              <div style={{ overflowX: 'auto' }}>
-                <table style={{ width: '100%', fontSize: '0.82rem', textAlign: 'center', borderCollapse: 'collapse' }}>
-                  <thead>
-                    <tr style={{ borderBottom: '1px solid var(--border)' }}>
-                      {['Fecha', 'Monto', 'Monto final', 'Intereses', 'Cuotas', 'Vendedor'].map(h => (
-                        <th key={h} style={{ padding: '0.65rem 1rem', color: 'var(--text-muted)', fontWeight: 600, fontSize: '0.7rem', textTransform: 'uppercase' }}>{h}</th>
-                      ))}
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {historial.map(h => (
-                      <tr key={h.id} style={{ borderBottom: '1px solid rgba(139,92,246,0.06)' }}>
-                        <td style={{ padding: '0.65rem 1rem', color: 'var(--text-secondary)' }}>{fmt(h.fecha_inicio)}</td>
-                        <td style={{ padding: '0.65rem 1rem', color: 'var(--text-secondary)' }}>${Number(h.monto).toLocaleString('es-AR')}</td>
-                        <td style={{ padding: '0.65rem 1rem', color: 'var(--text-secondary)' }}>${Number(h.monto_final).toLocaleString('es-AR')}</td>
-                        <td style={{ padding: '0.65rem 1rem', color: 'var(--text-secondary)' }}>{h.intereses}%{h.solo_interes ? ' (solo int.)' : ''}</td>
-                        <td style={{ padding: '0.65rem 1rem', color: 'var(--text-secondary)' }}>{h.cuotas_pagadas}/{h.cuotas_totales}</td>
-                        <td style={{ padding: '0.65rem 1rem', color: 'var(--text-secondary)' }}>{h.vendedor}</td>
-                      </tr>
+            <Card>
+              <CardHeader className="pb-3">
+                <CardTitle className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">Historial de préstamos</CardTitle>
+              </CardHeader>
+              <Table>
+                <TableHeader>
+                  <TableRow>
+                    {['Fecha', 'Monto', 'Monto final', 'Intereses', 'Cuotas', 'Vendedor'].map(h => (
+                      <TableHead key={h}>{h}</TableHead>
                     ))}
-                  </tbody>
-                </table>
-              </div>
-            </div>
+                  </TableRow>
+                </TableHeader>
+                <TableBody>
+                  {historial.map(h => (
+                    <TableRow key={h.id}>
+                      <TableCell className="text-muted-foreground">{fmt(h.fecha_inicio)}</TableCell>
+                      <TableCell className="text-muted-foreground">${Number(h.monto).toLocaleString('es-AR')}</TableCell>
+                      <TableCell className="text-muted-foreground">${Number(h.monto_final).toLocaleString('es-AR')}</TableCell>
+                      <TableCell className="text-muted-foreground">{h.intereses}%{h.solo_interes ? ' (solo int.)' : ''}</TableCell>
+                      <TableCell className="text-muted-foreground">{h.cuotas_pagadas}/{h.cuotas_totales}</TableCell>
+                      <TableCell className="text-muted-foreground">{h.vendedor}</TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+            </Card>
           )}
-        </>
+        </div>
       )}
     </div>
   );

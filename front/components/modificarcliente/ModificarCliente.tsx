@@ -4,8 +4,15 @@ import { useEffect, useState } from 'react';
 import { Formik, Form, Field, ErrorMessage, FormikHelpers } from 'formik';
 import * as Yup from 'yup';
 import toast from 'react-hot-toast';
+import { Pencil } from 'lucide-react';
 import { useApi } from '@/lib/useApi';
 import type { Cliente } from '@/types';
+import { Card } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '@/components/ui/dialog';
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 
 const schema = Yup.object({
   formNombre:   Yup.string().min(2).max(20).required('Obligatorio'),
@@ -20,43 +27,14 @@ const schema = Yup.object({
 
 type Values = Yup.InferType<typeof schema>;
 
-const card: React.CSSProperties = {
-  background: 'var(--bg-card)',
-  border: '1px solid var(--border)',
-  borderRadius: '0.875rem',
-  boxShadow: 'var(--glow-purple)',
-  overflowX: 'auto',
-};
-
-const inputStyle: React.CSSProperties = {
-  width: '100%',
-  background: 'var(--bg-surface)',
-  border: '1px solid var(--border)',
-  borderRadius: '0.5rem',
-  padding: '0.5rem 0.75rem',
-  fontSize: '0.85rem',
-  color: 'var(--text-primary)',
-  outline: 'none',
-};
-
-const labelStyle: React.CSSProperties = {
-  display: 'block',
-  fontSize: '0.7rem',
-  color: 'var(--text-muted)',
-  marginBottom: '0.25rem',
-  fontWeight: 600,
-  textTransform: 'uppercase',
-  letterSpacing: '0.04em',
-};
-
-function CustomField({ label, id, type = 'text' }: { label: string; id: string; type?: string }) {
+function DialogField({ label, id }: { label: string; id: string }) {
   return (
-    <div>
-      <label style={labelStyle}>{label}</label>
+    <div className="space-y-1.5">
+      <Label htmlFor={id} className="text-xs uppercase tracking-wider text-muted-foreground">{label}</Label>
       <Field name={id}>
-        {({ field }: any) => <input style={inputStyle} id={id} type={type} {...field} />}
+        {({ field }: any) => <Input id={id} className="bg-secondary/50" {...field} />}
       </Field>
-      <ErrorMessage name={id} render={msg => <div style={{ color: '#f87171', fontSize: '0.7rem', marginTop: '0.2rem' }}>{msg}</div>} />
+      <ErrorMessage name={id} render={msg => <p className="text-xs text-destructive">{msg}</p>} />
     </div>
   );
 }
@@ -91,87 +69,64 @@ export default function ModificarCliente() {
   };
 
   return (
-    <div style={{ padding: '2rem', color: 'var(--text-primary)', maxWidth: '1300px' }}>
-      <h3 style={{ fontSize: '1.5rem', fontWeight: 800, marginBottom: '0.25rem', letterSpacing: '-0.02em' }}>Modificar Clientes</h3>
-      <p style={{ fontSize: '0.8rem', color: 'var(--text-muted)', marginBottom: '1.75rem' }}>Editá los datos personales de un cliente</p>
-      <div style={card}>
-        <table style={{ width: '100%', fontSize: '0.83rem', textAlign: 'center', borderCollapse: 'collapse' }}>
-          <thead>
-            <tr style={{ borderBottom: '1px solid var(--border)' }}>
-              {['Nombre', 'DNI', 'Dirección', 'Teléfono', 'Teléfono 2', 'Teléfono 3', ''].map(h => (
-                <th key={h} style={{ padding: '0.65rem 1rem', color: 'var(--text-muted)', fontWeight: 600, fontSize: '0.72rem', textTransform: 'uppercase', letterSpacing: '0.04em' }}>{h}</th>
-              ))}
-            </tr>
-          </thead>
-          <tbody>
-            {clientes.map(c => (
-              <tr key={c.dni} style={{ borderBottom: '1px solid rgba(139,92,246,0.06)' }}
-                onMouseEnter={e => (e.currentTarget.style.background = 'rgba(139,92,246,0.04)')}
-                onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}
-              >
-                <td style={{ padding: '0.7rem 1rem', color: 'var(--text-primary)' }}>{c.nombre} {c.apellido}</td>
-                <td style={{ padding: '0.7rem 1rem', color: 'var(--text-secondary)' }}>{c.dni}</td>
-                <td style={{ padding: '0.7rem 1rem', color: 'var(--text-secondary)' }}>{c.direccion}</td>
-                <td style={{ padding: '0.7rem 1rem', color: 'var(--text-secondary)' }}>{c.telefono_personal}</td>
-                <td style={{ padding: '0.7rem 1rem', color: 'var(--text-secondary)' }}>{c.telefono_referencia}</td>
-                <td style={{ padding: '0.7rem 1rem', color: 'var(--text-secondary)' }}>{c.telefono_tres}</td>
-                <td style={{ padding: '0.7rem 1rem' }}>
-                  <button
-                    onClick={() => { setSelected(c); setOpen(true); }}
-                    style={{
-                      background: 'rgba(250,204,21,0.1)', border: '1px solid rgba(250,204,21,0.3)',
-                      color: '#facc15', fontSize: '0.75rem', padding: '0.3rem 0.75rem',
-                      borderRadius: '0.4rem', cursor: 'pointer', fontWeight: 600,
-                    }}
-                    onMouseEnter={e => { e.currentTarget.style.background = 'rgba(250,204,21,0.22)'; }}
-                    onMouseLeave={e => { e.currentTarget.style.background = 'rgba(250,204,21,0.1)'; }}
-                  >
-                    Modificar
-                  </button>
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      </div>
+    <div className="p-4 md:p-6 lg:p-8 max-w-[1300px] space-y-2">
+      <h1 className="text-2xl font-bold tracking-tight">Modificar Clientes</h1>
+      <p className="text-sm text-muted-foreground mb-6">Editá los datos personales de un cliente</p>
 
-      {/* Modal */}
-      {open && selected && (
-        <div style={{
-          position: 'fixed', inset: 0, zIndex: 50,
-          display: 'flex', alignItems: 'center', justifyContent: 'center',
-          backdropFilter: 'blur(6px)', WebkitBackdropFilter: 'blur(6px)',
-        }}>
-          <div style={{ position: 'absolute', inset: 0, background: 'rgba(5,5,15,0.75)' }} onClick={() => setOpen(false)} />
-          <div style={{
-            position: 'relative', zIndex: 10,
-            background: 'linear-gradient(145deg, #1a1a3e, #111127)',
-            border: '1px solid rgba(139,92,246,0.35)',
-            boxShadow: '0 0 0 1px rgba(139,92,246,0.1), 0 24px 60px rgba(0,0,0,0.7), 0 0 40px rgba(139,92,246,0.15)',
-            borderRadius: '1.25rem',
-            width: '100%', maxWidth: '38rem', margin: '0 1rem',
-            animation: 'none',
-          }}>
-            <div style={{
-              display: 'flex', alignItems: 'center', justifyContent: 'space-between',
-              padding: '1.35rem 1.75rem',
-              borderBottom: '1px solid rgba(139,92,246,0.12)',
-              background: 'rgba(139,92,246,0.04)',
-              borderRadius: '1.25rem 1.25rem 0 0',
-            }}>
-              <div>
-                <div style={{ fontWeight: 700, color: 'var(--text-primary)', fontSize: '1rem' }}>Modificar Cliente</div>
-                <div style={{ fontSize: '0.72rem', color: 'var(--text-muted)', marginTop: '0.1rem' }}>
-                  {selected.nombre} {selected.apellido} — DNI {selected.dni}
-                </div>
-              </div>
-              <button onClick={() => setOpen(false)} style={{
-                background: 'rgba(248,113,113,0.1)', border: '1px solid rgba(248,113,113,0.2)',
-                color: '#f87171', cursor: 'pointer',
-                width: '2rem', height: '2rem', borderRadius: '50%',
-                fontSize: '1rem', display: 'flex', alignItems: 'center', justifyContent: 'center',
-              }}>&times;</button>
-            </div>
+      <Card>
+        <Table>
+          <TableHeader>
+            <TableRow>
+              {['Nombre', 'DNI', 'Dirección', 'Teléfono', 'Tel. 2', 'Tel. 3', ''].map(h => (
+                <TableHead key={h}>{h}</TableHead>
+              ))}
+            </TableRow>
+          </TableHeader>
+          <TableBody>
+            {clientes.map(c => (
+              <TableRow key={c.dni}>
+                <TableCell className="font-medium text-foreground">{c.nombre} {c.apellido}</TableCell>
+                <TableCell className="text-muted-foreground">{c.dni}</TableCell>
+                <TableCell className="text-muted-foreground">{c.direccion}</TableCell>
+                <TableCell className="text-muted-foreground">{c.telefono_personal}</TableCell>
+                <TableCell className="text-muted-foreground">{c.telefono_referencia ?? '—'}</TableCell>
+                <TableCell className="text-muted-foreground">{c.telefono_tres ?? '—'}</TableCell>
+                <TableCell>
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    className="text-yellow-400 hover:text-yellow-300 hover:bg-yellow-400/10"
+                    onClick={() => { setSelected(c); setOpen(true); }}
+                  >
+                    <Pencil className="size-3.5 mr-1.5" />
+                    Modificar
+                  </Button>
+                </TableCell>
+              </TableRow>
+            ))}
+            {clientes.length === 0 && (
+              <TableRow>
+                <TableCell colSpan={7} className="text-center text-muted-foreground py-10">
+                  No hay clientes registrados
+                </TableCell>
+              </TableRow>
+            )}
+          </TableBody>
+        </Table>
+      </Card>
+
+      <Dialog open={open} onOpenChange={setOpen}>
+        <DialogContent className="max-w-lg">
+          <DialogHeader>
+            <DialogTitle>Modificar Cliente</DialogTitle>
+            {selected && (
+              <p className="text-xs text-muted-foreground">
+                {selected.nombre} {selected.apellido} — DNI {selected.dni}
+              </p>
+            )}
+          </DialogHeader>
+
+          {selected && (
             <Formik
               enableReinitialize
               initialValues={{
@@ -188,48 +143,25 @@ export default function ModificarCliente() {
               onSubmit={submit}
             >
               <Form>
-                <div style={{ padding: '1.5rem 1.75rem', display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.875rem 1.25rem' }}>
-                  <CustomField label="Nombre" id="formNombre" />
-                  <CustomField label="Apellido" id="formApellido" />
-                  <CustomField label="DNI" id="formDni" />
-                  <CustomField label="Teléfono" id="formTel" />
-                  <CustomField label="Teléfono 2" id="formTel2" />
-                  <CustomField label="Teléfono 3" id="formTel3" />
-                  <div style={{ gridColumn: '1 / -1' }}><CustomField label="Dirección" id="formDirec" /></div>
-                  <div style={{ gridColumn: '1 / -1' }}><CustomField label="Google Maps" id="formMaps" /></div>
+                <div className="grid grid-cols-2 gap-3 py-2">
+                  <DialogField label="Nombre" id="formNombre" />
+                  <DialogField label="Apellido" id="formApellido" />
+                  <DialogField label="DNI" id="formDni" />
+                  <DialogField label="Teléfono" id="formTel" />
+                  <DialogField label="Teléfono 2" id="formTel2" />
+                  <DialogField label="Teléfono 3" id="formTel3" />
+                  <div className="col-span-2"><DialogField label="Dirección" id="formDirec" /></div>
+                  <div className="col-span-2"><DialogField label="Google Maps" id="formMaps" /></div>
                 </div>
-                <div style={{ padding: '1.25rem 1.75rem', borderTop: '1px solid rgba(139,92,246,0.12)', display: 'flex', gap: '0.75rem' }}>
-                  <button
-                    type="submit"
-                    style={{
-                      flex: 1,
-                      background: 'linear-gradient(135deg, #7c3aed, #5b21b6)',
-                      boxShadow: '0 4px 20px rgba(124,58,237,0.4)',
-                      color: '#fff', fontWeight: 700,
-                      padding: '0.65rem', borderRadius: '0.6rem',
-                      border: 'none', cursor: 'pointer', fontSize: '0.9rem',
-                      letterSpacing: '0.02em',
-                    }}
-                  >
-                    Guardar Cambios
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => setOpen(false)}
-                    style={{
-                      padding: '0.65rem 1.25rem', borderRadius: '0.6rem',
-                      background: 'rgba(100,116,139,0.1)', border: '1px solid rgba(100,116,139,0.2)',
-                      color: 'var(--text-muted)', cursor: 'pointer', fontSize: '0.85rem',
-                    }}
-                  >
-                    Cancelar
-                  </button>
-                </div>
+                <DialogFooter className="mt-4">
+                  <Button type="button" variant="ghost" onClick={() => setOpen(false)}>Cancelar</Button>
+                  <Button type="submit">Guardar cambios</Button>
+                </DialogFooter>
               </Form>
             </Formik>
-          </div>
-        </div>
-      )}
+          )}
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }

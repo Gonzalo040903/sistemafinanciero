@@ -5,190 +5,178 @@ import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { useClerk, useUser } from '@clerk/nextjs';
 import {
-  FaBars, FaTimes, FaChartBar, FaUserPlus, FaUserMinus,
-  FaUserEdit, FaMoneyBillWave, FaUsers, FaSignOutAlt,
-  FaChevronDown, FaChevronUp,
-} from 'react-icons/fa';
+  LayoutDashboard, UserPlus, UserMinus, UserCog,
+  DollarSign, Users, LogOut, Menu, ChevronDown, ChevronRight,
+  Banknote, BarChart2, CalendarDays,
+} from 'lucide-react';
+import { cn } from '@/lib/utils';
+import { Button } from '@/components/ui/button';
+import { Badge } from '@/components/ui/badge';
+import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet';
 
 const navLinks = [
-  { href: '/panel', label: 'Panel de control', icon: <FaChartBar /> },
+  { href: '/panel',      label: 'Panel de control', icon: LayoutDashboard },
+  { href: '/balance',    label: 'Balance',           icon: BarChart2 },
+  { href: '/calendario', label: 'Calendario',        icon: CalendarDays },
   {
-    label: 'Gestión Clientes', icon: <FaUsers />,
+    label: 'Gestión Clientes', icon: Users,
     children: [
-      { href: '/agregar-cliente',   label: 'Agregar Cliente',   icon: <FaUserPlus /> },
-      { href: '/eliminar-cliente',  label: 'Eliminar Cliente',  icon: <FaUserMinus /> },
-      { href: '/modificar-cliente', label: 'Modificar Cliente', icon: <FaUserEdit /> },
+      { href: '/agregar-cliente',   label: 'Agregar Cliente',   icon: UserPlus },
+      { href: '/eliminar-cliente',  label: 'Eliminar Cliente',  icon: UserMinus },
+      { href: '/modificar-cliente', label: 'Modificar Cliente', icon: UserCog },
     ],
   },
-  { href: '/nuevo-cobro', label: 'Nuevo Cobro', icon: <FaMoneyBillWave /> },
+  { href: '/nuevo-cobro', label: 'Cobros', icon: DollarSign },
 ];
 
-const activeStyle: React.CSSProperties = {
-  color: '#a78bfa',
-  background: 'rgba(139,92,246,0.15)',
-  borderLeft: '3px solid #8b5cf6',
-  boxShadow: 'inset 0 0 12px rgba(139,92,246,0.08)',
-};
-
-const inactiveStyle: React.CSSProperties = {
-  color: 'rgba(203,213,225,0.75)',
-  background: 'none',
-  borderLeft: '3px solid transparent',
-};
-
-export default function Sidebar() {
+function NavContent({ onNavigate }: { onNavigate?: () => void }) {
   const pathname = usePathname();
   const { signOut } = useClerk();
   const { user } = useUser();
-  const [mobileOpen, setMobileOpen] = useState(false);
   const [clientesOpen, setClientesOpen] = useState(false);
 
   const rol = (user?.publicMetadata as { rol?: string })?.rol;
   const isAdmin = rol === 'admin';
-  const handleLogout = () => signOut({ redirectUrl: '/sign-in' });
 
-  const linkStyle = (href: string): React.CSSProperties => ({
-    display: 'flex', alignItems: 'center', gap: '0.75rem',
-    padding: '0.7rem 1.5rem',
-    textDecoration: 'none', fontSize: '0.9rem',
-    transition: 'all 0.15s',
-    ...(pathname === href ? activeStyle : inactiveStyle),
-  });
+  const isActive = (href: string) => pathname === href;
+  const isGroupActive = (children: { href: string }[]) => children.some(c => pathname === c.href);
 
-  const NavContent = () => (
-    <div style={{ display: 'flex', flexDirection: 'column', height: '100%', padding: '0.5rem 0' }}>
+  return (
+    <div className="flex flex-col h-full">
       {/* Logo */}
-      <div style={{ padding: '1.25rem 1.5rem', borderBottom: '1px solid rgba(139,92,246,0.15)', marginBottom: '0.75rem' }}>
-        <div style={{
-          fontSize: '1.15rem', fontWeight: 700, letterSpacing: '-0.02em',
-          background: 'linear-gradient(135deg, #a78bfa, #22d3ee)',
-          WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent',
-        }}>
-          FinancieraApp
-        </div>
-        <div style={{ fontSize: '0.75rem', color: 'var(--text-muted)', marginTop: '0.15rem' }}>
-          {user?.username || user?.firstName || ''}
-          {isAdmin && (
-            <span style={{
-              marginLeft: '0.5rem', fontSize: '0.65rem', fontWeight: 600,
-              background: 'rgba(139,92,246,0.25)', color: '#a78bfa',
-              padding: '1px 6px', borderRadius: '999px', border: '1px solid rgba(139,92,246,0.3)',
-            }}>admin</span>
-          )}
+      <div className="px-4 py-5 border-b border-border mb-2">
+        <div className="flex items-center gap-2.5">
+          <div className="size-7 rounded-lg bg-primary/20 flex items-center justify-center">
+            <Banknote className="size-4 text-primary" />
+          </div>
+          <div>
+            <div className="text-sm font-semibold tracking-tight text-foreground">FinancieraApp</div>
+            <div className="text-xs text-muted-foreground flex items-center gap-1.5">
+              {user?.username || user?.firstName || ''}
+              {isAdmin && (
+                <Badge variant="default" className="text-[10px] py-0 px-1.5 h-4">admin</Badge>
+              )}
+            </div>
+          </div>
         </div>
       </div>
 
       {/* Nav */}
-      <nav style={{ flex: 1 }}>
+      <nav className="flex-1 px-2 py-1 space-y-0.5">
         {navLinks.map((item) =>
           item.children ? (
             <div key={item.label}>
               <button
                 onClick={() => setClientesOpen(p => !p)}
-                style={{
-                  width: '100%', display: 'flex', alignItems: 'center', gap: '0.75rem',
-                  padding: '0.7rem 1.5rem', background: 'none', border: 'none',
-                  borderLeft: '3px solid transparent',
-                  color: 'rgba(203,213,225,0.75)', cursor: 'pointer', fontSize: '0.9rem',
-                }}
+                className={cn(
+                  'w-full flex items-center gap-2.5 px-3 py-2 rounded-md text-sm transition-colors',
+                  isGroupActive(item.children)
+                    ? 'text-primary bg-primary/10'
+                    : 'text-muted-foreground hover:text-foreground hover:bg-accent',
+                )}
               >
-                {item.icon} {item.label}
-                <span style={{ marginLeft: 'auto', fontSize: '0.75rem', opacity: 0.6 }}>
-                  {clientesOpen ? <FaChevronUp /> : <FaChevronDown />}
-                </span>
+                <item.icon className="size-4 shrink-0" />
+                <span className="flex-1 text-left">{item.label}</span>
+                {clientesOpen
+                  ? <ChevronDown className="size-3.5 opacity-60" />
+                  : <ChevronRight className="size-3.5 opacity-60" />
+                }
               </button>
-              {clientesOpen && item.children.map(child => (
-                <Link key={child.href} href={child.href}
-                  onClick={() => setMobileOpen(false)}
-                  style={{
-                    ...linkStyle(child.href),
-                    padding: '0.6rem 1.5rem 0.6rem 3rem',
-                    fontSize: '0.85rem',
-                  }}
-                >
-                  {child.icon} {child.label}
-                </Link>
-              ))}
+              {clientesOpen && (
+                <div className="ml-4 mt-0.5 space-y-0.5 pl-3 border-l border-border">
+                  {item.children.map(child => (
+                    <Link
+                      key={child.href}
+                      href={child.href}
+                      onClick={onNavigate}
+                      className={cn(
+                        'flex items-center gap-2.5 px-3 py-1.5 rounded-md text-sm transition-colors',
+                        isActive(child.href)
+                          ? 'text-primary bg-primary/10 font-medium'
+                          : 'text-muted-foreground hover:text-foreground hover:bg-accent',
+                      )}
+                    >
+                      <child.icon className="size-3.5 shrink-0" />
+                      {child.label}
+                    </Link>
+                  ))}
+                </div>
+              )}
             </div>
           ) : (
-            <Link key={item.href} href={item.href!}
-              onClick={() => setMobileOpen(false)}
-              style={linkStyle(item.href!)}
+            <Link
+              key={item.href}
+              href={item.href!}
+              onClick={onNavigate}
+              className={cn(
+                'flex items-center gap-2.5 px-3 py-2 rounded-md text-sm transition-colors',
+                isActive(item.href!)
+                  ? 'text-primary bg-primary/10 font-medium'
+                  : 'text-muted-foreground hover:text-foreground hover:bg-accent',
+              )}
             >
-              {item.icon} {item.label}
+              <item.icon className="size-4 shrink-0" />
+              {item.label}
             </Link>
           )
         )}
 
         {isAdmin && (
-          <Link href="/vendedores" onClick={() => setMobileOpen(false)} style={linkStyle('/vendedores')}>
-            <FaUsers /> Vendedores
+          <Link
+            href="/vendedores"
+            onClick={onNavigate}
+            className={cn(
+              'flex items-center gap-2.5 px-3 py-2 rounded-md text-sm transition-colors',
+              isActive('/vendedores')
+                ? 'text-primary bg-primary/10 font-medium'
+                : 'text-muted-foreground hover:text-foreground hover:bg-accent',
+            )}
+          >
+            <Users className="size-4 shrink-0" />
+            Vendedores
           </Link>
         )}
       </nav>
 
       {/* Logout */}
-      <button
-        onClick={handleLogout}
-        style={{
-          display: 'flex', alignItems: 'center', gap: '0.75rem',
-          padding: '0.9rem 1.5rem', background: 'none', border: 'none',
-          borderTop: '1px solid rgba(139,92,246,0.12)',
-          color: 'rgba(203,213,225,0.5)', cursor: 'pointer', fontSize: '0.85rem',
-          transition: 'color 0.15s', width: '100%',
-        }}
-        onMouseEnter={e => (e.currentTarget.style.color = '#f87171')}
-        onMouseLeave={e => (e.currentTarget.style.color = 'rgba(203,213,225,0.5)')}
-      >
-        <FaSignOutAlt /> Cerrar sesión
-      </button>
+      <div className="p-2 border-t border-border">
+        <Button
+          variant="ghost"
+          size="sm"
+          className="w-full justify-start gap-2.5 text-muted-foreground hover:text-destructive hover:bg-destructive/10"
+          onClick={() => signOut({ redirectUrl: '/sign-in' })}
+        >
+          <LogOut className="size-4" />
+          Cerrar sesión
+        </Button>
+      </div>
     </div>
   );
+}
 
-  const sidebarStyle: React.CSSProperties = {
-    width: 240,
-    background: 'var(--bg-surface)',
-    borderRight: '1px solid rgba(139,92,246,0.12)',
-    flexShrink: 0,
-    height: '100vh',
-    position: 'sticky',
-    top: 0,
-    overflowY: 'auto',
-  };
+export default function Sidebar() {
+  const [open, setOpen] = useState(false);
 
   return (
     <>
-      {/* Desktop */}
-      <aside style={sidebarStyle} className="hidden md:block">
+      {/* Desktop sidebar */}
+      <aside className="hidden md:flex flex-col w-[240px] shrink-0 h-screen sticky top-0 border-r border-border bg-sidebar overflow-y-auto">
         <NavContent />
       </aside>
 
-      {/* Mobile toggle */}
-      <div className="md:hidden" style={{ position: 'fixed', top: 12, left: 12, zIndex: 1100 }}>
-        <button
-          onClick={() => setMobileOpen(p => !p)}
-          style={{
-            background: 'var(--bg-surface)', border: '1px solid var(--border)',
-            borderRadius: 8, color: '#a78bfa',
-            padding: '8px 10px', cursor: 'pointer', fontSize: '1.1rem',
-          }}
-        >
-          {mobileOpen ? <FaTimes /> : <FaBars />}
-        </button>
+      {/* Mobile: hamburger + sheet */}
+      <div className="md:hidden fixed top-3 left-3 z-50">
+        <Sheet open={open} onOpenChange={setOpen}>
+          <SheetTrigger asChild>
+            <Button variant="outline" size="icon-sm">
+              <Menu className="size-4" />
+            </Button>
+          </SheetTrigger>
+          <SheetContent side="left" className="p-0 w-[240px] max-w-[240px]">
+            <NavContent onNavigate={() => setOpen(false)} />
+          </SheetContent>
+        </Sheet>
       </div>
-
-      {/* Mobile drawer */}
-      {mobileOpen && (
-        <>
-          <div
-            onClick={() => setMobileOpen(false)}
-            style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.6)', zIndex: 1050 }}
-          />
-          <aside style={{ ...sidebarStyle, position: 'fixed', top: 0, left: 0, zIndex: 1060 }}>
-            <NavContent />
-          </aside>
-        </>
-      )}
     </>
   );
 }

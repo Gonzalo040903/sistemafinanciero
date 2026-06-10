@@ -2,8 +2,12 @@
 
 import { useEffect, useState } from 'react';
 import toast from 'react-hot-toast';
+import { Trash2 } from 'lucide-react';
 import { useApi } from '@/lib/useApi';
 import type { Cliente } from '@/types';
+import { Card } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 
 export default function EliminarCliente() {
   const api = useApi();
@@ -25,56 +29,50 @@ export default function EliminarCliente() {
     }
   };
 
-  const card: React.CSSProperties = {
-    background: 'var(--bg-card)',
-    border: '1px solid var(--border)',
-    borderRadius: '0.875rem',
-    boxShadow: 'var(--glow-purple)',
-    overflowX: 'auto',
-  };
-
   return (
-    <div style={{ padding: '2rem', color: 'var(--text-primary)', maxWidth: '1200px' }}>
-      <h3 style={{ fontSize: '1.5rem', fontWeight: 800, marginBottom: '0.25rem', letterSpacing: '-0.02em' }}>Eliminar Cliente</h3>
-      <p style={{ fontSize: '0.8rem', color: 'var(--text-muted)', marginBottom: '1.75rem' }}>Eliminá un cliente y todo su historial de préstamos</p>
-      <div style={card}>
-        <table style={{ width: '100%', fontSize: '0.83rem', textAlign: 'center', borderCollapse: 'collapse' }}>
-          <thead>
-            <tr style={{ borderBottom: '1px solid var(--border)' }}>
+    <div className="p-4 md:p-6 lg:p-8 max-w-[1200px] space-y-2">
+      <h1 className="text-2xl font-bold tracking-tight">Eliminar Cliente</h1>
+      <p className="text-sm text-muted-foreground mb-6">Eliminá un cliente y todo su historial de préstamos</p>
+
+      <Card>
+        <Table>
+          <TableHeader>
+            <TableRow>
               {['Nombre', 'DNI', 'Dirección', 'Teléfono', ''].map(h => (
-                <th key={h} style={{ padding: '0.65rem 1rem', color: 'var(--text-muted)', fontWeight: 600, fontSize: '0.72rem', textTransform: 'uppercase', letterSpacing: '0.04em' }}>{h}</th>
+                <TableHead key={h}>{h}</TableHead>
               ))}
-            </tr>
-          </thead>
-          <tbody>
+            </TableRow>
+          </TableHeader>
+          <TableBody>
             {clientes.map(c => (
-              <tr key={c.dni} style={{ borderBottom: '1px solid rgba(139,92,246,0.06)' }}
-                onMouseEnter={e => (e.currentTarget.style.background = 'rgba(139,92,246,0.04)')}
-                onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}
-              >
-                <td style={{ padding: '0.7rem 1rem', color: 'var(--text-primary)' }}>{c.nombre} {c.apellido}</td>
-                <td style={{ padding: '0.7rem 1rem', color: 'var(--text-secondary)' }}>{c.dni}</td>
-                <td style={{ padding: '0.7rem 1rem', color: 'var(--text-secondary)' }}>{c.direccion}</td>
-                <td style={{ padding: '0.7rem 1rem', color: 'var(--text-secondary)' }}>{c.telefono_personal}</td>
-                <td style={{ padding: '0.7rem 1rem' }}>
-                  <button
+              <TableRow key={c.dni}>
+                <TableCell className="font-medium text-foreground">{c.nombre} {c.apellido}</TableCell>
+                <TableCell className="text-muted-foreground">{c.dni}</TableCell>
+                <TableCell className="text-muted-foreground">{c.direccion}</TableCell>
+                <TableCell className="text-muted-foreground">{c.telefono_personal}</TableCell>
+                <TableCell>
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    className="text-destructive hover:text-destructive hover:bg-destructive/10"
                     onClick={() => eliminar(c.dni)}
-                    style={{
-                      background: 'rgba(248,113,113,0.1)', border: '1px solid rgba(248,113,113,0.3)',
-                      color: '#f87171', fontSize: '0.75rem', padding: '0.3rem 0.75rem',
-                      borderRadius: '0.4rem', cursor: 'pointer', fontWeight: 600,
-                    }}
-                    onMouseEnter={e => { e.currentTarget.style.background = 'rgba(248,113,113,0.25)'; }}
-                    onMouseLeave={e => { e.currentTarget.style.background = 'rgba(248,113,113,0.1)'; }}
                   >
+                    <Trash2 className="size-3.5 mr-1.5" />
                     Eliminar
-                  </button>
-                </td>
-              </tr>
+                  </Button>
+                </TableCell>
+              </TableRow>
             ))}
-          </tbody>
-        </table>
-      </div>
+            {clientes.length === 0 && (
+              <TableRow>
+                <TableCell colSpan={5} className="text-center text-muted-foreground py-10">
+                  No hay clientes registrados
+                </TableCell>
+              </TableRow>
+            )}
+          </TableBody>
+        </Table>
+      </Card>
     </div>
   );
 }

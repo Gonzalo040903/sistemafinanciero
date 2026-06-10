@@ -1,6 +1,8 @@
 import type { Metadata } from 'next';
 import { ClerkProvider } from '@clerk/nextjs';
 import { Toaster } from 'react-hot-toast';
+import { GeistSans } from 'geist/font/sans';
+import { GeistMono } from 'geist/font/mono';
 import './globals.css';
 
 export const metadata: Metadata = {
@@ -11,15 +13,15 @@ export const metadata: Metadata = {
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <ClerkProvider>
-      <html lang="es">
-        <body style={{ background: 'var(--bg-base)', color: 'var(--text-primary)' }}>
+      <html lang="es" className={`dark ${GeistSans.variable} ${GeistMono.variable}`}>
+        <body>
           {children}
           <Toaster
             position="top-right"
             toastOptions={{
               style: {
-                background: 'var(--bg-card)',
-                color: 'var(--text-primary)',
+                background: 'var(--card)',
+                color: 'var(--foreground)',
                 border: '1px solid var(--border)',
               },
             }}
