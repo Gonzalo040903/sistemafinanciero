@@ -1,0 +1,18 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(git config *)",
+      "Bash(git add *)",
+      "Bash(git commit -m ' *)",
+      "Bash(npm run *)",
+      "Bash(python3 -c \"import json,sys; d=json.load\\(sys.stdin\\); mcps = d.get\\('mcpServers', {}\\); [print\\(k, ':', json.dumps\\({kk:vv for kk,vv in v.items\\(\\) if kk != 'env'}, indent=2\\)\\) for k,v in mcps.items\\(\\)]\")",
+      "Bash(python3 -c \"import json,sys; d=json.load\\(sys.stdin\\); print\\('deps:', list\\(d.get\\('dependencies',{}\\).keys\\(\\)\\)\\)\")",
+      "Bash(python3 -c \"import json,sys; d=json.load\\(sys.stdin\\); print\\('deps:', list\\(d.get\\('dependencies',{}\\).keys\\(\\)\\)[:20]\\)\")",
+      "Bash(python3 -c ' *)",
+      "Bash(python3 -c \"import json,sys; d=json.load\\(sys.stdin\\); print\\('tailwind:', d.get\\('devDependencies',{}\\).get\\('tailwindcss', d.get\\('dependencies',{}\\).get\\('tailwindcss','not found'\\)\\)\\); print\\('postcss tailwind:', d.get\\('devDependencies',{}\\).get\\('@tailwindcss/postcss', 'not found'\\)\\); print\\('shadcn:', d.get\\('devDependencies',{}\\).get\\('shadcn','not found'\\), d.get\\('dependencies',{}\\).get\\('shadcn','not found'\\)\\)\")",
+      "Bash(npm install *)",
+      "Bash(npx tsc *)",
+      "Bash(git push *)"
+    ]
+  }
+}

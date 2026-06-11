@@ -1,194 +1,266 @@
 import { Router } from 'express';
-import Cliente from '../model/modelCliente.js'
+import supabase from '../db/supabase.js';
 
 const router = Router();
 
-//crear cliente
+function calcularPrestamo(monto, intereses, semanas, soloInteres) {
+  const montoFinal = soloInteres
+    ? monto * (intereses / 100)
+    : monto + monto * (intereses / 100);
+  return {
+    monto_final: montoFinal,
+    monto_adeudado: montoFinal,
+    cuotas_totales: semanas,
+  };
+}
+
+// POST /api/clientes — crear cliente con préstamo inicial
 router.post('/', async (req, res) => {
-    const {
-        nombre,
-        apellido,
-        dni,
-        direccion,
-        googleMaps,
-        telefonoPersonal,
-        telefonoReferencia,
-        telefonoTres,
-        prestamoActual,
-        historialPrestamos
-    } = req.body;
+  const {
+    nombre, apellido, dni, direccion, googleMaps,
+    telefonoPersonal, telefonoReferencia, telefonoTres,
+    prestamoActual,
+  } = req.body;
 
-    if (!nombre || !apellido || !dni || !direccion || !telefonoPersonal || !telefonoReferencia || !telefonoTres || !prestamoActual) {
-        return res.status(400).json({ message: 'Todos los campos son obligatorios' });
-    }
+  if (!nombre || !apellido || !dni || !direccion || !telefonoPersonal || !prestamoActual) {
+    return res.status(400).json({ message: 'Todos los campos son obligatorios' });
+  }
 
-    try {
-        const nuevoCliente = new Cliente({
-            nombre,
-            apellido,
-            dni,
-            direccion,
-            googleMaps,
-            telefonoPersonal,
-            telefonoReferencia,
-            telefonoTres,
-            prestamoActual: prestamoActual || null, //opcional?
-            historialPrestamos: historialPrestamos || []
-        });
+  const { monto, semanas, intereses, soloInteres, fechaInicio, vendedor } = prestamoActual;
+  if (!monto || !semanas || !intereses || !fechaInicio || !vendedor) {
+    return res.status(400).json({ message: 'El préstamo inicial es obligatorio' });
+  }
 
-        const clienteGuardado = await nuevoCliente.save();
-        res.status(201).json(clienteGuardado);
-    } catch (error) {
-        res.status(500).json({ message: error.message });
-    }
+  const { data: cliente, error: clienteError } = await supabase
+    .from('clientes')
+    .insert({
+      nombre, apellido, dni, direccion,
+      google_maps: googleMaps,
+      telefono_personal: telefonoPersonal,
+      telefono_referencia: telefonoReferencia,
+      telefono_tres: telefonoTres,
+    })
+    .select()
+    .single();
+
+  if (clienteError) {
+    if (clienteError.code === '23505') return res.status(409).json({ message: 'Ya existe un cliente con ese DNI' });
+    return res.status(500).json({ message: clienteError.message });
+  }
+
+  const calc = calcularPrestamo(Number(monto), Number(intereses), Number(semanas), Boolean(soloInteres));
+
+  const { error: prestamoError } = await supabase.from('prestamos').insert({
+    cliente_id: cliente.id,
+    monto: Number(monto),
+    ...calc,
+    semanas: Number(semanas),
+    intereses: Number(intereses),
+    solo_interes: Boolean(soloInteres),
+    fecha_inicio: fechaInicio,
+    vendedor,
+    activo: true,
+  });
+
+  if (prestamoError) return res.status(500).json({ message: prestamoError.message });
+
+  res.status(201).json(cliente);
 });
 
-//Obetener Clientes
+// GET /api/clientes — listar todos con su préstamo activo
 router.get('/', async (req, res) => {
-    try {
-        const clientes = await Cliente.find();
-        res.json(clientes);
-    } catch (error) {
-        res.status(500).json({ message: error.message });
-    }
+  const { data, error } = await supabase
+    .from('clientes')
+    .select('*, prestamoActual:prestamos!inner(*)')
+    .eq('prestamos.activo', true)
+    .order('apellido');
+
+  if (error) {
+    // Fallback: traer clientes sin join si no hay préstamos activos
+    const { data: clientes, error: e2 } = await supabase
+      .from('clientes')
+      .select('*')
+      .order('apellido');
+    if (e2) return res.status(500).json({ message: e2.message });
+    return res.json(clientes);
+  }
+  res.json(data);
 });
-//obtener por dni
+
+// GET /api/clientes/:dni
 router.get('/:dni', async (req, res) => {
-    try {
-        const cliente = await Cliente.findOne({ dni: req.params.dni });
-        if (cliente.length === 0) {
-            return res.status(404).json({ message: 'Cliente no encontrado' });
-        }
-        res.json(cliente);
-    } catch (error) {
-        res.status(500).json({ message: error.message });
-    }
+  const { data, error } = await supabase
+    .from('clientes')
+    .select('*')
+    .eq('dni', req.params.dni)
+    .single();
+
+  if (error || !data) return res.status(404).json({ message: 'Cliente no encontrado' });
+  res.json(data);
 });
+
+// GET /api/clientes/:dni/prestamo — préstamo activo
 router.get('/:dni/prestamo', async (req, res) => {
-    try {
-        const cliente = await Cliente.findOne({ dni: req.params.dni });
-        if (cliente.length === 0) {
-            return res.status(404).json({ message: 'Cliente no encontrado' });
-        }
-        res.json(cliente.prestamoActual);
-    } catch (error) {
-        res.status(500).json({ message: error.message });
-    }
+  const { data: cliente } = await supabase
+    .from('clientes')
+    .select('id')
+    .eq('dni', req.params.dni)
+    .single();
+
+  if (!cliente) return res.status(404).json({ message: 'Cliente no encontrado' });
+
+  const { data, error } = await supabase
+    .from('prestamos')
+    .select('*, pagos(*)')
+    .eq('cliente_id', cliente.id)
+    .eq('activo', true)
+    .single();
+
+  if (error || !data) return res.status(404).json({ message: 'Sin préstamo activo' });
+  res.json(data);
 });
-//actualizar cliente
+
+// GET /api/clientes/:dni/prestamos — historial completo
+router.get('/:dni/prestamos', async (req, res) => {
+  const { data: cliente } = await supabase
+    .from('clientes')
+    .select('id')
+    .eq('dni', req.params.dni)
+    .single();
+
+  if (!cliente) return res.status(404).json({ message: 'Cliente no encontrado' });
+
+  const { data, error } = await supabase
+    .from('prestamos')
+    .select('*, pagos(*)')
+    .eq('cliente_id', cliente.id)
+    .order('created_at', { ascending: false });
+
+  if (error) return res.status(500).json({ message: error.message });
+  res.json(data);
+});
+
+// PATCH /api/clientes/:dni — actualizar datos del cliente
 router.patch('/:dni', async (req, res) => {
-    try {
-        const cliente = await Cliente.findOne({ dni: req.params.dni });
-        if (cliente == null) {
-            return res.status(404).json({ message: 'Cliente no encontrado' });
-        }
-        const { nombre, apellido, dni, direccion, googleMaps, telefonoPersonal, telefonoReferencia, telefonoTres, historialPrestamos } = req.body;
-        if (nombre) cliente.nombre = nombre;
-        if (apellido) cliente.apellido = apellido;
-        if (dni) cliente.dni = dni;
-        if (direccion) cliente.direccion = direccion;
-        if (googleMaps) cliente.googleMaps = googleMaps;
-        if (telefonoPersonal) cliente.telefonoPersonal = telefonoPersonal;
-        if (telefonoReferencia) cliente.telefonoReferencia = telefonoReferencia;
-        if (telefonoTres) cliente.telefonoTres = telefonoTres;
-        if (historialPrestamos && Array.isArray(historialPrestamos)) { cliente.historialPrestamos = cliente.historialPrestamos.concact(historialPrestamos) };
-        await cliente.save();
-        res.json({ message: 'Cliente actualizado', cliente });
+  const { nombre, apellido, dni, direccion, googleMaps,
+          telefonoPersonal, telefonoReferencia, telefonoTres } = req.body;
 
-    } catch (error) {
-        res.status(500).json({ message: error.message });
-    }
+  const updates = {};
+  if (nombre)            updates.nombre             = nombre;
+  if (apellido)          updates.apellido            = apellido;
+  if (dni)               updates.dni                 = dni;
+  if (direccion)         updates.direccion            = direccion;
+  if (googleMaps)        updates.google_maps          = googleMaps;
+  if (telefonoPersonal)  updates.telefono_personal    = telefonoPersonal;
+  if (telefonoReferencia) updates.telefono_referencia = telefonoReferencia;
+  if (telefonoTres)      updates.telefono_tres        = telefonoTres;
+
+  const { data, error } = await supabase
+    .from('clientes')
+    .update(updates)
+    .eq('dni', req.params.dni)
+    .select()
+    .single();
+
+  if (error || !data) return res.status(404).json({ message: 'Cliente no encontrado' });
+  res.json({ message: 'Cliente actualizado', cliente: data });
 });
-//eliminar cliente
+
+// DELETE /api/clientes/:dni
 router.delete('/:dni', async (req, res) => {
-    try {
-        const cliente = await Cliente.findOne({ dni: req.params.dni });
-        if (cliente == null) {
-            return res.status(404).json({ message: 'Cliente no encontrado' });
-        }
-        await cliente.deleteOne({ dni: req.params.dni })
-        res.json({ message: 'Cliente eliminado' });
-
-    } catch (error) {
-        res.status(500).json({ message: error.message });
-    }
+  const { error } = await supabase.from('clientes').delete().eq('dni', req.params.dni);
+  if (error) return res.status(500).json({ message: error.message });
+  res.json({ message: 'Cliente eliminado' });
 });
 
-// Endpoint PATCH para actualizar cuotas y recalcular montoAdeudado
+// PATCH /api/clientes/:dni/prestamo/cuotas — registrar pagos
 router.patch('/:dni/prestamo/cuotas', async (req, res) => {
-    const { dni } = req.params;
-    const { cuotasPagadas } = req.body;
+  const { cuotasPagadas } = req.body;
 
-    try {
-        const cliente = await Cliente.findOne({ dni }).populate('prestamoActual');
-        if (!cliente) return res.status(404).send("Cliente no encontrado");
+  const { data: cliente } = await supabase
+    .from('clientes')
+    .select('id')
+    .eq('dni', req.params.dni)
+    .single();
 
-        // Verifica que exista un préstamo asociado al cliente
-        if (!cliente.prestamoActual) {
-            return res.status(400).json({ message: 'No hay préstamo asociado a este cliente' });
-        }
+  if (!cliente) return res.status(404).json({ message: 'Cliente no encontrado' });
 
-        // Calcular el valor de cada cuota
-        const cuotaValor = cliente.prestamoActual.montoFinal / cliente.prestamoActual.cuotasTotales;
+  const { data: prestamo } = await supabase
+    .from('prestamos')
+    .select('*')
+    .eq('cliente_id', cliente.id)
+    .eq('activo', true)
+    .single();
 
-        // Verificar si las cuotas aumentaron (para registrar el pago)
-        const cuotasAnteriores = cliente.prestamoActual.cuotasPagadas || 0;
+  if (!prestamo) return res.status(400).json({ message: 'Sin préstamo activo' });
 
-        if (cuotasPagadas > cuotasAnteriores) {
-            const cuotasNuevas = cuotasPagadas - cuotasAnteriores;
-            const fechaActual = new Date();
+  const cuotaValor = prestamo.monto_final / prestamo.cuotas_totales;
+  const cuotasAnteriores = prestamo.cuotas_pagadas;
+  const cuotasNuevas = cuotasPagadas - cuotasAnteriores;
 
-            // Agregar un pago por cada cuota nueva que se haya pagado
-            for (let i = 0; i < cuotasNuevas; i++) {
-                cliente.prestamoActual.pagos.push({
-                    fecha: fechaActual,
-                    monto: cuotaValor
-                });
-            }
-        }
+  if (cuotasNuevas > 0) {
+    const nuevoPagos = Array.from({ length: cuotasNuevas }, () => ({
+      prestamo_id: prestamo.id,
+      fecha: new Date().toISOString(),
+      monto: cuotaValor,
+    }));
+    await supabase.from('pagos').insert(nuevoPagos);
+  }
 
-        // Actualizar el número de cuotas pagadas
-        cliente.prestamoActual.cuotasPagadas = cuotasPagadas;
+  const montoAdeudado = prestamo.monto_final - cuotaValor * cuotasPagadas;
 
-        // Calcular el monto adeudado como el total pagado hasta el momento
-        cliente.prestamoActual.montoAdeudado = cuotaValor * cuotasPagadas;
+  const { data: updated, error } = await supabase
+    .from('prestamos')
+    .update({ cuotas_pagadas: cuotasPagadas, monto_adeudado: Math.max(0, montoAdeudado) })
+    .eq('id', prestamo.id)
+    .select()
+    .single();
 
-        // Guardar los cambios
-        await cliente.save();
-
-        // Retornar la respuesta con el cliente actualizado
-        res.status(200).send(cliente);
-    } catch (error) {
-        console.error("Error al actualizar cuotas:", error);
-        res.status(500).send("Error al actualizar cuotas");
-    }
+  if (error) return res.status(500).json({ message: error.message });
+  res.json(updated);
 });
 
+// PATCH /api/clientes/:dni/prestamo/nuevo — cerrar préstamo actual y abrir uno nuevo
 router.patch('/:dni/prestamo/nuevo', async (req, res) => {
+  const { prestamoActual, moverHistorial } = req.body;
+  const { monto, semanas, intereses, soloInteres, fechaInicio, vendedor } = prestamoActual;
 
+  const { data: cliente } = await supabase
+    .from('clientes')
+    .select('id')
+    .eq('dni', req.params.dni)
+    .single();
 
-    const { dni } = req.params;
-    const { prestamoActual, moverHistorial } = req.body;
+  if (!cliente) return res.status(404).json({ message: 'Cliente no encontrado' });
 
-    try {
-        const cliente = await Cliente.findOne({ dni });
+  if (moverHistorial) {
+    await supabase
+      .from('prestamos')
+      .update({ activo: false })
+      .eq('cliente_id', cliente.id)
+      .eq('activo', true);
+  }
 
-        if (moverHistorial && cliente.prestamoActual) {
-            // Mueve el préstamo actual al historial
-            cliente.historialPrestamos.push(cliente.prestamoActual);
-        }
+  const calc = calcularPrestamo(Number(monto), Number(intereses), Number(semanas), Boolean(soloInteres));
 
-        // Actualiza el préstamo actual
-        cliente.prestamoActual = prestamoActual;
+  const { data: nuevoPrestamo, error } = await supabase
+    .from('prestamos')
+    .insert({
+      cliente_id: cliente.id,
+      monto: Number(monto),
+      ...calc,
+      semanas: Number(semanas),
+      intereses: Number(intereses),
+      solo_interes: Boolean(soloInteres),
+      fecha_inicio: fechaInicio,
+      vendedor,
+      activo: true,
+    })
+    .select()
+    .single();
 
-        // Guarda los cambios
-        await cliente.save();
-
-        res.status(200).json(cliente);
-    } catch (error) {
-        console.error("Error al actualizar el cliente:", error);
-        res.status(500).json({ message: "Error al actualizar el cliente" });
-    }
+  if (error) return res.status(500).json({ message: error.message });
+  res.json(nuevoPrestamo);
 });
 
 export default router;

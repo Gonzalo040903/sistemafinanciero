@@ -1,58 +1,53 @@
 import { Router } from 'express';
-import Vendedor from '../model/modelVendedor.js';
+import { createClerkClient } from '@clerk/backend';
 import autenticarUsuario from '../middlewares/autenticarUsuario.js';
 import verificarAdmin from '../middlewares/verificarAdmin.js';
 
 const router = Router();
-router.use('/', autenticarUsuario);
+const clerk = createClerkClient({ secretKey: process.env.CLERK_SECRET_KEY });
 
-router.post('/', verificarAdmin, async (req, res) => {
-    try {
-        const { nombre, contraseña } = req.body;
-        if (!nombre || !contraseña) {
-            return res.status(400).json({ message: 'Todos los campos son obligatorios.' });
-        }
-        const nuevoVendedor = new Vendedor({ nombre, contraseña });
-        await nuevoVendedor.save();
-        res.status(201).json({ message: 'Vendedor creado con éxito.', vendedor: nuevoVendedor });
-    } catch (error) {
-        res.status(500).json({ message: error.message });
-    }
+router.use(autenticarUsuario, verificarAdmin);
+
+// GET /api/vendedores
+router.get('/', async (_req, res) => {
+  const { data } = await clerk.users.getUserList({ limit: 100 });
+  const vendedores = data.map(u => ({
+    id: u.id,
+    nombre: u.username,
+    rol: u.publicMetadata?.rol ?? 'vendedor',
+    creadoEn: u.createdAt,
+  }));
+  res.json(vendedores);
 });
 
-router.get('/', verificarAdmin, async (req, res) => {
-    try {
-        const vendedores = await Vendedor.find({}, 'nombre contraseña');
-        res.json(vendedores);
-    } catch (error) {
-        res.status(500).json({ message: error.message });
-    }
+// POST /api/vendedores — crear vendedor vía Clerk
+router.post('/', async (req, res) => {
+  const { nombre, contraseña, rol = 'vendedor' } = req.body;
+  if (!nombre || !contraseña) {
+    return res.status(400).json({ message: 'Nombre y contraseña son obligatorios' });
+  }
+
+  try {
+    const user = await clerk.users.createUser({
+      username: nombre,
+      password: contraseña,
+      publicMetadata: { rol },
+    });
+    res.status(201).json({ id: user.id, nombre: user.username, rol });
+  } catch (err) {
+    const msg = err.errors?.[0]?.message ?? err.message;
+    res.status(400).json({ message: msg });
+  }
 });
 
-
-router.get('/:id', verificarAdmin,  async(req, res) =>{
-    try{
-        const vendedor = await Vendedor.findById(req.params.id);
-        if(!vendedor){
-            return res.status(404).json({message:'Vendedor no encontrado.'});
-        }
-        res.json(vendedor);
-    }catch(error){
-        res.status(500).json({message: error.message});
-    }
-});
-
-router.delete('/:id', verificarAdmin, async(req, res) =>{
-    try{
-        const vendedor = await Vendedor.findById(req.params.id);
-        if(!vendedor){
-            return res.status(404).json({message:'Vendedor no encontrado.'});
-        }
-        await vendedor.deleteOne();
-        res.json({message: 'Vendedor eliminado con exito.'});
-    }catch (error) {
-        res.status(500).json({message: error.message});
-    }
+// DELETE /api/vendedores/:id
+router.delete('/:id', async (req, res) => {
+  try {
+    await clerk.users.deleteUser(req.params.id);
+    res.json({ message: 'Vendedor eliminado' });
+  } catch (err) {
+    res.status(404).json({ message: 'Vendedor no encontrado' });
+  }
 });
 
 export default router;

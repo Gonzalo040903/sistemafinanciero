@@ -1,2 +1,22 @@
-# Local Netlify folder
+# Dependencies
+node_modules/
+back/node_modules/
+front/node_modules/
+
+# Environment variables (NEVER commit these)
+.env
+.env.local
+back/.env
+front/.env.local
+
+# Next.js
+front/.next/
+front/out/
+
+# Build output
+front/build/
+
+# Misc
+.DS_Store
+*.log
 .netlify

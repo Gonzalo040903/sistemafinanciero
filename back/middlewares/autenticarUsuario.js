@@ -1,30 +1,19 @@
-import jwt from 'jsonwebtoken';
+import { createClerkClient } from '@clerk/backend';
 
-const autenticarUsuario = (req, res, next) => {
-  const authHeader = req.header('Authorization');
+const clerk = createClerkClient({ secretKey: process.env.CLERK_SECRET_KEY });
 
-  //console.log('Authorization Header:', authHeader);
-
-  if (!authHeader || typeof authHeader !== 'string') {
-    return res.status(403).json({ message: 'No se proporcionó un token. Acceso denegado.' });
-  }
-
-  const token = authHeader.split(' ')[1]; 
-
-
-  if (!token) {
-    return res.status(403).json({ message: 'Formato de token incorrecto.' });
-  }
+export default async function autenticarUsuario(req, res, next) {
+  const token = req.headers.authorization?.split(' ')[1];
+  if (!token) return res.status(403).json({ message: 'Token requerido' });
 
   try {
-    const decoded = jwt.verify(token, '2024');
-
-    req.usuario = decoded; 
-    next(); 
-  } catch (error) {
-    res.status(401).json({ message: 'Token no válido. Acceso denegado.' });
+    const payload = await clerk.verifyToken(token);
+    req.usuario = {
+      id: payload.sub,
+      rol: payload.metadata?.rol ?? 'vendedor',
+    };
+    next();
+  } catch {
+    res.status(401).json({ message: 'Token inválido o expirado' });
   }
-};
-
-
-export default autenticarUsuario;
+}
